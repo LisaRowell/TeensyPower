@@ -19,17 +19,26 @@
 #include "BMV.h"
 #include "MPPTController.h"
 #include "OrionXS.h"
+#include "NetworkInterface.h"
+#include "Logger.h"
+#include "Error.h"
 
 #include <Arduino.h>
 
+NetworkInterface networkInterface;
 MPPTController testController("Test", Serial);
 
 void setup() {
-    Serial.begin(9600); // This number is ignoreed anyway
+    Serial.begin(9600); // This number is ignored anyway
+
+    networkInterface.setup();
 
     testController.setup();
+
 }
 
 void loop() {
     testController.service();
+
+    networkInterface.service();
 }

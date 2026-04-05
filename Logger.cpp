@@ -20,6 +20,7 @@
 #include "LoggableItem.h"
 
 #include "Arduino.h"
+#include "QNEthernet.h"
 
 #include "Embedded_Template_Library.h"
 #include "etl/string.h"
@@ -93,6 +94,12 @@ Logger & Logger::operator << (const char *string) {
 
 Logger & Logger::operator << (const etl::istring &string) {
     lineStream << string;
+
+    return *this;
+}
+
+Logger & Logger::operator << (IPAddress &ip) {
+    lineStream << ip[0] << "." << ip[1] << "." << ip[2] << "." << ip[3];
 
     return *this;
 }

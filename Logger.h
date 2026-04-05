@@ -34,6 +34,7 @@ const EndOfLine eol = EndOfLine();
 struct Debug {};
 const Debug debug = Debug();
 
+class IPAddress;
 class LoggableItem;
 
 class Logger {
@@ -57,6 +58,7 @@ class Logger {
         Logger & operator << (float value);
         Logger & operator << (const char *string);
         Logger & operator << (const etl::istring &string);
+        Logger & operator << (IPAddress &ip);
         Logger & operator << (const LoggableItem &item);
         Logger & operator << (const etl::private_basic_format_spec::base_spec &format);
         Logger & operator << (const etl::private_basic_format_spec::width_spec &format);
