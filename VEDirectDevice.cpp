@@ -17,20 +17,21 @@
  */
 
 #include "VEDirectDevice.h"
-#include "Register.h"
-#include "VEDirectHexMessage.h"
-#include "VEDirectHexCommandMessage.h"
-#include "VEDirectHexProtocol.h"
-#include "PassiveTimer.h"
-#include "Logger.h"
+#include "src/VEDirect/Register.h"
+#include "src/VEDirect/VEDirectHexMessage.h"
+#include "src/VEDirect/VEDirectHexCommandMessage.h"
+#include "src/VEDirect/VEDirectHexProtocol.h"
+
+#include "src/Util/PassiveTimer.h"
+#include "src/Util/Logger.h"
 
 #include <Arduino.h>
 
-#include "Embedded_Template_Library.h"
-#include "etl/vector.h"
-#include "etl/string.h"
-#include "etl/string_stream.h"
-#include "etl/flat_map.h"
+#include <Embedded_Template_Library.h>
+#include <etl/vector.h>
+#include <etl/string.h>
+#include <etl/string_stream.h>
+#include <etl/flat_map.h>
 
 #include <stdint.h>
 

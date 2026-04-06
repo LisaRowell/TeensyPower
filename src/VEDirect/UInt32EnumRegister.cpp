@@ -16,29 +16,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VE_DIRECT_HEX_COMMAND_MESSAGE_H
-#define VE_DIRECT_HEX_COMMAND_MESSAGE_H
+#include "UInt32EnumRegister.h"
 
-#include "VEDirectHexProtocol.h"
+#include "../Util/Logger.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
+#include <Embedded_Template_Library.h>
+#include <etl/flat_map.h>
+#include <etl/string_stream.h>
 
 #include <stdint.h>
 
-class VEDirectHexCommandMessage {
-    private:
-        etl::string<HEX_PROTOCOL_MAX_MESSAGE_LENGTH> message;
-        uint8_t checksum;
+UInt32EnumRegister::UInt32EnumRegister(const char *deviceName, const char *name,
+                                       etl::iflat_map<uint32_t, const char *> &descriptions)
+    : UInt32Register(deviceName, name),
+      descriptions(descriptions) {
+}
 
-        char nibbleToHexChar(uint8_t nibble);
-        void appendByte(uint8_t byte);
-        void appendNibble(uint8_t nibble);
-
-    public:
-        void setCommand(VEDirectHexCommand command);
-        void appendChecksum();
-        const char *cString();
-};
-
-#endif
+void UInt32EnumRegister::log(Logger &logger) const {
+    const auto &mapping = descriptions.find(value);
+    if (mapping != descriptions.end()) {
+        logger << mapping->second;
+    } else {
+        logger << etl::hex << etl::setw(8) << etl::setfill('0') << value
+               << etl::setw(0);
+    }
+}

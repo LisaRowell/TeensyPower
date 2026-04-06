@@ -17,24 +17,24 @@
  */
 
 #include "MPPTController.h"
-#include "VEDirectHexMessage.h"
-#include "UInt8Register.h"
-#include "UInt8EnumRegister.h"
-#include "UInt8OnOffRegister.h"
-#include "UInt16Register.h"
-#include "UInt16RangeRegister.h"
-#include "UInt32Register.h"
-#include "UInt32EnumRegister.h"
-#include "Int16Register.h"
-#include "MPPTTotalHistoryRegister.h"
-#include "MPPTDailyHistoryRegister.h"
-#include "Logger.h"
 
-#include "Arduino.h"
+#include "src/VEDirect/VEDirectHexMessage.h"
+#include "src/VEDirect/UInt8Register.h"
+#include "src/VEDirect/UInt8EnumRegister.h"
+#include "src/VEDirect/UInt8OnOffRegister.h"
+#include "src/VEDirect/UInt16Register.h"
+#include "src/VEDirect/UInt16RangeRegister.h"
+#include "src/VEDirect/UInt32Register.h"
+#include "src/VEDirect/UInt32EnumRegister.h"
+#include "src/VEDirect/Int16Register.h"
+#include "src/VEDirect/MPPTTotalHistoryRegister.h"
+#include "src/VEDirect/MPPTDailyHistoryRegister.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/string_stream.h"
-#include "etl/flat_map.h"
+#include <Arduino.h>
+
+#include <Embedded_Template_Library.h>
+#include <etl/string_stream.h>
+#include <etl/flat_map.h>
 
 #include <stdint.h>
 

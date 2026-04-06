@@ -18,8 +18,8 @@
 
 #include "NetworkInterface.h"
 
-#include "Logger.h"
-#include "Error.h"
+#include "src/Util/Logger.h"
+#include "src/Util/Error.h"
 
 #include <Arduino.h>
 #include <QNEthernet.h>

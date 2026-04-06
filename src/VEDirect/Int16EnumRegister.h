@@ -16,27 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
  
-#include "Int16EnumRegister.h"
-#include "Logger.h"
+ #ifndef INT16_ENUM_REGISTER_H
+#define INT16_ENUM_REGISTER_H
 
-#include "Embedded_Template_Library.h"
-#include "etl/flat_map.h"
-#include "etl/string_stream.h"
+#include "Int16Register.h"
+
+#include <Embedded_Template_Library.h>
+#include <etl/flat_map.h>
 
 #include <stdint.h>
 
-Int16EnumRegister::Int16EnumRegister(const char *deviceName, const char *name,
-                                     etl::iflat_map<int16_t, const char *> &descriptions)
-    : Int16Register(deviceName, name),
-      descriptions(descriptions) {
-}
+class Int16EnumRegister : public Int16Register {
+    private:
+        etl::iflat_map<int16_t, const char *> &descriptions;
 
-void Int16EnumRegister::log(Logger &logger) const {
-    const auto &mapping = descriptions.find(value);
-    if (mapping != descriptions.end()) {
-        logger << mapping->second;
-    } else {
-        logger << etl::hex << etl::setw(4) << etl::setfill('0') << value
-               << etl::setw(0);
-    }
-}
+    public:
+        Int16EnumRegister(const char *deviceName, const char *name,
+                          etl::iflat_map<int16_t, const char *> &descriptions);
+        void log(Logger &logger) const override;
+};
+
+#endif

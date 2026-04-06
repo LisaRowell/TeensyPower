@@ -18,20 +18,20 @@
 
 #include "BMV.h"
 #include "VEDirectDevice.h"
-#include "UInt8Register.h"
-#include "UInt8EnumRegister.h"
-#include "UInt8OnOffRegister.h"
-#include "UInt16Register.h"
-#include "UInt24Register.h"
-#include "UInt32Register.h"
-#include "UInt32EnumRegister.h"
-#include "Int16Register.h"
-#include "Int16EnumRegister.h"
-#include "Int32Register.h"
-#include "String20Register.h"
-#include "String32Register.h"
+#include "src/VEDirect/UInt8Register.h"
+#include "src/VEDirect/UInt8EnumRegister.h"
+#include "src/VEDirect/UInt8OnOffRegister.h"
+#include "src/VEDirect/UInt16Register.h"
+#include "src/VEDirect/UInt24Register.h"
+#include "src/VEDirect/UInt32Register.h"
+#include "src/VEDirect/UInt32EnumRegister.h"
+#include "src/VEDirect/Int16Register.h"
+#include "src/VEDirect/Int16EnumRegister.h"
+#include "src/VEDirect/Int32Register.h"
+#include "src/VEDirect/String20Register.h"
+#include "src/VEDirect/String32Register.h"
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 BMV::BMV(const char *name, Stream &serialPort)
     : VEDirectDevice(name, serialPort, registerMap),

@@ -16,25 +16,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Int32Register.h"
+#include "UInt24Register.h"
 #include "Register.h"
 #include "VEDirectHexMessage.h"
-#include "Logger.h"
+
+#include "../Util/Logger.h"
 
 #include <stdint.h>
 #include <cmath>
 
-Int32Register::Int32Register(const char *deviceName, const char *name,
-                             const char *label, uint8_t precision)
+UInt24Register::UInt24Register(const char *deviceName, const char *name,
+                               const char *label, uint8_t precision)
     : Register(deviceName, name),
       label(label),
       precision(precision) {
     scale = powf(10, precision);
 }
 
-void Int32Register::set(VEDirectHexMessage &message) {
+void UInt24Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    int32_t value = message.parseInt32();
+    uint32_t value = message.parseUInt24();
     message.expectedEnd();
 
     if (message.hadParseError()) {
@@ -52,7 +53,7 @@ void Int32Register::set(VEDirectHexMessage &message) {
     }
 }
 
-void Int32Register::log(Logger &logger) const {
+void UInt24Register::log(Logger &logger) const {
     if (scale) {
         logger << etl::setprecision(precision) << (float)value / scale;
     } else {

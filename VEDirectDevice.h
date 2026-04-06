@@ -19,14 +19,14 @@
 #ifndef VE_DIRECT_DEVICE_H
 #define VE_DIRECT_DEVICE_H
 
-#include "Register.h"
-#include "VEDirectHexMessage.h"
-#include "VEDirectTextField.h"
-#include "PassiveTimer.h"
+#include "src/VEDirect/Register.h"
+#include "src/VEDirect/VEDirectHexMessage.h"
+#include "src/VEDirect/VEDirectTextField.h"
+#include "src/Util/PassiveTimer.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/vector.h"
-#include "etl/flat_map.h"
+#include <Embedded_Template_Library.h>
+#include <etl/vector.h>
+#include <etl/flat_map.h>
 
 #include <stdint.h>
 #include <stddef.h>

@@ -16,22 +16,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "String20Register.h"
+#include "UInt16Register.h"
 #include "Register.h"
 #include "VEDirectHexMessage.h"
-#include "Logger.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
+#include "../Util/Logger.h"
 
-String20Register::String20Register(const char *deviceName, const char *name)
-    : Register(deviceName, name) {
+#include <stdint.h>
+#include <cmath>
+
+UInt16Register::UInt16Register(const char *deviceName, const char *name,
+                               const char *label, uint8_t precision,
+                               const char *maxValueDescription)
+    : Register(deviceName, name),
+      label(label),
+      precision(precision),
+      maxValueDescription(maxValueDescription) {
+    scale = powf(10, precision);
 }
 
-void String20Register::set(VEDirectHexMessage &message) {
+void UInt16Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    etl::string<20> string;
-    message.parseString(string, 20);
+    uint16_t value = message.parseUInt16();
     message.expectedEnd();
 
     if (message.hadParseError()) {
@@ -42,13 +48,24 @@ void String20Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->string = string;
+        this->value = value;
 
         logger << debug << deviceName << ": Updating " << name << " to "
                << *this << eol;
     }
 }
 
-void String20Register::log(Logger &logger) const {
-    logger << string;
+void UInt16Register::log(Logger &logger) const {
+    if ((value == 0x0ffff) && (maxValueDescription != nullptr)) {
+        logger << maxValueDescription;
+    } else {
+        if (scale) {
+            logger << etl::setprecision(precision) << (float)value / scale;
+        } else {
+            logger << value;
+        }
+        if (label != nullptr) {
+            logger << label;
+        }
+    }
 }

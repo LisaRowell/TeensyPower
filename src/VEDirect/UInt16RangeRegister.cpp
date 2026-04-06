@@ -16,27 +16,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "UInt16EnumRegister.h"
-#include "Logger.h"
+#include "UInt16RangeRegister.h"
+#include "Register.h"
+#include "VEDirectHexMessage.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/flat_map.h"
-#include "etl/string_stream.h"
+#include "../Util/Logger.h"
 
 #include <stdint.h>
+#include <cmath>
 
-UInt16EnumRegister::UInt16EnumRegister(const char *deviceName, const char *name,
-                                       etl::iflat_map<uint16_t, const char *> &descriptions)
-    : UInt16Register(deviceName, name),
-      descriptions(descriptions) {
+UInt16RangeRegister::UInt16RangeRegister(const char *deviceName, const char *name,
+                                         const char *label)
+    : UInt16Register(deviceName, name, label) {
 }
 
-void UInt16EnumRegister::log(Logger &logger) const {
-    const auto &mapping = descriptions.find(value);
-    if (mapping != descriptions.end()) {
-        logger << mapping->second;
-    } else {
-        logger << etl::hex << etl::setw(4) << etl::setfill('0') << value
-               << etl::setw(0);
+void UInt16RangeRegister::log(Logger &logger) const {
+    uint8_t highValue = value >> 8;
+    uint8_t lowValue = value & 0xff;
+
+    logger << lowValue << "-" << highValue;
+    if (label != nullptr) {
+        logger << label;
     }
 }

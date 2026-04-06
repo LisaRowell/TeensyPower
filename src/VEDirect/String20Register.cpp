@@ -16,25 +16,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "UInt32Register.h"
+#include "String20Register.h"
 #include "Register.h"
 #include "VEDirectHexMessage.h"
-#include "Logger.h"
 
-#include <stdint.h>
-#include <cmath>
+#include "../Util/Logger.h"
 
-UInt32Register::UInt32Register(const char *deviceName, const char *name,
-                               const char *label, uint8_t precision)
-    : Register(deviceName, name),
-      label(label),
-      precision(precision) {
-    scale = powf(10, precision);
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+
+String20Register::String20Register(const char *deviceName, const char *name)
+    : Register(deviceName, name) {
 }
 
-void UInt32Register::set(VEDirectHexMessage &message) {
+void String20Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    uint32_t value = message.parseUInt32();
+    etl::string<20> string;
+    message.parseString(string, 20);
     message.expectedEnd();
 
     if (message.hadParseError()) {
@@ -45,20 +43,13 @@ void UInt32Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->value = value;
+        this->string = string;
 
         logger << debug << deviceName << ": Updating " << name << " to "
                << *this << eol;
     }
 }
 
-void UInt32Register::log(Logger &logger) const {
-    if (scale) {
-        logger << etl::setprecision(precision) << (float)value / scale;
-    } else {
-        logger << value;
-    }
-    if (label != nullptr) {
-        logger << label;
-    }
+void String20Register::log(Logger &logger) const {
+    logger << string;
 }

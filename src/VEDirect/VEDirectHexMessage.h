@@ -20,11 +20,12 @@
 #define VE_DIRECT_HEX_MESSAGE_H
 
 #include "VEDirectHexProtocol.h"
-#include "LoggableItem.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/u8string.h"
-#include "etl/string.h"
+#include "../Util/LoggableItem.h"
+
+#include <Embedded_Template_Library.h>
+#include <etl/u8string.h>
+#include <etl/string.h>
 
 #include <stdint.h>
 #include <stddef.h>

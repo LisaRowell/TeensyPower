@@ -16,14 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Register.h"
-#include "Logger.h"
+#ifndef VE_DIRECT_HEX_COMMAND_MESSAGE_H
+#define VE_DIRECT_HEX_COMMAND_MESSAGE_H
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
-#include "etl/string_stream.h"
+#include "VEDirectHexProtocol.h"
 
-Register::Register(const char *deviceName, const char *name)
-    : deviceName(deviceName),
-      name(name) {
-}
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+
+#include <stdint.h>
+
+class VEDirectHexCommandMessage {
+    private:
+        etl::string<HEX_PROTOCOL_MAX_MESSAGE_LENGTH> message;
+        uint8_t checksum;
+
+        char nibbleToHexChar(uint8_t nibble);
+        void appendByte(uint8_t byte);
+        void appendNibble(uint8_t nibble);
+
+    public:
+        void setCommand(VEDirectHexCommand command);
+        void appendChecksum();
+        const char *cString();
+};
+
+#endif

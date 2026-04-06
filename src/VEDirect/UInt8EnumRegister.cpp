@@ -16,29 +16,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "UInt8OnOffRegister.h"
-#include "Logger.h"
+#include "UInt8EnumRegister.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/flat_map.h"
-#include "etl/string_stream.h"
+#include "../Util/Logger.h"
+
+#include <Embedded_Template_Library.h>
+#include <etl/flat_map.h>
+#include <etl/string_stream.h>
 
 #include <stdint.h>
 
-UInt8OnOffRegister::UInt8OnOffRegister(const char *deviceName, const char *name)
-    : UInt8Register(deviceName, name) {
+UInt8EnumRegister::UInt8EnumRegister(const char *deviceName, const char *name,
+                                     etl::iflat_map<uint8_t, const char *> &descriptions)
+    : UInt8Register(deviceName, name),
+      descriptions(descriptions) {
 }
 
-void UInt8OnOffRegister::log(Logger &logger) const {
-    switch (value) {
-        case 0:
-            logger << "Off";
-            break;
-        case 1:
-            logger << "On";
-            break;
-        default:
-            logger << etl::hex << etl::setw(2) << etl::setfill('0') << value
-                   << etl::setw(0);
+void UInt8EnumRegister::log(Logger &logger) const {
+    const auto &mapping = descriptions.find(value);
+    if (mapping != descriptions.end()) {
+        logger << mapping->second;
+    } else {
+        logger << etl::hex << etl::setw(2) << etl::setfill('0') << value
+               << etl::setw(0);
     }
 }

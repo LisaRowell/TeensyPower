@@ -18,14 +18,15 @@
 
 #include "VEDirectHexMessage.h"
 #include "VEDirectHexProtocol.h"
-#include "Logger.h"
 
-#include "Arduino.h"
+#include "../Util/Logger.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
-#include "etl/string_stream.h"
-#include "etl/u8string.h"
+#include <Arduino.h>
+
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+#include <etl/string_stream.h>
+#include <etl/u8string.h>
 
 #include <stdint.h>
 #include <stddef.h>

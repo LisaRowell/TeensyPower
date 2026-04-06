@@ -16,25 +16,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "UInt16RangeRegister.h"
-#include "Register.h"
-#include "VEDirectHexMessage.h"
-#include "Logger.h"
+#ifndef REGISTER_H
+#define REGISTER_H
 
-#include <stdint.h>
-#include <cmath>
+#include "../Util/LoggableItem.h"
 
-UInt16RangeRegister::UInt16RangeRegister(const char *deviceName, const char *name,
-                                         const char *label)
-    : UInt16Register(deviceName, name, label) {
-}
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+#include <etl/string_stream.h>
 
-void UInt16RangeRegister::log(Logger &logger) const {
-    uint8_t highValue = value >> 8;
-    uint8_t lowValue = value & 0xff;
+#include <stddef.h>
 
-    logger << lowValue << "-" << highValue;
-    if (label != nullptr) {
-        logger << label;
-    }
-}
+class Logger;
+class VEDirectHexMessage;
+
+class Register : public LoggableItem {
+    protected:
+        static constexpr size_t MAX_REGISTER_DESCRIPTION = 80;
+
+        const char *deviceName;
+        const char *name;
+
+    public:
+        Register(const char *deviceName, const char *name);
+        virtual void set(VEDirectHexMessage &message) = 0;
+};
+
+#endif

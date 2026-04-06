@@ -16,27 +16,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "UInt16Register.h"
+#include "Int16Register.h"
 #include "Register.h"
 #include "VEDirectHexMessage.h"
-#include "Logger.h"
+
+#include "../Util/Logger.h"
 
 #include <stdint.h>
 #include <cmath>
 
-UInt16Register::UInt16Register(const char *deviceName, const char *name,
-                               const char *label, uint8_t precision,
-                               const char *maxValueDescription)
+Int16Register::Int16Register(const char *deviceName, const char *name,
+                             const char *label, uint8_t precision)
     : Register(deviceName, name),
       label(label),
-      precision(precision),
-      maxValueDescription(maxValueDescription) {
+      precision(precision) {
     scale = powf(10, precision);
 }
 
-void UInt16Register::set(VEDirectHexMessage &message) {
+void Int16Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    uint16_t value = message.parseUInt16();
+    int16_t value = message.parseInt16();
     message.expectedEnd();
 
     if (message.hadParseError()) {
@@ -54,17 +53,13 @@ void UInt16Register::set(VEDirectHexMessage &message) {
     }
 }
 
-void UInt16Register::log(Logger &logger) const {
-    if ((value == 0x0ffff) && (maxValueDescription != nullptr)) {
-        logger << maxValueDescription;
+void Int16Register::log(Logger &logger) const {
+    if (scale) {
+        logger << etl::setprecision(precision) << (float)value / scale;
     } else {
-        if (scale) {
-            logger << etl::setprecision(precision) << (float)value / scale;
-        } else {
-            logger << value;
-        }
-        if (label != nullptr) {
-            logger << label;
-        }
+        logger << value;
+    }
+    if (label != nullptr) {
+        logger << label;
     }
 }

@@ -18,16 +18,17 @@
 
 #include "OrionXS.h"
 #include "VEDirectDevice.h"
-#include "VEDirectHexMessage.h"
-#include "Logger.h"
-#include "PassiveTimer.h"
+#include "src/VEDirect/VEDirectHexMessage.h"
 
-#include "Arduino.h"
+#include "src/Util/Logger.h"
+#include "src/Util/PassiveTimer.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
-#include "etl/string_stream.h"
-#include "etl/map.h"
+#include <Arduino.h>
+
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+#include <etl/string_stream.h>
+#include <etl/map.h>
 
 #include <stdint.h>
 

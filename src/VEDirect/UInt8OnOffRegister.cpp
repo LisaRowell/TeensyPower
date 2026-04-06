@@ -16,30 +16,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REGISTER_H
-#define REGISTER_H
+#include "UInt8OnOffRegister.h"
 
-#include "LoggableItem.h"
+#include "../Util/Logger.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
-#include "etl/string_stream.h"
+#include <Embedded_Template_Library.h>
+#include <etl/flat_map.h>
+#include <etl/string_stream.h>
 
-#include <stddef.h>
+#include <stdint.h>
 
-class Logger;
-class VEDirectHexMessage;
+UInt8OnOffRegister::UInt8OnOffRegister(const char *deviceName, const char *name)
+    : UInt8Register(deviceName, name) {
+}
 
-class Register : public LoggableItem {
-    protected:
-        static constexpr size_t MAX_REGISTER_DESCRIPTION = 80;
-
-        const char *deviceName;
-        const char *name;
-
-    public:
-        Register(const char *deviceName, const char *name);
-        virtual void set(VEDirectHexMessage &message) = 0;
-};
-
-#endif
+void UInt8OnOffRegister::log(Logger &logger) const {
+    switch (value) {
+        case 0:
+            logger << "Off";
+            break;
+        case 1:
+            logger << "On";
+            break;
+        default:
+            logger << etl::hex << etl::setw(2) << etl::setfill('0') << value
+                   << etl::setw(0);
+    }
+}

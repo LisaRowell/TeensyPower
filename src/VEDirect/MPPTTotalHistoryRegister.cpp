@@ -18,10 +18,11 @@
 
 #include "MPPTTotalHistoryRegister.h"
 #include "VEDirectHexMessage.h"
-#include "Logger.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/string_stream.h"
+#include "../Util/Logger.h"
+
+#include <Embedded_Template_Library.h>
+#include <etl/string_stream.h>
 
 #include <stdint.h>
 

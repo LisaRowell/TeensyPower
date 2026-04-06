@@ -20,17 +20,17 @@
 #define ORION_XS_H
 
 #include "VEDirectDevice.h"
-#include "VEDirectHexMessage.h"
-#include "UInt8EnumRegister.h"
-#include "UInt8Register.h"
-#include "UInt32Register.h"
-#include "PassiveTimer.h"
+#include "src/VEDirect/VEDirectHexMessage.h"
+#include "src/VEDirect/UInt8EnumRegister.h"
+#include "src/VEDirect/UInt8Register.h"
+#include "src/VEDirect/UInt32Register.h"
+#include "src/Util/PassiveTimer.h"
 
-#include "Arduino.h"
+#include <Arduino.h>
 
-#include "Embedded_Template_Library.h"
-#include "etl/map.h"
-#include "etl/flat_map.h"
+#include <Embedded_Template_Library.h>
+#include <etl/map.h>
+#include <etl/flat_map.h>
 
 #include <stdint.h>
 
