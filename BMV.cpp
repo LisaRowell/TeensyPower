@@ -33,7 +33,7 @@
 
 #include <Arduino.h>
 
-BMV::BMV(const char *name, Stream &serialPort)
+BMV::BMV(const char *name, HardwareSerial &serialPort)
     : VEDirectDevice(name, serialPort, registerMap),
       productID(name, "Product ID", productIDDescriptions),
       productRevision(name, "Product Revision"),
@@ -140,7 +140,4 @@ BMV::BMV(const char *name, Stream &serialPort)
       settingsChangedTimestamp(name, "Settings Changed Timestamp", " sec"),
       bluetoothMode(name, "Bluetooth Mode"),
       dcMonitorMode(name, "DC Monitor Mode", dcMonitorModeDescriptions) {
-}
-
-void BMV::setup() {
 }

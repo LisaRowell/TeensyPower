@@ -32,15 +32,12 @@
 
 #include <stdint.h>
 
-OrionXS::OrionXS(const char *name, Stream &serialPort)
+OrionXS::OrionXS(const char *name, HardwareSerial &serialPort)
     : VEDirectDevice(name, serialPort, registerMap),
       deviceMode(name, "Device Mode", deviceModeDescriptions),
       deviceState(name, "Device State", deviceStateDescriptions),
       inputPower(name, "Input Power", " W", 2) {
     dumpTimer.setSeconds(DUMP_DELAY);
-}
-
-void OrionXS::setup() {
 }
 
 void OrionXS::service() {

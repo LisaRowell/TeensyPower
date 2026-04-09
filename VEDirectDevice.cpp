@@ -35,7 +35,7 @@
 
 #include <stdint.h>
 
-VEDirectDevice::VEDirectDevice(const char *name, Stream &serialPort,
+VEDirectDevice::VEDirectDevice(const char *name, HardwareSerial &serialPort,
                                etl::iflat_map<uint16_t, Register &> &registers)
     : serialPort(serialPort),
       registers(registers),
@@ -47,6 +47,13 @@ VEDirectDevice::VEDirectDevice(const char *name, Stream &serialPort,
     // Protocol mode. Avoid all devices sending replies at once by
     // staggering the ping send times.
     pingTimer.setSeconds(random(MIN_INITIAL_PING_DELAY, PING_RESEND_DELAY));
+}
+
+void VEDirectDevice::setup() {
+    // Since the hardware connects to VE.Direct with opto-couplers, we setup
+    // the serial to be inverted along with the expect 19200 buad, 8 bit, no
+    // parity, one stop bit.
+    serialPort.begin(19200, SERIAL_8N1_RXINV_TXINV);
 }
 
 void VEDirectDevice::service() {
@@ -334,7 +341,7 @@ void VEDirectDevice::sendCommand(VEDirectHexCommandMessage &command) {
     // For now we just chuck this at the serial port, without
     // looking if there's butffer space and we don't worry about
     // multiple outstanding commands. Later this will change.
-    Serial.write(command.cString());
+    serialPort.write(command.cString());
 }
 
 void VEDirectDevice::addToTextCheckSum(char input) {

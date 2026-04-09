@@ -24,6 +24,8 @@
 #include "src/VEDirect/VEDirectTextField.h"
 #include "src/Util/PassiveTimer.h"
 
+#include <Arduino.h>
+
 #include <Embedded_Template_Library.h>
 #include <etl/vector.h>
 #include <etl/flat_map.h>
@@ -54,7 +56,7 @@ class VEDirectDevice {
             IN_HEX_PROTOCOL_MESSAGE
         };
 
-        Stream &serialPort;
+        HardwareSerial &serialPort;
         etl::iflat_map<uint16_t, Register &> &registers;
         PassiveTimer pingTimer;
         State state;
@@ -90,9 +92,11 @@ class VEDirectDevice {
     protected:
         const char *name;
 
-        VEDirectDevice(const char *name, Stream &serialPort, etl::iflat_map<uint16_t, Register &> &registers);
+        VEDirectDevice(const char *name, HardwareSerial &serialPort,
+                       etl::iflat_map<uint16_t, Register &> &registers);
 
     public:
+        void setup();
         virtual void service();
 };
 

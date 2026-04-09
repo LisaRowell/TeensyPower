@@ -38,7 +38,7 @@
 
 #include <stdint.h>
 
-MPPTController::MPPTController(const char *name, Stream &serialPort)
+MPPTController::MPPTController(const char *name, HardwareSerial &serialPort)
     : VEDirectDevice(name, serialPort, registerMap),
       productID(name, "Product ID", productIDDescriptions),
       groupID(name, "Groupd ID"),
@@ -171,7 +171,4 @@ MPPTController::MPPTController(const char *name, Stream &serialPort)
       dailyHistory28(name),
       dailyHistory29(name),
       dailyHistory30(name) {
-}
-
-void MPPTController::setup() {
 }

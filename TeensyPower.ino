@@ -27,7 +27,7 @@
 #include <Arduino.h>
 
 NetworkInterface networkInterface;
-MPPTController testController("Test", Serial);
+MPPTController testController("Test", Serial1);
 
 void setup() {
     Serial.begin(9600); // This number is ignored anyway

@@ -549,8 +549,7 @@ class MPPTController : public VEDirectDevice {
         };
 
     public:
-        MPPTController(const char *name, Stream &serialPort);
-        void setup();
+        MPPTController(const char *name, HardwareSerial &serialPort);
 };
 
 #endif

@@ -310,8 +310,7 @@ class BMV : public VEDirectDevice {
         };
 
     public:
-        BMV(const char *name, Stream &serialPort);
-        void setup();
+        BMV(const char *name, HardwareSerial &serialPort);
 };
 
 #endif

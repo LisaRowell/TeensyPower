@@ -76,8 +76,7 @@ class OrionXS :public VEDirectDevice {
 
 
     public:
-        OrionXS(const char *name, Stream &serialPort);
-        void setup();
+        OrionXS(const char *name, HardwareSerial &serialPort);
         void service() override;
 
 };
