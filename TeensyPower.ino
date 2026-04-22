@@ -19,8 +19,8 @@
 #include "BMV.h"
 #include "MPPTController.h"
 #include "OrionXS.h"
-#include "NetworkInterface.h"
 
+#include "src/Network/NetworkInterface.h"
 #include "src/StatsManager/StatsManager.h"
 #include "src/DataModel/DataModel.h"
 
