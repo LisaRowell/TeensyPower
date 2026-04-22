@@ -22,6 +22,10 @@
 #include "src/VEDirect/VEDirectHexCommandMessage.h"
 #include "src/VEDirect/VEDirectHexProtocol.h"
 
+#include "src/DataModel/DataModel.h"
+#include "src/DataModel/DataModelRoot.h"
+#include "src/DataModel/DataModelNode.h"
+
 #include "src/Util/PassiveTimer.h"
 #include "src/Util/Logger.h"
 
@@ -36,13 +40,15 @@
 #include <stdint.h>
 
 VEDirectDevice::VEDirectDevice(const char *name, HardwareSerial &serialPort,
-                               etl::iflat_map<uint16_t, Register &> &registers)
+                               etl::iflat_map<uint16_t, Register &> &registers,
+                               DataModel &dataModel)
     : serialPort(serialPort),
       registers(registers),
       state(IDLE),
       runtMessages(0),
       textChecksumErrors(0),
-      name(name) {
+      name(name),
+      deviceNode(name, &dataModel.rootNode()) {
     // We periodically ping each device so that we keep them in HEX
     // Protocol mode. Avoid all devices sending replies at once by
     // staggering the ping send times.

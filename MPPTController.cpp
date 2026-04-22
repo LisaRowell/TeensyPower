@@ -30,6 +30,8 @@
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
 
+#include "src/DataModel/DataModel.h"
+
 #include <Arduino.h>
 
 #include <Embedded_Template_Library.h>
@@ -38,8 +40,11 @@
 
 #include <stdint.h>
 
-MPPTController::MPPTController(const char *name, HardwareSerial &serialPort)
-    : VEDirectDevice(name, serialPort, registerMap),
+MPPTController::MPPTController(const char *name, HardwareSerial &serialPort,
+                               DataModel &dataModel)
+    : VEDirectDevice(name, serialPort, registerMap, dataModel),
+      chargerNode("charger", &dataModel.rootNode()),
+      chargerVoltageLeaf("voltage", &chargerNode),
       productID(name, "Product ID", productIDDescriptions),
       groupID(name, "Groupd ID"),
       capabilities(name, "Capabilities"),
@@ -79,7 +84,7 @@ MPPTController::MPPTController(const char *name, HardwareSerial &serialPort)
       chargerInternalTemp(name, "Charger Internal Temp", " C", 2),
       chargerErrorCode(name, "Charger Error Code", chargerErrorCodeDescriptions),
       chargerCurrent(name, "Charger Current", " A", 1),
-      chargerVoltage(name, "Charger Voltage", " V", 2),
+      chargerVoltage(name, "Charger Voltage", chargerVoltageLeaf, " V", 2),
       additionalChargerStateInfo(name, "Additional Charger State Info"),
       yieldToday(name, "Yield Today", " kWh", 2),
       maximumPowerToday(name, "Max Power Today", " W"),

@@ -34,6 +34,8 @@
 
 #include <stdint.h>
 
+class DataModel;
+
 class OrionXS :public VEDirectDevice {
     private:
         static constexpr uint32_t DUMP_DELAY = 10;
@@ -76,7 +78,7 @@ class OrionXS :public VEDirectDevice {
 
 
     public:
-        OrionXS(const char *name, HardwareSerial &serialPort);
+        OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataModel);
         void service() override;
 
 };

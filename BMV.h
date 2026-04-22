@@ -40,6 +40,8 @@
 
 #include <stdint.h>
 
+class DataModel;
+
 class BMV : public VEDirectDevice {
     private:
         UInt32EnumRegister productID;
@@ -310,7 +312,8 @@ class BMV : public VEDirectDevice {
         };
 
     public:
-        BMV(const char *name, HardwareSerial &serialPort);
+        BMV(const char *name, HardwareSerial &serialPort,
+            DataModel &dataModel);
 };
 
 #endif

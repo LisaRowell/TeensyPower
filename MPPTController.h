@@ -33,6 +33,8 @@
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
 
+#include "src/DataModel/DataModelNode.h"
+
 #include <Arduino.h>
 
 #include <Embedded_Template_Library.h>
@@ -40,8 +42,13 @@
 
 #include <stdint.h>
 
+class DataModel;
+
 class MPPTController : public VEDirectDevice {
     private:
+        DataModelNode chargerNode;
+        DataModelLeaf chargerVoltageLeaf;
+
         UInt32EnumRegister productID;
         UInt8Register groupID;
         UInt32Register capabilities;
@@ -549,7 +556,8 @@ class MPPTController : public VEDirectDevice {
         };
 
     public:
-        MPPTController(const char *name, HardwareSerial &serialPort);
+        MPPTController(const char *name, HardwareSerial &serialPort,
+                       DataModel &dataModel);
 };
 
 #endif

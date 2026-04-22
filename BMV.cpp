@@ -18,6 +18,7 @@
 
 #include "BMV.h"
 #include "VEDirectDevice.h"
+
 #include "src/VEDirect/UInt8Register.h"
 #include "src/VEDirect/UInt8EnumRegister.h"
 #include "src/VEDirect/UInt8OnOffRegister.h"
@@ -31,10 +32,12 @@
 #include "src/VEDirect/String20Register.h"
 #include "src/VEDirect/String32Register.h"
 
+#include "src/DataModel/DataModel.h"
+
 #include <Arduino.h>
 
-BMV::BMV(const char *name, HardwareSerial &serialPort)
-    : VEDirectDevice(name, serialPort, registerMap),
+BMV::BMV(const char *name, HardwareSerial &serialPort, DataModel &dataModel)
+    : VEDirectDevice(name, serialPort, registerMap, dataModel),
       productID(name, "Product ID", productIDDescriptions),
       productRevision(name, "Product Revision"),
       serialNumber(name, "Serial Number"),

@@ -18,7 +18,10 @@
 
 #include "OrionXS.h"
 #include "VEDirectDevice.h"
+
 #include "src/VEDirect/VEDirectHexMessage.h"
+
+#include "src/DataModel/DataModel.h"
 
 #include "src/Util/Logger.h"
 #include "src/Util/PassiveTimer.h"
@@ -32,8 +35,8 @@
 
 #include <stdint.h>
 
-OrionXS::OrionXS(const char *name, HardwareSerial &serialPort)
-    : VEDirectDevice(name, serialPort, registerMap),
+OrionXS::OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataModel)
+    : VEDirectDevice(name, serialPort, registerMap, dataModel),
       deviceMode(name, "Device Mode", deviceModeDescriptions),
       deviceState(name, "Device State", deviceStateDescriptions),
       inputPower(name, "Input Power", " W", 2) {

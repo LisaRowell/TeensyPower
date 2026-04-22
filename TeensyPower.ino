@@ -21,13 +21,19 @@
 #include "OrionXS.h"
 #include "NetworkInterface.h"
 
+#include "src/StatsManager/StatsManager.h"
+#include "src/DataModel/DataModel.h"
+
 #include "src/Util/Logger.h"
 #include "src/Util/Error.h"
 
 #include <Arduino.h>
 
+StatsManager statsManager;
+DataModel dataModel(statsManager);
+
 NetworkInterface networkInterface;
-MPPTController testController("Test", Serial1);
+MPPTController testController("Test", Serial1, dataModel);
 
 void setup() {
     Serial.begin(9600); // This number is ignored anyway
@@ -41,5 +47,6 @@ void setup() {
 void loop() {
     testController.service();
 
+    statsManager.service();
     networkInterface.service();
 }

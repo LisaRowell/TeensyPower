@@ -21,21 +21,30 @@
 
 #include "Register.h"
 
+#include "../FixedPoint/ScaledUInt16.h"
+
 #include <stdint.h>
 
+class DataModelLeaf;
 class VEDirectHexMessage;
+class Logger;
 
 class UInt16Register : public Register {
     protected:
-        uint16_t value;
+        DataModelLeaf *dataModelLeaf;
+        ScaledUInt16 value;
         const char *label;
-        uint16_t scale;
-        uint8_t precision;
         const char *maxValueDescription;
 
     public:
         UInt16Register(const char *deviceName, const char *name,
-                       const char *label = nullptr, uint8_t precision = 0,
+                       const char *label = nullptr,
+                       uint8_t denominatorExponent = 0,
+                       const char *maxValueDescription = nullptr);
+        UInt16Register(const char *deviceName, const char *name,
+                       DataModelLeaf &dataModelLeaf,
+                       const char *label = nullptr,
+                       uint8_t denominatorExponent = 0,
                        const char *maxValueDescription = nullptr);
         void set(VEDirectHexMessage &message) override;
         void log(Logger &logger) const override;

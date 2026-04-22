@@ -27,13 +27,34 @@
 
 UInt16RangeRegister::UInt16RangeRegister(const char *deviceName, const char *name,
                                          const char *label)
-    : UInt16Register(deviceName, name, label) {
+    : Register(deviceName, name),
+      lowValue(0),
+      highValue(0),
+      label(label) {
+}
+
+void UInt16RangeRegister::set(VEDirectHexMessage &message) {
+    uint8_t flags = message.parseUInt8();
+    uint16_t values = message.parseUInt16();
+    message.expectedEnd();
+
+    if (message.hadParseError()) {
+        logger << deviceName << ": Badly formed " << name << " message: "
+               << message << eol;
+    } else if (flags != 0) {
+        logger << deviceName << ": " << name << " update with flags (0x"
+               << etl::hex << etl::setw(2) << etl::setfill('0') << flags
+               << ") set: " << message << eol;
+    } else {
+        highValue = values >> 8;
+        lowValue = values & 0xff;
+
+        logger << debug << deviceName << ": Updating " << name << " to "
+               << *this << eol;
+    }
 }
 
 void UInt16RangeRegister::log(Logger &logger) const {
-    uint8_t highValue = value >> 8;
-    uint8_t lowValue = value & 0xff;
-
     logger << lowValue << "-" << highValue;
     if (label != nullptr) {
         logger << label;

@@ -22,6 +22,10 @@
 #include "src/VEDirect/Register.h"
 #include "src/VEDirect/VEDirectHexMessage.h"
 #include "src/VEDirect/VEDirectTextField.h"
+
+#include "src/DataModel/DataModel.h"
+#include "src/DataModel/DataModelNode.h"
+
 #include "src/Util/PassiveTimer.h"
 
 #include <Arduino.h>
@@ -35,6 +39,7 @@
 
 class Stream;
 class VEDirectHexCommandMessage;
+class DataModelRoot;
 
 class VEDirectDevice {
     private:
@@ -91,9 +96,11 @@ class VEDirectDevice {
 
     protected:
         const char *name;
+        DataModelNode deviceNode;
 
         VEDirectDevice(const char *name, HardwareSerial &serialPort,
-                       etl::iflat_map<uint16_t, Register &> &registers);
+                       etl::iflat_map<uint16_t, Register &> &registers,
+                       DataModel &dataModel);
 
     public:
         void setup();

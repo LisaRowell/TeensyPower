@@ -20,19 +20,36 @@
 #include "Register.h"
 #include "VEDirectHexMessage.h"
 
+#include "../DataModel/DataModelLeaf.h"
+
 #include "../Util/Logger.h"
+
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
 
 #include <stdint.h>
 #include <cmath>
 
 UInt16Register::UInt16Register(const char *deviceName, const char *name,
-                               const char *label, uint8_t precision,
+                               const char *label, uint8_t denominatorExponent,
                                const char *maxValueDescription)
     : Register(deviceName, name),
+      dataModelLeaf(nullptr),
+      value(denominatorExponent),
       label(label),
-      precision(precision),
       maxValueDescription(maxValueDescription) {
-    scale = powf(10, precision);
+}
+
+UInt16Register::UInt16Register(const char *deviceName, const char *name,
+                               DataModelLeaf &dataModelLeaf,
+                               const char *label,
+                               uint8_t denominatorExponent,
+                               const char *maxValueDescription)
+    : Register(deviceName, name),
+      dataModelLeaf(&dataModelLeaf),
+      value(denominatorExponent),
+      label(label),
+      maxValueDescription(maxValueDescription) {
 }
 
 void UInt16Register::set(VEDirectHexMessage &message) {
@@ -48,7 +65,12 @@ void UInt16Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->value = value;
+        this->value.set(value);
+        if (dataModelLeaf != nullptr) {
+            etl::string<20> valueStr;
+            this->value.toString(valueStr);
+            *dataModelLeaf << valueStr;
+        }
 
         logger << debug << deviceName << ": Updating " << name << " to "
                << *this << eol;
@@ -56,14 +78,10 @@ void UInt16Register::set(VEDirectHexMessage &message) {
 }
 
 void UInt16Register::log(Logger &logger) const {
-    if ((value == 0x0ffff) && (maxValueDescription != nullptr)) {
+    if ((value == (uint16_t)0x0ffff) && (maxValueDescription != nullptr)) {
         logger << maxValueDescription;
     } else {
-        if (scale) {
-            logger << etl::setprecision(precision) << (float)value / scale;
-        } else {
-            logger << value;
-        }
+        logger << value;
         if (label != nullptr) {
             logger << label;
         }

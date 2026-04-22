@@ -19,14 +19,23 @@
 #ifndef UINT16_RANGE_REGISTER_H
 #define UINT16_RANGE_REGISTER_H
 
-#include "UInt16Register.h"
+#include "Register.h"
 
 #include <stdint.h>
 
-class UInt16RangeRegister : public UInt16Register {
+class VEDirectHexMessage;
+class Logger;
+
+class UInt16RangeRegister : public Register {
+    private:
+        uint8_t lowValue;
+        uint8_t highValue;
+        const char *label;
+
     public:
         UInt16RangeRegister(const char *deviceName, const char *name,
                             const char *label = nullptr);
+        void set(VEDirectHexMessage &message) override;
         void log(Logger &logger) const override;
 };
 
