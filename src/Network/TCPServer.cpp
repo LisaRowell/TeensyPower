@@ -1,4 +1,4 @@
-/* 
+/*
  * This file is part of the TeensyPower distribution
  * (https://github.com/LisaRowell/TeensyPower).
  * Copyright (c) 2026 Lisa Rowell
@@ -16,29 +16,46 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETWORK_INTERFACE_H
-#define NETWORK_INTERFACE_H
+#include "TCPServer.h"
+#include "TCPClient.h"
 
+#include "../Util/Logger.h"
+
+#include <Arduino.h>
 #include <QNEthernet.h>
 
 #include <Embedded_Template_Library.h>
 #include <etl/pool.h>
-#include <etl/vector.h>
 
 #include <stdint.h>
-#include <stddef.h>
 
 namespace qn = qindesign::network;
 
-class NetworkInterface {
-    private:
-        static void linkStateChanged(bool linkState);
-        static void interfaceStatusChanged(bool InterfaceStatus);
-        static void ethernetAddressChanged();
+TCPServer::TCPServer(uint16_t port)
+    : port(port) {
+}
 
-    public:
-        void setup();
-        void service();
-};
+void TCPServer::setup() {
+    server.begin(port);
+}
 
-#endif
+TCPClient *TCPServer::accept() {
+    qn::EthernetClient etherClient = server.accept();
+    if (etherClient) {
+        if (!freeClients.full()) {
+            TCPClient *client = new (freeClients.allocate()) TCPClient(etherClient);
+            return client;
+        } else {
+            logger << "Connection requested to port " << port << " but max connections in use";
+            etherClient.close();
+            return nullptr;
+        }
+    }
+
+    return nullptr;
+}
+
+void TCPServer::clientClosed(TCPClient *client) {
+    client->~TCPClient();
+    freeClients.release(client);
+}

@@ -23,6 +23,7 @@
 #include "src/Network/NetworkInterface.h"
 #include "src/StatsManager/StatsManager.h"
 #include "src/DataModel/DataModel.h"
+#include "src/MQTT/MQTTBroker.h"
 
 #include "src/Util/Logger.h"
 #include "src/Util/Error.h"
@@ -31,14 +32,20 @@
 
 StatsManager statsManager;
 DataModel dataModel(statsManager);
-
 NetworkInterface networkInterface;
-MPPTController testController("Test", Serial1, dataModel);
+MQTTBroker mqttBroker(dataModel);
+
+MPPTController testController("Test", "testMPPT", Serial1, dataModel);
 
 void setup() {
     Serial.begin(9600); // This number is ignored anyway
 
+    if (CrashReport) {
+        Serial.print(CrashReport);
+    }
+
     networkInterface.setup();
+    mqttBroker.setup();
 
     testController.setup();
 
@@ -46,6 +53,7 @@ void setup() {
 
 void loop() {
     testController.service();
+    mqttBroker.service();
 
     statsManager.service();
     networkInterface.service();

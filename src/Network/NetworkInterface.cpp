@@ -37,124 +37,12 @@ void NetworkInterface::setup() {
     if (!qn::Ethernet.begin()) {
         fatalError("Failed to initialize Ethernet");
     }
-
-    httpServer.begin(80);
 }
 
 void NetworkInterface::service() {
-    checkForHTTPClients();
-
     // It's not clear if this is actually needed, but it seems like a good idea
     // to make sure that the stack gets to run.
     qn::Ethernet.loop();
-}
-
-void NetworkInterface::checkForHTTPClients() {
-    qn::EthernetClient client = httpServer.available();
-
-    if (client) {
-        Serial.println("HTTP client connected");
-
-        // An http request ends with a blank line.
-        bool currentLineIsBlank = true;
-
-        while (client.connected()) {
-            if (client.available()) {
-                char c = client.read();
-
-                if (c == '\n' && currentLineIsBlank) {
-                    // If we've gotten to the end of the line (received a newline
-                    // character) and the line is blank, the http request has ended,
-                    // so we can send a reply.
-                    sendHTTPReply(client);
-                    break;
-                } else if (c == '\n') {
-                    // Starting a new line.
-                    currentLineIsBlank = true;
-                } else if (c != '\r') {
-                    // Read a character on the current line.
-                    currentLineIsBlank = false;
-                }
-            }
-        }
-
-        // Close the connection.
-        client.stop();
-    }
-}
-
-
-void NetworkInterface::sendHTTPReply(qn::EthernetClient &client) {
-    // Send a website that connects to the websocket server and allows to
-    // communicate with the us.
-
-    const char* header = 
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/html\r\n"
-        "Connection: close\r\n"
-        "\r\n";
-
-    const char* document = 
-        "<!DOCTYPE html>\n"
-        "<title>Teensy 4.1 Websockets</title>\n"
-        "<meta charset='UTF-8'>\n"
-        "<style>\n"
-        "  body {\n"
-        "    display: grid;\n"
-        "    grid-template: min-content auto / auto min-content;\n"
-        "    grid-gap: 1em;\n"
-        "    margin: 0;\n"
-        "    padding: 1em;\n"
-        "    height: 100vh;\n"
-        "    box-sizing: border-box;\n"
-        "  }\n"
-        "  #output {\n"
-        "    grid-column-start: span 2;\n"
-        "    overflow-y: scroll;\n"
-        "    padding: 0.1em;\n"
-        "    border: 1px solid;\n"
-        "    font-family: monospace;\n"
-        "  }\n"
-        "</style>\n"
-        "<input type='text' id='message' placeholder='Send a message and Teensy will echo it back!'>\n"
-        "<button id='send-message'>send</button>\n"
-        "<div id='output'></div>\n"
-        "<script>\n"
-        "  const url = `ws://${window.location.host}:3000`\n"
-        "  const ws = new WebSocket(url)\n"
-        "  let connected = false\n"
-        "  const sendMessage = document.querySelector('#send-message')\n"
-        "  const message = document.querySelector('#message')\n"
-        "  const output = document.querySelector('#output')\n"
-        "  function log(message, color = 'black') {\n"
-        "    const el = document.createElement('div')\n"
-        "    el.innerHTML = message\n"
-        "    el.style.color = color\n"
-        "    output.append(el)\n"
-        "    output.scrollTop = output.scrollHeight\n"
-        "  }\n"
-        "  ws.addEventListener('open', () => {\n"
-        "    connected = true\n"
-        "    log('(✔️) Open', 'green')\n"
-        "  })\n"
-        "  ws.addEventListener('close', () => {\n"
-        "    connected = false\n"
-        "    log('(❌) Close', 'red')\n"
-        "  })\n"
-        "  ws.addEventListener('message', ({ data }) =>\n"
-        "    log(`(💌) ${data}`)\n"
-        "  )\n"
-        "  sendMessage.addEventListener('click', () => {\n"
-        "    connected && ws.send(message.value)\n"
-        "  })\n"
-        "  message.addEventListener('keyup', ({ keyCode }) => {\n"
-        "     connected && keyCode === 13 && ws.send(message.value)\n"
-        "  })\n"
-        "  log(`(📡) Connecting to ${url} ...`, 'blue')\n"
-        "</script>\n";
-
-    client.write(header);
-    client.write(document);  
 }
 
 void NetworkInterface::linkStateChanged(bool linkState) {

@@ -19,9 +19,12 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
-#include "etl/string_stream.h"
+#include <Arduino.h>
+
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+#include <etl/string_view.h>
+#include <etl/string_stream.h>
 
 #include <stddef.h>
 #include <stdint.h>
@@ -58,8 +61,10 @@ class Logger {
         Logger & operator << (float value);
         Logger & operator << (const char *string);
         Logger & operator << (const etl::istring &string);
+        Logger & operator << (const etl::string_view &stringView);
         Logger & operator << (IPAddress &ip);
         Logger & operator << (const LoggableItem &item);
+        Logger & operator << (const LoggableItem *item);
         Logger & operator << (const etl::private_basic_format_spec::base_spec &format);
         Logger & operator << (const etl::private_basic_format_spec::width_spec &format);
         Logger & operator << (const etl::private_basic_format_spec::fill_spec<char> &format);

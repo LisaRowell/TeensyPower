@@ -1,3 +1,4 @@
+#include "IPAddress.h"
 /* 
  * This file is part of the TeensyPower distribution
  * (https://github.com/LisaRowell/TeensyPower).
@@ -16,29 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETWORK_INTERFACE_H
-#define NETWORK_INTERFACE_H
+ #ifndef TCP_CLIENT_H
+ #define TCP_CLIENT_H
 
+#include "../Util/LoggableItem.h"
+
+#include <Arduino.h>
 #include <QNEthernet.h>
-
-#include <Embedded_Template_Library.h>
-#include <etl/pool.h>
-#include <etl/vector.h>
 
 #include <stdint.h>
 #include <stddef.h>
 
 namespace qn = qindesign::network;
 
-class NetworkInterface {
+// This class is simply a wrapper for QN Ethernet so that later we can
+// port back to also working with ESP32 a little more easily.
+class TCPClient : public LoggableItem {
     private:
-        static void linkStateChanged(bool linkState);
-        static void interfaceStatusChanged(bool InterfaceStatus);
-        static void ethernetAddressChanged();
+        qn::EthernetClient client;
 
     public:
-        void setup();
-        void service();
+        TCPClient(qn::EthernetClient &client);
+        IPAddress address();
+        uint16_t port();
+        bool connected();
+        size_t available();
+        size_t read(uint8_t *buffer, size_t length);
+        size_t skip(size_t length);
+        bool write(const void *buffer, size_t length);
+        void close();
+        virtual void log(Logger &logger) const override;
 };
 
 #endif

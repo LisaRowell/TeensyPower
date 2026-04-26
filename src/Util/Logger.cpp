@@ -19,12 +19,12 @@
 #include "Logger.h"
 #include "LoggableItem.h"
 
-#include "Arduino.h"
-#include "QNEthernet.h"
+#include <Arduino.h>
+#include <QNEthernet.h>
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
-#include "etl/string_stream.h"
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+#include <etl/string_stream.h>
 
 #include <stddef.h>
 
@@ -98,6 +98,12 @@ Logger & Logger::operator << (const etl::istring &string) {
     return *this;
 }
 
+Logger & Logger::operator << (const etl::string_view &stringView) {
+    lineStream << stringView;
+
+    return *this;
+}
+
 Logger & Logger::operator << (IPAddress &ip) {
     lineStream << ip[0] << "." << ip[1] << "." << ip[2] << "." << ip[3];
 
@@ -106,6 +112,12 @@ Logger & Logger::operator << (IPAddress &ip) {
 
 Logger & Logger::operator << (const LoggableItem &item) {
     item.log(*this);
+
+    return *this;
+}
+
+Logger & Logger::operator << (const LoggableItem *item) {
+    item->log(*this);
 
     return *this;
 }

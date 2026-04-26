@@ -40,10 +40,11 @@
 
 #include <stdint.h>
 
-MPPTController::MPPTController(const char *name, HardwareSerial &serialPort,
-                               DataModel &dataModel)
+MPPTController::MPPTController(const char *name, const char *nodeName,
+                               HardwareSerial &serialPort, DataModel &dataModel)
     : VEDirectDevice(name, serialPort, registerMap, dataModel),
-      chargerNode("charger", &dataModel.rootNode()),
+      deviceNode(nodeName, &dataModel.rootNode()),
+      chargerNode("charger", &deviceNode),
       chargerVoltageLeaf("voltage", &chargerNode),
       productID(name, "Product ID", productIDDescriptions),
       groupID(name, "Groupd ID"),

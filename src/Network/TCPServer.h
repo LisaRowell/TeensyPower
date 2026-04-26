@@ -16,29 +16,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETWORK_INTERFACE_H
-#define NETWORK_INTERFACE_H
+#ifndef TCP_SERVER_H
+#define TCP_SERVER_H
+
+#include "TCPClient.h"
 
 #include <QNEthernet.h>
 
 #include <Embedded_Template_Library.h>
 #include <etl/pool.h>
-#include <etl/vector.h>
 
 #include <stdint.h>
 #include <stddef.h>
 
 namespace qn = qindesign::network;
 
-class NetworkInterface {
+// This class is simply a wrapper for QN Ethernet so that later we can
+// port back to also working with ESP32 a little more easily.
+class TCPServer {
     private:
-        static void linkStateChanged(bool linkState);
-        static void interfaceStatusChanged(bool InterfaceStatus);
-        static void ethernetAddressChanged();
+        static constexpr size_t maxClients = 5;
+
+        uint16_t port;
+        qn::EthernetServer server;
+        etl::pool<TCPClient, maxClients> freeClients;
 
     public:
+        TCPServer(uint16_t port);
         void setup();
-        void service();
+        TCPClient *accept();
+        void clientClosed(TCPClient *client);
 };
 
 #endif

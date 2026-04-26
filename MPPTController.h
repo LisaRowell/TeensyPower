@@ -46,6 +46,7 @@ class DataModel;
 
 class MPPTController : public VEDirectDevice {
     private:
+        DataModelNode deviceNode;
         DataModelNode chargerNode;
         DataModelLeaf chargerVoltageLeaf;
 
@@ -556,8 +557,8 @@ class MPPTController : public VEDirectDevice {
         };
 
     public:
-        MPPTController(const char *name, HardwareSerial &serialPort,
-                       DataModel &dataModel);
+        MPPTController(const char *name, const char *nodeName,
+                       HardwareSerial &serialPort, DataModel &dataModel);
 };
 
 #endif
