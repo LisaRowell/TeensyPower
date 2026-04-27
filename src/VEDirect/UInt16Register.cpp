@@ -28,7 +28,6 @@
 #include <etl/string.h>
 
 #include <stdint.h>
-#include <cmath>
 
 UInt16Register::UInt16Register(const char *deviceName, const char *name,
                                const char *label, uint8_t denominatorExponent,

@@ -16,16 +16,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REGISTER_H
-#define REGISTER_H
+#ifndef FIELD_H
+#define FIELD_H
 
-#include "../Util/LoggableItem.h"
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
 
 #include <stddef.h>
 
-class VEDirectHexMessage;
+class Logger;
 
-class Register : public LoggableItem {
+class Field {
     protected:
         static constexpr size_t MAX_REGISTER_DESCRIPTION = 80;
 
@@ -33,8 +34,8 @@ class Register : public LoggableItem {
         const char *name;
 
     public:
-        Register(const char *deviceName, const char *name);
-        virtual void set(VEDirectHexMessage &message) = 0;
+        Field(const char *deviceName, const char *name);
+        virtual void set(const etl::istring &message) = 0;
 };
 
 #endif

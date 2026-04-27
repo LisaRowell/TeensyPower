@@ -23,7 +23,6 @@
 #include "../Util/Logger.h"
 
 #include <stdint.h>
-#include <cmath>
 
 UInt16RangeRegister::UInt16RangeRegister(const char *deviceName, const char *name,
                                          const char *label)

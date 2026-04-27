@@ -21,9 +21,12 @@
 
 #include "VEDirectDevice.h"
 #include "src/VEDirect/VEDirectHexMessage.h"
+#include "src/VEDirect//Register.h"
 #include "src/VEDirect/UInt8EnumRegister.h"
 #include "src/VEDirect/UInt8Register.h"
 #include "src/VEDirect/UInt32Register.h"
+#include "src/VEDirect/Field.h"
+
 #include "src/Util/PassiveTimer.h"
 
 #include <Arduino.h>
@@ -76,6 +79,8 @@ class OrionXS :public VEDirectDevice {
             { 0xEDBC, inputPower }
        };
 
+        etl::flat_map<const char *, Field &, 2, CStringCompare> fieldMap = {
+        };
 
     public:
         OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataModel);

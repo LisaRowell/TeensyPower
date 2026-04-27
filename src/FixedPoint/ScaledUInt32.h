@@ -16,6 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SCALED_UINT32_H
+#define SCALED_UINT32_H
+
 #include <stdint.h>
 
 class ScaledUInt32 {
@@ -27,3 +30,5 @@ class ScaledUInt32 {
         ScaledUInt32();
         void set(uint32_t value, uint8_t denominatorExponent = 0);
 };
+
+#endif

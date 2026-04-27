@@ -16,6 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SCALED_UINT16_H
+#define SCALED_UINT16_H
+
 #include <stdint.h>
 
 #include "../Util/LoggableItem.h"
@@ -39,3 +42,5 @@ class ScaledUInt16 : public LoggableItem {
         void toString(etl::istring &string) const;
         virtual void log(Logger &logger) const override;
 };
+
+#endif

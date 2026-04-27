@@ -18,12 +18,6 @@
 
 #include "Register.h"
 
-#include "../Util/Logger.h"
-
-#include <Embedded_Template_Library.h>
-#include <etl/string.h>
-#include <etl/string_stream.h>
-
 Register::Register(const char *deviceName, const char *name)
     : deviceName(deviceName),
       name(name) {

@@ -18,19 +18,26 @@
 
 #include "VEDirectTextField.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
+#include "../Util/LoggableItem.h"
+#include "../Util/Logger.h"
+
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
 
 
 void VEDirectTextField::Reset() {
-    label.clear();
-    value.clear();
+    _label.clear();
+    _value.clear();
 }
 
 void VEDirectTextField::addToLabel(char labelChar) {
-    label.push_back(labelChar);
+    _label.push_back(labelChar);
 }
 
 void VEDirectTextField::addToValue(char valueChar) {
-    label.push_back(valueChar);
+    _value.push_back(valueChar);
+}
+
+void VEDirectTextField::log(Logger &logger) const {
+    logger << _label << ":" << _value;
 }

@@ -56,6 +56,16 @@ Logger & Logger::operator << (uint32_t value) {
     return *this;
 }
 
+Logger & Logger::operator << (char value) {
+    char cString[2];
+    cString[0] = value;
+    cString[1] = 0;
+
+    lineStream << cString;
+
+    return *this;
+}
+
 Logger & Logger::operator << (int16_t value) {
     lineStream << value;
 

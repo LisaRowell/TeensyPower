@@ -20,6 +20,7 @@
 #define VE_DIRECT_DEVICE_H
 
 #include "src/VEDirect/Register.h"
+#include "src/VEDirect/Field.h"
 #include "src/VEDirect/VEDirectHexMessage.h"
 #include "src/VEDirect/VEDirectTextField.h"
 
@@ -42,6 +43,13 @@ class VEDirectHexCommandMessage;
 class DataModelRoot;
 
 class VEDirectDevice {
+    protected:
+        struct CStringCompare {
+            bool operator()(char const *a, char const *b) const {
+                return strcmp(a, b) < 0;
+            }
+        };
+
     private:
         static constexpr uint32_t MIN_INITIAL_PING_DELAY =  5;
         static constexpr uint32_t PING_RESEND_DELAY      = 30;
@@ -63,6 +71,7 @@ class VEDirectDevice {
 
         HardwareSerial &serialPort;
         etl::iflat_map<uint16_t, Register &> &registers;
+        etl::iflat_map<const char *, Field &, CStringCompare> &fields;
         PassiveTimer pingTimer;
         State state;
         VEDirectHexMessage hexMessage;
@@ -100,6 +109,7 @@ class VEDirectDevice {
 
         VEDirectDevice(const char *name, HardwareSerial &serialPort,
                        etl::iflat_map<uint16_t, Register &> &registers,
+                       etl::iflat_map<const char *, Field &, CStringCompare> &fields,
                        DataModel &dataModel);
 
     public:

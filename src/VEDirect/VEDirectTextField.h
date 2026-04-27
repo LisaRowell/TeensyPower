@@ -19,26 +19,32 @@
 #ifndef VE_DIRECT_TEXT_FIELD
 #define VE_DIRECT_TEXT_FIELD
 
-#include "Embedded_Template_Library.h"
-#include "etl/string.h"
+#include "../Util/LoggableItem.h"
+
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
 
 #include <stddef.h>
 
-class VEDirectTextField {
+class VEDirectTextField : public LoggableItem {
     private:
         static constexpr size_t MAX_LABEL_LENGTH = 9;
         static constexpr size_t MAX_VALUE_LENGTH = 33;
 
-        etl::string<MAX_LABEL_LENGTH> label;
-        etl::string<MAX_VALUE_LENGTH> value;
+        etl::string<MAX_LABEL_LENGTH> _label;
+        etl::string<MAX_VALUE_LENGTH> _value;
 
     public:
         void Reset();
         void addToLabel(char labelChar);
         void addToValue(char valueChar);
-        const etl::istring &Label() const {
-            return label;
+        const etl::istring &label() const {
+            return _label;
         }
+        const etl::istring &value() const {
+            return _value;
+        }
+        virtual void log(Logger &logger) const override;
 };
 
 #endif

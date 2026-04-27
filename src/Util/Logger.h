@@ -54,6 +54,7 @@ class Logger {
         Logger & operator << (uint8_t value);
         Logger & operator << (uint16_t value);
         Logger & operator << (uint32_t value);
+        Logger & operator << (char value);
         Logger & operator << (int16_t value);
         Logger & operator << (int32_t value);
         Logger & operator << (int value);

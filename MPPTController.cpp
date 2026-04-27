@@ -31,6 +31,8 @@
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
 
 #include "src/DataModel/DataModel.h"
+#include "src/DataModel/DataModelNode.h"
+#include "src/DataModel/DataModelLeaf.h"
 
 #include <Arduino.h>
 
@@ -42,7 +44,7 @@
 
 MPPTController::MPPTController(const char *name, const char *nodeName,
                                HardwareSerial &serialPort, DataModel &dataModel)
-    : VEDirectDevice(name, serialPort, registerMap, dataModel),
+    : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel),
       deviceNode(nodeName, &dataModel.rootNode()),
       chargerNode("charger", &deviceNode),
       chargerVoltageLeaf("voltage", &chargerNode),

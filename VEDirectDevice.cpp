@@ -41,9 +41,11 @@
 
 VEDirectDevice::VEDirectDevice(const char *name, HardwareSerial &serialPort,
                                etl::iflat_map<uint16_t, Register &> &registers,
+                               etl::iflat_map<const char *, Field &, CStringCompare> &fields,
                                DataModel &dataModel)
     : serialPort(serialPort),
       registers(registers),
+      fields(fields),
       state(IDLE),
       runtMessages(0),
       textChecksumErrors(0),
@@ -179,7 +181,7 @@ void VEDirectDevice::inTextFieldLabelInput(char input) {
         // Checksum are funky, being sent as a single byte value
         // instead of being encounder in ascii hex so go to a
         // special state.
-        if (textField.Label() == "Checksum") {
+        if (textField.label() == "Checksum") {
             state = IN_TEXT_CHECKSUM;
         } else {
             state = IN_TEXT_FIELD_VALUE;
@@ -221,6 +223,16 @@ void VEDirectDevice::textChecksumInput(char input) {
 
 void VEDirectDevice::processTextBlock() {
     logger << debug << "Block complete" << eol;
+    for (const VEDirectTextField &textField : textBlock) {
+        logger << debug << textField << eol;
+        const etl::istring &label = textField.label();
+        const auto &mapping = fields.find(label.data());
+        if (mapping != fields.end()) {
+            mapping->second.set(textField.value());
+        } else {
+            logger << debug << "Unhandled text field " << textField.label() << eol;
+        }
+    }
 }
 
 void VEDirectDevice::hexMessageCompleted() {

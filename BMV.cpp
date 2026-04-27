@@ -33,11 +33,18 @@
 #include "src/VEDirect/String32Register.h"
 
 #include "src/DataModel/DataModel.h"
+#include "src/DataModel/DataModelNode.h"
+#include "src/DataModel/DataModelLeaf.h"
 
 #include <Arduino.h>
 
-BMV::BMV(const char *name, HardwareSerial &serialPort, DataModel &dataModel)
-    : VEDirectDevice(name, serialPort, registerMap, dataModel),
+BMV::BMV(const char *name, const char *nodeName,
+         HardwareSerial &serialPort, DataModel &dataModel)
+    : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel),
+      deviceNode(nodeName, &dataModel.rootNode()),
+      batteryNode("battery", &deviceNode),
+      batterySOCLeaf("soc", &batteryNode),
+      batteryVoltageLeaf("voltage", &batteryNode),
       productID(name, "Product ID", productIDDescriptions),
       productRevision(name, "Product Revision"),
       serialNumber(name, "Serial Number"),
@@ -45,13 +52,13 @@ BMV::BMV(const char *name, HardwareSerial &serialPort, DataModel &dataModel)
       description(name, "Description"),
       deviceUptime(name, "Uptime", " sec"),
       bluetoothCapabilities(name, "Bluetooth Capabilities"),
-      mainVoltage(name, "Main Voltage", " V, 2"),
+      mainVoltage(name, "Main Voltage", /* batteryVoltageLeaf, */ " V, 2"),
       auxVoltage(name, "Aux Voltage", " V, 2"),
       current(name, "Current", " A", 1),
       current2(name, "Current", " A", 3),
       power(name, "Power", " W"),
       consumedAmpHours(name, "Consumed Amp Hours", " Ah", 1),
-      stateOfCharge(name, "State of Charge", "%", 1),
+      stateOfCharge(name, "State of Charge", /* batterySOCLeaf, */ "%", 2),
       timeToGo(name, "Time to Go", " min"),
       temperature(name, "Temperature", " K", 2),
       midPointVoltage(name, "Mid-point Voltage", " V", 2),
@@ -142,5 +149,6 @@ BMV::BMV(const char *name, HardwareSerial &serialPort, DataModel &dataModel)
       startSynchronized(name, "Start Synchronized"),
       settingsChangedTimestamp(name, "Settings Changed Timestamp", " sec"),
       bluetoothMode(name, "Bluetooth Mode"),
-      dcMonitorMode(name, "DC Monitor Mode", dcMonitorModeDescriptions) {
+      dcMonitorMode(name, "DC Monitor Mode", dcMonitorModeDescriptions),
+      socField(name, "SoC", batterySOCLeaf, "%", 1) {
 }

@@ -20,6 +20,8 @@
 #define BMV_H
 
 #include "VEDirectDevice.h"
+
+#include "src/VEDirect/Register.h"
 #include "src/VEDirect/UInt8Register.h"
 #include "src/VEDirect/UInt8EnumRegister.h"
 #include "src/VEDirect/UInt8OnOffRegister.h"
@@ -32,18 +34,31 @@
 #include "src/VEDirect/Int32Register.h"
 #include "src/VEDirect/String20Register.h"
 #include "src/VEDirect/String32Register.h"
+#include "src/VEDirect/Field.h"
+#include "src/VEDirect/UnsignedField.h"
+
+#include "src/DataModel/DataModelNode.h"
+#include "src/DataModel/DataModelLeaf.h"
 
 #include <Arduino.h>
 
 #include <Embedded_Template_Library.h>
 #include <etl/flat_map.h>
+#include <etl/map.h>
+#include <etl/string.h>
 
 #include <stdint.h>
+#include <string.h>
 
 class DataModel;
 
 class BMV : public VEDirectDevice {
     private:
+        DataModelNode deviceNode;
+        DataModelNode batteryNode;
+        DataModelLeaf batterySOCLeaf;
+        DataModelLeaf batteryVoltageLeaf;
+
         UInt32EnumRegister productID;
         UInt24Register productRevision;
         String32Register serialNumber;
@@ -149,6 +164,8 @@ class BMV : public VEDirectDevice {
         UInt32Register settingsChangedTimestamp;
         UInt8OnOffRegister bluetoothMode;
         Int16EnumRegister dcMonitorMode;
+
+        UnsignedField socField;
 
         etl::flat_map<uint32_t, const char *, 7> productIDDescriptions = {
             { 0x0200, "BMV600S" },
@@ -311,9 +328,13 @@ class BMV : public VEDirectDevice {
             { 0xEEFF, consumedAmpHours }
         };
 
+        etl::flat_map<const char *, Field &, 2, CStringCompare> fieldMap = {
+            { "SOC", socField }
+        };
+
     public:
-        BMV(const char *name, HardwareSerial &serialPort,
-            DataModel &dataModel);
+        BMV(const char *name, const char *nodeName,
+            HardwareSerial &serialPort, DataModel &dataModel);
 };
 
 #endif

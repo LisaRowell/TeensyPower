@@ -35,7 +35,8 @@ DataModel dataModel(statsManager);
 NetworkInterface networkInterface;
 MQTTBroker mqttBroker(dataModel);
 
-MPPTController testController("Test", "testMPPT", Serial1, dataModel);
+BMV bmv("BMV", "bmv", Serial1, dataModel);
+//MPPTController testController("Test", "testMPPT", Serial1, dataModel);
 
 void setup() {
     Serial.begin(9600); // This number is ignored anyway
@@ -47,12 +48,11 @@ void setup() {
     networkInterface.setup();
     mqttBroker.setup();
 
-    testController.setup();
-
+    bmv.setup();
 }
 
 void loop() {
-    testController.service();
+    bmv.service();
     mqttBroker.service();
 
     statsManager.service();

@@ -19,20 +19,22 @@
  #ifndef INT16_ENUM_REGISTER_H
 #define INT16_ENUM_REGISTER_H
 
-#include "Int16Register.h"
+#include "Register.h"
 
 #include <Embedded_Template_Library.h>
 #include <etl/flat_map.h>
 
 #include <stdint.h>
 
-class Int16EnumRegister : public Int16Register {
+class Int16EnumRegister : public Register {
     private:
+        int16_t value;
         etl::iflat_map<int16_t, const char *> &descriptions;
 
     public:
         Int16EnumRegister(const char *deviceName, const char *name,
                           etl::iflat_map<int16_t, const char *> &descriptions);
+        void set(VEDirectHexMessage &message);
         void log(Logger &logger) const override;
 };
 

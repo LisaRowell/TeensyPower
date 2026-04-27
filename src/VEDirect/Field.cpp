@@ -16,25 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REGISTER_H
-#define REGISTER_H
+#include "Field.h"
 
-#include "../Util/LoggableItem.h"
-
-#include <stddef.h>
-
-class VEDirectHexMessage;
-
-class Register : public LoggableItem {
-    protected:
-        static constexpr size_t MAX_REGISTER_DESCRIPTION = 80;
-
-        const char *deviceName;
-        const char *name;
-
-    public:
-        Register(const char *deviceName, const char *name);
-        virtual void set(VEDirectHexMessage &message) = 0;
-};
-
-#endif
+Field::Field(const char *deviceName, const char *name)
+    : deviceName(deviceName),
+      name(name) {
+}

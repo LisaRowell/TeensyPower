@@ -22,6 +22,8 @@
 #include "VEDirectDevice.h"
 
 #include "src/VEDirect/VEDirectHexMessage.h"
+
+#include "src/VEDirect/Register.h"
 #include "src/VEDirect/UInt8Register.h"
 #include "src/VEDirect/UInt8EnumRegister.h"
 #include "src/VEDirect/UInt8OnOffRegister.h"
@@ -32,8 +34,10 @@
 #include "src/VEDirect/Int16Register.h"
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
+#include "src/VEDirect/Field.h"
 
 #include "src/DataModel/DataModelNode.h"
+#include "src/DataModel/DataModelLeaf.h"
 
 #include <Arduino.h>
 
@@ -554,6 +558,9 @@ class MPPTController : public VEDirectDevice {
             { 0xEDFD, automaticEqualizationMode },
             { 0xEDFE, adaptiveMode },
             { 0xEDFF, batterySafeMode }
+        };
+
+        etl::flat_map<const char *, Field &, 2, CStringCompare> fieldMap = {
         };
 
     public:

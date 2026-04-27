@@ -16,25 +16,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REGISTER_H
-#define REGISTER_H
+#ifndef UNSIGNED_FIELD_H
+#define UNSIGNED_FIELD_H
 
-#include "../Util/LoggableItem.h"
+#include "Field.h"
 
-#include <stddef.h>
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
 
-class VEDirectHexMessage;
+#include <stdint.h>
 
-class Register : public LoggableItem {
+class DataModelLeaf;
+
+class UnsignedField : public Field {
     protected:
-        static constexpr size_t MAX_REGISTER_DESCRIPTION = 80;
-
-        const char *deviceName;
-        const char *name;
+        DataModelLeaf *dataModelLeaf;
+        const char *label;
+        uint8_t denominatorExponent;
 
     public:
-        Register(const char *deviceName, const char *name);
-        virtual void set(VEDirectHexMessage &message) = 0;
+        UnsignedField(const char *deviceName, const char *name,
+                      DataModelLeaf &dataModelLeaf,
+                      const char *label = nullptr,
+                      uint8_t denominatorExponent = 0);
+        void set(const etl::istring &message) override;
 };
 
 #endif

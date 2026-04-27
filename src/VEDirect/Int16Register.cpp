@@ -20,17 +20,30 @@
 #include "Register.h"
 #include "VEDirectHexMessage.h"
 
+#include "../DataModel/DataModelLeaf.h"
+
 #include "../Util/Logger.h"
 
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+
 #include <stdint.h>
-#include <cmath>
 
 Int16Register::Int16Register(const char *deviceName, const char *name,
-                             const char *label, uint8_t precision)
+                             const char *label, uint8_t denominatorExponent)
     : Register(deviceName, name),
-      label(label),
-      precision(precision) {
-    scale = powf(10, precision);
+      dataModelLeaf(nullptr),
+      value(denominatorExponent),
+      label(label) {
+}
+
+Int16Register::Int16Register(const char *deviceName, const char *name,
+                             DataModelLeaf &dataModelLeaf,
+                             const char *label, uint8_t denominatorExponent)
+    : Register(deviceName, name),
+      dataModelLeaf(&dataModelLeaf),
+      value(denominatorExponent),
+      label(label) {
 }
 
 void Int16Register::set(VEDirectHexMessage &message) {
@@ -46,7 +59,12 @@ void Int16Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->value = value;
+        this->value.set(value);
+        if (dataModelLeaf != nullptr) {
+            etl::string<20> valueStr;
+            this->value.toString(valueStr);
+            *dataModelLeaf << valueStr;
+        }
 
         logger << debug << deviceName << ": Updating " << name << " to "
                << *this << eol;
@@ -54,11 +72,7 @@ void Int16Register::set(VEDirectHexMessage &message) {
 }
 
 void Int16Register::log(Logger &logger) const {
-    if (scale) {
-        logger << etl::setprecision(precision) << (float)value / scale;
-    } else {
-        logger << value;
-    }
+    logger << value;
     if (label != nullptr) {
         logger << label;
     }

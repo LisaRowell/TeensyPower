@@ -21,8 +21,8 @@
 
 #include "UInt32Register.h"
 
-#include "Embedded_Template_Library.h"
-#include "etl/flat_map.h"
+#include <Embedded_Template_Library.h>
+#include <etl/flat_map.h>
 
 #include <stdint.h>
 

@@ -17,6 +17,7 @@
  */
  
 #include "Int16EnumRegister.h"
+#include "VEDirectHexMessage.h"
 
 #include "../Util/Logger.h"
 
@@ -28,8 +29,29 @@
 
 Int16EnumRegister::Int16EnumRegister(const char *deviceName, const char *name,
                                      etl::iflat_map<int16_t, const char *> &descriptions)
-    : Int16Register(deviceName, name),
+    : Register(deviceName, name),
+      value(0),
       descriptions(descriptions) {
+}
+
+void Int16EnumRegister::set(VEDirectHexMessage &message) {
+    uint8_t flags = message.parseUInt8();
+    uint16_t value = message.parseUInt16();
+    message.expectedEnd();
+
+    if (message.hadParseError()) {
+        logger << deviceName << ": Badly formed " << name << " message: "
+               << message << eol;
+    } else if (flags != 0) {
+        logger << deviceName << ": " << name << " update with flags (0x"
+               << etl::hex << etl::setw(2) << etl::setfill('0') << flags
+               << ") set: " << message << eol;
+    } else {
+        this->value = value;
+
+        logger << debug << deviceName << ": Updating " << name << " to "
+               << *this << eol;
+    }
 }
 
 void Int16EnumRegister::log(Logger &logger) const {

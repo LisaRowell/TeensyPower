@@ -16,25 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REGISTER_H
-#define REGISTER_H
+#ifndef SCALED_INT16_H
+#define SCALED_INT16_H
 
 #include "../Util/LoggableItem.h"
 
-#include <stddef.h>
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
 
-class VEDirectHexMessage;
+#include <stdint.h>
 
-class Register : public LoggableItem {
-    protected:
-        static constexpr size_t MAX_REGISTER_DESCRIPTION = 80;
-
-        const char *deviceName;
-        const char *name;
+class ScaledInt16 : public LoggableItem {
+    private:
+        int16_t value;
+        uint8_t denominatorExponent;
 
     public:
-        Register(const char *deviceName, const char *name);
-        virtual void set(VEDirectHexMessage &message) = 0;
+        ScaledInt16();
+        ScaledInt16(uint8_t denominatorExponent);
+        bool operator == (int16_t right) const;
+        void set(int16_t value);
+        void set(int16_t value, uint8_t denominatorExponent);
+        void toString(etl::istring &string) const;
+        virtual void log(Logger &logger) const override;
 };
 
 #endif

@@ -36,7 +36,7 @@
 #include <stdint.h>
 
 OrionXS::OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataModel)
-    : VEDirectDevice(name, serialPort, registerMap, dataModel),
+    : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel),
       deviceMode(name, "Device Mode", deviceModeDescriptions),
       deviceState(name, "Device State", deviceStateDescriptions),
       inputPower(name, "Input Power", " W", 2) {
