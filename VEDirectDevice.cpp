@@ -224,7 +224,6 @@ void VEDirectDevice::textChecksumInput(char input) {
 void VEDirectDevice::processTextBlock() {
     logger << debug << "Block complete" << eol;
     for (const VEDirectTextField &textField : textBlock) {
-        logger << debug << textField << eol;
         const etl::istring &label = textField.label();
         const auto &mapping = fields.find(label.data());
         if (mapping != fields.end()) {
