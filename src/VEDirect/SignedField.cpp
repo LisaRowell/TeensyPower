@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- #include "UnsignedField.h"
+ #include "SignedField.h"
  #include "Field.h"
 
 #include "../DataModel/DataModelLeaf.h"
@@ -29,32 +29,26 @@
 
 #include <stdint.h>
 
-UnsignedField::UnsignedField(const char *deviceName, const char *name,
-                             DataModelLeaf &dataModelLeaf,
-                             const char *label,
-                             uint8_t denominatorExponent)
+SignedField::SignedField(const char *deviceName, const char *name,
+                         DataModelLeaf &dataModelLeaf, const char *label,
+                         uint8_t denominatorExponent, bool invert)
     : Field(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
       label(label),
-      denominatorExponent(denominatorExponent) {
+      denominatorExponent(denominatorExponent),
+      invert(invert) {
 }
 
-void UnsignedField::set(const etl::istring &message) {
+void SignedField::set(const etl::istring &message) {
     etl::string<20> valueStr;
 
-    if (message == "---") {
-        valueStr.clear();
-
+    etl::to_arithmetic_result result = etl::to_arithmetic<int32_t>(message);
+    if (result.has_value()) {
+        int32_t value = invert ? -result.value() : result.value();
+        etl::to_string(value, denominatorExponent, valueStr,
+                       etl::format_spec().precision(denominatorExponent));
     } else {
-        etl::to_arithmetic_result result = etl::to_arithmetic<uint32_t>(message);
-        if (result.has_value()) {
-            etl::to_string(result.value(), denominatorExponent, valueStr,
-                           etl::format_spec().precision(denominatorExponent));
-        } else {
-            logger << deviceName << ": Bad value '" << message << "' for field "
-                   << name << eol;
-            valueStr.clear();
-        }
+        valueStr.clear();
     }
 
     if (dataModelLeaf != nullptr) {

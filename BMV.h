@@ -36,6 +36,9 @@
 #include "src/VEDirect/String32Register.h"
 #include "src/VEDirect/Field.h"
 #include "src/VEDirect/UnsignedField.h"
+#include "src/VEDirect/SignedField.h"
+#include "src/VEDirect/OnOffField.h"
+#include "src/VEDirect/StringField.h"
 
 #include "src/DataModel/DataModelNode.h"
 #include "src/DataModel/DataModelLeaf.h"
@@ -58,6 +61,37 @@ class BMV : public VEDirectDevice {
         DataModelNode batteryNode;
         DataModelLeaf batterySOCLeaf;
         DataModelLeaf batteryVoltageLeaf;
+        DataModelLeaf batteryTemperatureLeaf;
+        DataModelLeaf batteryCurrentLeaf;
+        DataModelLeaf batteryConsumedAmpHoursLeaf;
+        DataModelLeaf batteryPowerLeaf;
+        DataModelLeaf batteryTimeToGoLeaf;
+        DataModelNode alarmNode;
+        DataModelLeaf alarmStateLeaf;
+        DataModelLeaf alarmReasonLeaf;
+        DataModelNode relayNode;
+        DataModelLeaf relayStateLeaf;
+        DataModelNode historyNode;
+        DataModelLeaf historyDeepestDischargeLeaf;
+        DataModelLeaf historyLastDischargeLeaf;
+        DataModelLeaf historyAverageDischargeLeaf;
+        DataModelLeaf historyCyclesLeaf;
+        DataModelLeaf historyFullDischargesLeaf;
+        DataModelLeaf historyCumulativeAmpHoursDrawnLeaf;
+        DataModelLeaf historyMinimumVoltageLeaf;
+        DataModelLeaf historyMaximumVoltageLeaf;
+        DataModelLeaf historyTimeSinceLastFullChargeLeaf;
+        DataModelLeaf historyAutomaticSynchronizationsLeaf;
+        DataModelLeaf historyLowVoltageAlarmsLeaf;
+        DataModelLeaf historyHighVoltageAlarmsLeaf;
+        DataModelLeaf historyDischargedEnergyLeaf;
+        DataModelLeaf historyChargedEnergyLeaf;
+        DataModelLeaf pidLeaf;
+        DataModelLeaf modelDescriptionLeaf;
+        DataModelLeaf firmwareLeaf;
+        DataModelLeaf monitorModeLeaf;
+        DataModelLeaf historyMinimumAuxVoltageLeaf;
+        DataModelLeaf historyMaximumAuxVoltageLeaf;
 
         UInt32EnumRegister productID;
         UInt24Register productRevision;
@@ -166,15 +200,46 @@ class BMV : public VEDirectDevice {
         Int16EnumRegister dcMonitorMode;
 
         UnsignedField socField;
+        UnsignedField voltageField;
+        UnsignedField temperatureField;
+        SignedField currentField;
+        SignedField consumedAmpHoursField;
+        SignedField powerField;
+        UnsignedField timeToGoField;
+        OnOffField alarmField;
+        UnsignedField alarmReasonField;
+        OnOffField relayField;
+        SignedField deepestDischargeField;
+        SignedField lastDischargeField;
+        UnsignedField averageDischargeField;
+        UnsignedField cyclesField;
+        UnsignedField fullDischargesField;
+        SignedField cumulativeAmpHoursDrawnField;
+        UnsignedField minimumVoltageField;
+        UnsignedField maximumVoltageField;
+        UnsignedField timeSinceLastFullChargeField;
+        UnsignedField automaticSynchronizationsField;
+        UnsignedField lowVoltageAlarmsField;
+        UnsignedField highVoltageAlarmsField;
+        UnsignedField dischargedEnergyField;
+        UnsignedField chargedEnergyField;
+        StringField pidField;
+        StringField modelDescriptionField;
+        StringField firmwareField;
+        SignedField monitorModeField;
+        UnsignedField minimumAuxVoltageField;
+        UnsignedField maximumAuxVoltageField;
 
-        etl::flat_map<uint32_t, const char *, 7> productIDDescriptions = {
+        etl::flat_map<uint32_t, const char *, 9> productIDDescriptions = {
             { 0x0200, "BMV600S" },
             { 0x0201, "BMV602S" },
             { 0x0202, "BMV600HS" },
             { 0x0203, "BMV700" },
             { 0x0204, "BMV702" },
             { 0x0205, "BMV700H" },
-            { 0xA381, "BMV712" }
+            { 0xA381, "BMV712" },
+            { 0xA382, "BMV710H" },
+            { 0xA383, "BMV712 Rev2" }
         };
 
         etl::flat_map<uint8_t, const char *, 3> relayModeDescriptions = {
@@ -328,8 +393,37 @@ class BMV : public VEDirectDevice {
             { 0xEEFF, consumedAmpHours }
         };
 
-        etl::flat_map<const char *, Field &, 2, CStringCompare> fieldMap = {
-            { "SOC", socField }
+        etl::flat_map<const char *, Field &, 30, CStringCompare> fieldMap = {
+            { "AR", alarmReasonField },
+            { "Alarm", alarmField },
+            { "BMV", modelDescriptionField},
+            { "CE", consumedAmpHoursField },
+            { "FW", firmwareField },
+            { "H1", deepestDischargeField },
+            { "H10", automaticSynchronizationsField },
+            { "H11", lowVoltageAlarmsField },
+            { "H12", highVoltageAlarmsField },
+            { "H15", minimumAuxVoltageField },
+            { "H16", maximumAuxVoltageField },
+            { "H17", dischargedEnergyField },
+            { "H18", chargedEnergyField },
+            { "H2", lastDischargeField },
+            { "H3", averageDischargeField },
+            { "H4", cyclesField },
+            { "H5", fullDischargesField },
+            { "H6", cumulativeAmpHoursDrawnField },
+            { "H7", minimumVoltageField },
+            { "H8", maximumVoltageField },
+            { "H9", timeSinceLastFullChargeField },
+            { "I", currentField },
+            { "MON", monitorModeField },
+            { "P", powerField },
+            { "PID", pidField },
+            { "Relay", relayField },
+            { "SOC", socField },
+            { "T", temperatureField },
+            { "TTG", timeToGoField },
+            { "V", voltageField }
         };
 
     public:

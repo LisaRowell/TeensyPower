@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- #include "UnsignedField.h"
+ #include "OnOffField.h"
  #include "Field.h"
 
 #include "../DataModel/DataModelLeaf.h"
@@ -25,36 +25,24 @@
 
 #include <Embedded_Template_Library.h>
 #include <etl/string.h>
-#include <etl/to_arithmetic.h>
 
-#include <stdint.h>
-
-UnsignedField::UnsignedField(const char *deviceName, const char *name,
-                             DataModelLeaf &dataModelLeaf,
-                             const char *label,
-                             uint8_t denominatorExponent)
+OnOffField::OnOffField(const char *deviceName, const char *name,
+                       DataModelLeaf &dataModelLeaf)
     : Field(deviceName, name),
-      dataModelLeaf(&dataModelLeaf),
-      label(label),
-      denominatorExponent(denominatorExponent) {
+      dataModelLeaf(&dataModelLeaf) {
 }
 
-void UnsignedField::set(const etl::istring &message) {
+void OnOffField::set(const etl::istring &message) {
     etl::string<20> valueStr;
 
-    if (message == "---") {
-        valueStr.clear();
-
+    if (message == "ON") {
+        valueStr = "true";
+    } else if (message == "OFF") {
+        valueStr = "false";
     } else {
-        etl::to_arithmetic_result result = etl::to_arithmetic<uint32_t>(message);
-        if (result.has_value()) {
-            etl::to_string(result.value(), denominatorExponent, valueStr,
-                           etl::format_spec().precision(denominatorExponent));
-        } else {
-            logger << deviceName << ": Bad value '" << message << "' for field "
-                   << name << eol;
-            valueStr.clear();
-        }
+        logger << deviceName << ": Bad value '" << message << "' for field "
+               << name << eol;
+        valueStr.clear();
     }
 
     if (dataModelLeaf != nullptr) {

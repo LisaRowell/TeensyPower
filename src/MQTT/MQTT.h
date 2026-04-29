@@ -54,6 +54,12 @@ enum MQTTMessageType : uint8_t {
     MQTT_MSG_RESERVED2 = 15
 };
 
-constexpr size_t MAX_MQTT_CLIENT_ID_LENGTH = 23;
+// In the MQTT 3.1.1 spec, the wording around the client ID length was changed
+// to saying that the broker MUST accept names with a length of 1 to 23, but at
+// the same time MAY accept longer names. Since a client might generate the
+// client name based on the host's name, it makes sense to allow longer names
+// to limit user frustration around not knowing why their connection was denied
+// when they happen to having a long(ish) computer name.
+constexpr size_t MAX_MQTT_CLIENT_ID_LENGTH = 50;
 
 #endif
