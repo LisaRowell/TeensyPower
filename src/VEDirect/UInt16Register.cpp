@@ -17,10 +17,11 @@
  */
 
 #include "UInt16Register.h"
-#include "Register.h"
 #include "VEDirectHexMessage.h"
 
 #include "../DataModel/DataModelLeaf.h"
+
+#include "../FixedPoint/ScaledUInt16.h"
 
 #include "../Util/Logger.h"
 
@@ -34,8 +35,8 @@ UInt16Register::UInt16Register(const char *deviceName, const char *name,
                                const char *maxValueDescription)
     : Register(deviceName, name),
       dataModelLeaf(nullptr),
-      value(denominatorExponent),
       label(label),
+      denominatorExponent(denominatorExponent),
       maxValueDescription(maxValueDescription) {
 }
 
@@ -46,14 +47,14 @@ UInt16Register::UInt16Register(const char *deviceName, const char *name,
                                const char *maxValueDescription)
     : Register(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
-      value(denominatorExponent),
       label(label),
+      denominatorExponent(denominatorExponent),
       maxValueDescription(maxValueDescription) {
 }
 
 void UInt16Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    uint16_t value = message.parseUInt16();
+    uint16_t rawValue = message.parseUInt16(); 
     message.expectedEnd();
 
     if (message.hadParseError()) {
@@ -64,25 +65,25 @@ void UInt16Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->value.set(value);
-        if (dataModelLeaf != nullptr) {
-            etl::string<20> valueStr;
-            this->value.toString(valueStr);
-            *dataModelLeaf << valueStr;
-        }
-
-        logger << debug << deviceName << ": Updating " << name << " to "
-               << *this << eol;
-    }
-}
-
-void UInt16Register::log(Logger &logger) const {
-    if ((value == (uint16_t)0x0ffff) && (maxValueDescription != nullptr)) {
-        logger << maxValueDescription;
-    } else {
-        logger << value;
-        if (label != nullptr) {
-            logger << label;
+        if (maxValueDescription != nullptr && rawValue == UINT16_MAX) {
+            if (dataModelLeaf != nullptr) {
+                *dataModelLeaf << maxValueDescription;
+            }
+            logger << debug << deviceName << ": Updating " << name << " to "
+                   << maxValueDescription;
+        } else {
+            ScaledUInt16 value(rawValue, denominatorExponent);
+            if (dataModelLeaf != nullptr) {
+                etl::string<20> valueStr;
+                value.toString(valueStr);
+                *dataModelLeaf << valueStr;
+            }
+            logger << debug << deviceName << ": Updating " << name << " to "
+                   << value;
+            if (label != nullptr) {
+                logger << label;
+            }
+            logger << eol;
         }
     }
 }

@@ -16,27 +16,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UINT16_ENUM_REGISTER_H
-#define UINT16_ENUM_REGISTER_H
-
-#include "Register.h"
-
-#include <Embedded_Template_Library.h>
-#include <etl/flat_map.h>
+#ifndef SCALED_UINT8_H
+#define SCALED_UINT8_H
 
 #include <stdint.h>
 
-class VEDirectHexMessage;
-class Logger;
+#include "../Util/LoggableItem.h"
 
-class UInt16EnumRegister : public Register {
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+
+#include <stdint.h>
+
+class ScaledUInt8 : public LoggableItem {
     private:
-        etl::iflat_map<uint16_t, const char *> &descriptions;
+        uint8_t value;
+        uint8_t denominatorExponent;
 
     public:
-        UInt16EnumRegister(const char *deviceName, const char *name,
-                           etl::iflat_map<uint16_t, const char *> &descriptions);
-        void set(VEDirectHexMessage &message);
+        ScaledUInt8();
+        ScaledUInt8(uint8_t denominatorExponent);
+        ScaledUInt8(uint8_t value, uint8_t denominatorExponent);
+        bool operator == (uint8_t right) const;
+        bool operator != (const ScaledUInt8 &right) const;
+        void set(uint8_t value);
+        void set(uint8_t value, uint8_t denominatorExponent);
+        void toString(etl::istring &string) const;
+        virtual void log(Logger &logger) const override;
 };
 
 #endif

@@ -41,12 +41,9 @@ class DataModel;
 
 class OrionXS :public VEDirectDevice {
     private:
-        static constexpr uint32_t DUMP_DELAY = 10;
-
         UInt8EnumRegister deviceMode;
         UInt8EnumRegister deviceState;
         UInt32Register inputPower;
-        PassiveTimer dumpTimer;
 
         etl::flat_map<uint8_t, const char *, 4> deviceModeDescriptions = {
             { 0, "Charger Off (0)" },

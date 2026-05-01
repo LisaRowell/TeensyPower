@@ -17,7 +17,6 @@
  */
 
 #include "UInt16RangeRegister.h"
-#include "Register.h"
 #include "VEDirectHexMessage.h"
 
 #include "../Util/Logger.h"
@@ -27,8 +26,6 @@
 UInt16RangeRegister::UInt16RangeRegister(const char *deviceName, const char *name,
                                          const char *label)
     : Register(deviceName, name),
-      lowValue(0),
-      highValue(0),
       label(label) {
 }
 
@@ -45,17 +42,15 @@ void UInt16RangeRegister::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        highValue = values >> 8;
-        lowValue = values & 0xff;
+        uint8_t highValue = values >> 8;
+        uint8_t lowValue = values & 0xff;
 
         logger << debug << deviceName << ": Updating " << name << " to "
-               << *this << eol;
+               << lowValue << "-" << highValue;
+        if (label != nullptr) {
+            logger << label;
+        }
+        logger << eol;
     }
 }
 
-void UInt16RangeRegister::log(Logger &logger) const {
-    logger << lowValue << "-" << highValue;
-    if (label != nullptr) {
-        logger << label;
-    }
-}

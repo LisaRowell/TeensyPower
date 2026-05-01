@@ -17,7 +17,6 @@
  */
 
 #include "String32Register.h"
-#include "Register.h"
 #include "VEDirectHexMessage.h"
 
 #include "../Util/Logger.h"
@@ -43,13 +42,7 @@ void String32Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->string = string;
-
         logger << debug << deviceName << ": Updating " << name << " to "
-               << *this << eol;
+               << string << eol;
     }
-}
-
-void String32Register::log(Logger &logger) const {
-    logger << string;
 }

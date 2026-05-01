@@ -28,15 +28,12 @@ class Logger;
 
 class UInt16RangeRegister : public Register {
     private:
-        uint8_t lowValue;
-        uint8_t highValue;
         const char *label;
 
     public:
         UInt16RangeRegister(const char *deviceName, const char *name,
                             const char *label = nullptr);
         void set(VEDirectHexMessage &message) override;
-        void log(Logger &logger) const override;
 };
 
 #endif

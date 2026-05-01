@@ -19,17 +19,16 @@
 #ifndef UINT8_ON_OFF_REGISTER_H
 #define UINT8_ON_OFF_REGISTER_H
 
-#include "UInt8Register.h"
-
-#include <Embedded_Template_Library.h>
-#include <etl/flat_map.h>
+#include "Register.h"
 
 #include <stdint.h>
 
-class UInt8OnOffRegister : public UInt8Register {
+class VEDirectHexMessage;
+
+class UInt8OnOffRegister : public Register {
     public:
         UInt8OnOffRegister(const char *deviceName, const char *name);
-        void log(Logger &logger) const override;
+        void set(VEDirectHexMessage &message) override;
 };
 
 #endif

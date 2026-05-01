@@ -129,6 +129,18 @@ DataModelLeaf & DataModelLeaf::operator << (const etl::istring &value) {
     for (DataModelLeaf::Subscription subscription: subscriptions) {
         // This could be made more efficent by building a topic name outside of this loop instead of
         // down in the publish routine...
+        publishToSubscriber(*subscription.subscriber, value.c_str(), false);
+    }
+
+    parent->leafUpdated();
+
+    return *this;
+}
+
+DataModelLeaf & DataModelLeaf::operator << (const char *value) {
+    for (DataModelLeaf::Subscription subscription: subscriptions) {
+        // This could be made more efficent by building a topic name outside of this loop instead of
+        // down in the publish routine...
         publishToSubscriber(*subscription.subscriber, value, false);
     }
 
@@ -150,6 +162,13 @@ void DataModelLeaf::publishToSubscriber(DataModelSubscriber &subscriber, const e
     char topic[maxTopicNameLength];
     buildTopicName(topic);
     subscriber.publish(topic, value.c_str(), retainedValue);
+}
+
+void DataModelLeaf::publishToSubscriber(DataModelSubscriber &subscriber, const char *value,
+                                        bool retainedValue) {
+    char topic[maxTopicNameLength];
+    buildTopicName(topic);
+    subscriber.publish(topic, value, retainedValue);
 }
 
 void DataModelLeaf::unsubscribeIfMatching(const char *topicFilter,

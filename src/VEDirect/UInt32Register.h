@@ -21,22 +21,22 @@
 
 #include "Register.h"
 
+#include "../FixedPoint/ScaledUInt32.h"
+
 #include <stdint.h>
 
 class VEDirectHexMessage;
 
 class UInt32Register : public Register {
     protected:
-        uint32_t value;
         const char *label;
-        uint32_t scale;
-        uint8_t precision;
+        uint8_t denominatorExponent;
 
     public:
         UInt32Register(const char *deviceName, const char *name,
-                       const char *label = nullptr, uint8_t precision = 0);
+                       const char *label = nullptr,
+                       uint8_t denominatorExponent = 0);
         void set(VEDirectHexMessage &message) override;
-        void log(Logger &logger) const override;
 };
 
 #endif

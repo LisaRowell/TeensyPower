@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ScaledInt32.h"
+#include "ScaledUInt8.h"
 
 #include "../Util/Logger.h"
 
@@ -28,40 +28,45 @@
 
 #include <stdint.h>
 
-ScaledInt32::ScaledInt32()
+ScaledUInt8::ScaledUInt8()
   : value(0),
     denominatorExponent(0) {
 }
 
-ScaledInt32::ScaledInt32(uint8_t denominatorExponent)
+ScaledUInt8::ScaledUInt8(uint8_t denominatorExponent)
   : value(0),
     denominatorExponent(denominatorExponent) {
 }
 
-ScaledInt32::ScaledInt32(int32_t value, uint8_t denominatorExponent)
+ScaledUInt8::ScaledUInt8(uint8_t value, uint8_t denominatorExponent)
     : value(value),
       denominatorExponent(denominatorExponent) {
 }
 
-bool ScaledInt32::operator==(int32_t right) const {
+bool ScaledUInt8::operator==(uint8_t right) const {
     return value * pow(10, denominatorExponent) == right;
 }
 
-void ScaledInt32::set(int32_t value) {
+// Should this shift to match unequal denominatorExponents?
+bool ScaledUInt8::operator != (const ScaledUInt8 &right) const {
+    return value != right.value || denominatorExponent != right.denominatorExponent;
+}
+
+void ScaledUInt8::set(uint8_t value) {
     this->value = value;
 }
 
-void ScaledInt32::set(int32_t value, uint8_t denominatorExponent = 0) {
+void ScaledUInt8::set(uint8_t value, uint8_t denominatorExponent = 0) {
     this->value = value;
     this->denominatorExponent = denominatorExponent;
 }
 
-void ScaledInt32::toString(etl::istring &string) const {
+void ScaledUInt8::toString(etl::istring &string) const {
     etl::to_string(value, denominatorExponent, string,
                    etl::format_spec().precision(denominatorExponent));
 }
 
-void ScaledInt32::log(Logger &logger) const {
+void ScaledUInt8::log(Logger &logger) const {
     etl::string<20> text;
     toString(text);
     logger << text;

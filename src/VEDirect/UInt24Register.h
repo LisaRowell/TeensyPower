@@ -27,16 +27,14 @@ class VEDirectHexMessage;
 
 class UInt24Register : public Register {
     protected:
-        uint32_t value;
         const char *label;
-        uint32_t scale;
-        uint8_t precision;
+        uint8_t denominatorExponent;
 
     public:
         UInt24Register(const char *deviceName, const char *name,
-                       const char *label = nullptr, uint8_t precision = 0);
+                       const char *label = nullptr,
+                       uint8_t denominatorExponent = 0);
         void set(VEDirectHexMessage &message) override;
-        void log(Logger &logger) const override;
 };
 
 #endif

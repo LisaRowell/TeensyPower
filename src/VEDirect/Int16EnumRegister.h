@@ -28,14 +28,12 @@
 
 class Int16EnumRegister : public Register {
     private:
-        int16_t value;
         etl::iflat_map<int16_t, const char *> &descriptions;
 
     public:
         Int16EnumRegister(const char *deviceName, const char *name,
                           etl::iflat_map<int16_t, const char *> &descriptions);
         void set(VEDirectHexMessage &message);
-        void log(Logger &logger) const override;
 };
 
 #endif

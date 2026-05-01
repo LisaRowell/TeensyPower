@@ -22,6 +22,8 @@
 
 #include "../DataModel/DataModelLeaf.h"
 
+#include "../FixedPoint/ScaledInt32.h"
+
 #include "../Util/Logger.h"
 
 #include <Embedded_Template_Library.h>
@@ -34,8 +36,8 @@ Int32Register::Int32Register(const char *deviceName, const char *name,
                              const char *maxValueDescription)
     : Register(deviceName, name),
       dataModelLeaf(nullptr),
-      value(denominatorExponent),
       label(label),
+      denominatorExponent(denominatorExponent),
       maxValueDescription(maxValueDescription) {
 }
 
@@ -45,14 +47,14 @@ Int32Register::Int32Register(const char *deviceName, const char *name,
                              const char *maxValueDescription)
     : Register(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
-      value(denominatorExponent),
       label(label),
+      denominatorExponent(denominatorExponent),
       maxValueDescription(maxValueDescription) {
 }
 
 void Int32Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    int16_t value = message.parseInt32();
+    int32_t rawValue = message.parseInt32();
     message.expectedEnd();
 
     if (message.hadParseError()) {
@@ -63,25 +65,26 @@ void Int32Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->value.set(value);
-        if (dataModelLeaf != nullptr) {
-            etl::string<20> valueStr;
-            this->value.toString(valueStr);
-            *dataModelLeaf << valueStr;
+        if (maxValueDescription != nullptr && rawValue == INT32_MAX) {
+            if (dataModelLeaf != nullptr) {
+                *dataModelLeaf << maxValueDescription;
+            }
+            logger << debug << deviceName << ": Updating " << name << " to "
+                   << maxValueDescription << eol;
+        } else {
+            ScaledInt32 value(rawValue, denominatorExponent);
+            if (dataModelLeaf != nullptr) {
+                etl::string<20> valueStr;
+                value.toString(valueStr);
+                *dataModelLeaf << valueStr;
+            }
+            logger << debug << deviceName << ": Updating " << name << " to "
+                   << value;
+            if (label != nullptr) {
+                logger << label;
+            }
+            logger << eol;
         }
-
-        logger << debug << deviceName << ": Updating " << name << " to "
-               << *this << eol;
     }
 }
 
-void Int32Register::log(Logger &logger) const {
-    if ((value == (int32_t)0x07fffffff) && (maxValueDescription != nullptr)) {
-        logger << maxValueDescription;
-    } else {
-        logger << value;
-        if (label != nullptr) {
-            logger << label;
-        }
-    }
-}

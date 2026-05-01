@@ -30,7 +30,6 @@
 UInt16EnumRegister::UInt16EnumRegister(const char *deviceName, const char *name,
                                        etl::iflat_map<uint16_t, const char *> &descriptions)
     : Register(deviceName, name),
-      value(0),
       descriptions(descriptions) {
 }
 
@@ -47,19 +46,15 @@ void UInt16EnumRegister::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->value = value;
-
-        logger << debug << deviceName << ": Updating " << name << " to "
-               << *this << eol;
+        logger << debug << deviceName << ": Updating " << name << " to ";
+        const auto &mapping = descriptions.find(value);
+        if (mapping != descriptions.end()) {
+            logger << mapping->second;
+        } else {
+            logger << etl::hex << etl::setw(4) << etl::setfill('0') << value
+                   << etl::setw(0);
+        }
+        logger << eol;
     }
 }
 
-void UInt16EnumRegister::log(Logger &logger) const {
-    const auto &mapping = descriptions.find(value);
-    if (mapping != descriptions.end()) {
-        logger << mapping->second;
-    } else {
-        logger << etl::hex << etl::setw(4) << etl::setfill('0') << value
-               << etl::setw(0);
-    }
-}

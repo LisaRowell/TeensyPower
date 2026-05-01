@@ -19,13 +19,11 @@
 #ifndef REGISTER_H
 #define REGISTER_H
 
-#include "../Util/LoggableItem.h"
-
 #include <stddef.h>
 
 class VEDirectHexMessage;
 
-class Register : public LoggableItem {
+class Register {
     protected:
         static constexpr size_t MAX_REGISTER_DESCRIPTION = 80;
 

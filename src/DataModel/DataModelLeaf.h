@@ -53,6 +53,8 @@ class DataModelLeaf : public DataModelElement {
         void unsubscribe(DataModelSubscriber &subscriber);
         void publishToSubscriber(DataModelSubscriber &subscriber, const etl::istring &value,
                                  bool retainedValue);
+        void publishToSubscriber(DataModelSubscriber &subscriber, const char *value,
+                                 bool retainedValue);
 
     public:
         DataModelLeaf(const char *name, DataModelNode *parent);
@@ -63,6 +65,7 @@ class DataModelLeaf : public DataModelElement {
                                            DataModelSubscriber &subscriber) override;
         virtual void unsubscribeAll(DataModelSubscriber &subscriber) override;
         DataModelLeaf & operator << (const etl::istring &value);
+        DataModelLeaf & operator << (const char *value);
         DataModelLeaf & operator << (uint32_t value);
 };
 

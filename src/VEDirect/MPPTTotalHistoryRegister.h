@@ -26,23 +26,9 @@
 class VEDirectHexMessage;
 
 class MPPTTotalHistoryRegister : public Register {
-    protected:
-        uint8_t errorDatabase;
-        uint8_t error0;
-        uint8_t error1;
-        uint8_t error2;
-        uint8_t error3;
-        uint32_t totalYieldUser;
-        uint32_t totalYieldSystem;
-        uint16_t panelVoltageMaximum;
-        uint16_t batteryVoltageMaximum;
-        uint8_t numberDaysAvailable;
-        uint16_t batteryVoltageMinimum;
-
     public:
         MPPTTotalHistoryRegister(const char *deviceName);
         void set(VEDirectHexMessage &message) override;
-        void log(Logger &logger) const override;
 };
 
 #endif

@@ -40,16 +40,8 @@ OrionXS::OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataMo
       deviceMode(name, "Device Mode", deviceModeDescriptions),
       deviceState(name, "Device State", deviceStateDescriptions),
       inputPower(name, "Input Power", " W", 2) {
-    dumpTimer.setSeconds(DUMP_DELAY);
 }
 
 void OrionXS::service() {
     VEDirectDevice::service();
-
-    if (dumpTimer.expired()) {
-        logger << "Device Mode = " << deviceMode << eol;
-        logger << "Device State = " << deviceState << eol;
-        dumpTimer.setSeconds(DUMP_DELAY);
-
-    }
 }

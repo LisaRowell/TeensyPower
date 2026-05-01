@@ -21,19 +21,12 @@
 
 #include "Register.h"
 
-#include <Embedded_Template_Library.h>
-#include <etl/string.h>
-
 class VEDirectHexMessage;
 
 class String20Register : public Register {
-    protected:
-        etl::string<32> string;
-
     public:
         String20Register(const char *deviceName, const char *name);
         void set(VEDirectHexMessage &message) override;
-        void log(Logger &logger) const override;
 };
 
 #endif

@@ -19,6 +19,9 @@
 #include "MPPTTotalHistoryRegister.h"
 #include "VEDirectHexMessage.h"
 
+#include "../FixedPoint/ScaledUInt16.h"
+#include "../FixedPoint/ScaledUInt32.h"
+
 #include "../Util/Logger.h"
 
 #include <Embedded_Template_Library.h>
@@ -38,12 +41,12 @@ void MPPTTotalHistoryRegister::set(VEDirectHexMessage &message) {
     uint8_t error1 = message.parseUInt8();
     uint8_t error2 = message.parseUInt8();
     uint8_t error3 = message.parseUInt8();
-    uint32_t totalYieldUser = message.parseUInt32();
-    uint32_t totalYieldSystem = message.parseUInt32();
-    uint16_t panelVoltageMaximum = message.parseUInt16();
-    uint16_t batteryVoltageMaximum = message.parseUInt16();
+    ScaledUInt32 totalYieldUser(message.parseUInt32(), 2);
+    ScaledUInt32 totalYieldSystem(message.parseUInt32(), 2);
+    ScaledUInt16 panelVoltageMaximum(message.parseUInt16(), 2);
+    ScaledUInt16 batteryVoltageMaximum(message.parseUInt16(), 2);
     uint8_t numberDaysAvailable = message.parseUInt8();
-    uint16_t batteryVoltageMinimum = message.parseUInt16();
+    ScaledUInt16 batteryVoltageMinimum(message.parseUInt16(), 2);
 
     for (int i = 0; i < 13; i++) {
         (void)message.parseUInt8();
@@ -62,44 +65,17 @@ void MPPTTotalHistoryRegister::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->errorDatabase = errorDatabase;
-        this->error0 = error0;
-        this->error1 = error1;
-        this->error2 = error2;
-        this->error3 = error3;
-        this->totalYieldUser = totalYieldUser;
-        this->totalYieldSystem = totalYieldSystem;
-        this->panelVoltageMaximum = panelVoltageMaximum;
-        this->batteryVoltageMaximum = batteryVoltageMaximum;
-        this->numberDaysAvailable = numberDaysAvailable;
-        this->batteryVoltageMinimum = batteryVoltageMinimum;
-
         logger << debug << deviceName << ": Updating Total History:";
         logger << debug << "    Error Database: " << errorDatabase << eol;
         logger << debug << "    Error 0: " << error0 << eol;
         logger << debug << "    Error 1: " << error1 << eol;
         logger << debug << "    Error 2: " << error2 << eol;
         logger << debug << "    Error 3: " << error3 << eol;
-        logger << debug << "    Total Yield User: " << (float)totalYieldUser / 100 << " kWh" << eol;
-        logger << debug << "    Total Yield System: " << (float)totalYieldSystem  / 100 << " kWh" << eol;
-        logger << debug << "    Panel Voltage Maximum: " << (float)panelVoltageMaximum / 100 << " V" << eol;
-        logger << debug << "    Battery Voltage Maximum: " << (float)batteryVoltageMaximum / 100 << " V" << eol;
+        logger << debug << "    Total Yield User: " << totalYieldUser << " kWh" << eol;
+        logger << debug << "    Total Yield System: " << totalYieldSystem << " kWh" << eol;
+        logger << debug << "    Panel Voltage Maximum: " << panelVoltageMaximum << " V" << eol;
+        logger << debug << "    Battery Voltage Maximum: " << batteryVoltageMaximum << " V" << eol;
         logger << debug << "    Number Days Available: " << numberDaysAvailable << eol;
-        logger << debug << "    Battery Voltage Minimum: " << (float)batteryVoltageMinimum  / 100 << " V"<< eol;
+        logger << debug << "    Battery Voltage Minimum: " << batteryVoltageMinimum << " V"<< eol;
     }
-}
-
-void MPPTTotalHistoryRegister::log(Logger &logger) const {
-    logger << "Total History:" << eol;
-    logger << "    Error Database: " << errorDatabase << eol;
-    logger << "    Error 0: " << error0 << eol;
-    logger << "    Error 1: " << error1 << eol;
-    logger << "    Error 2: " << error2 << eol;
-    logger << "    Error 3: " << error3 << eol;
-    logger << "    Total Yield User: " << totalYieldUser << eol;
-    logger << "    Total Yield System: " << totalYieldSystem << eol;
-    logger << "    Panel Voltage Maximum: " << panelVoltageMaximum << eol;
-    logger << "    Battery Voltage Maximum: " << batteryVoltageMaximum << eol;
-    logger << "    Number Days Available: " << numberDaysAvailable << eol;
-    logger << "    Battery Voltage Minimum: " << batteryVoltageMinimum << eol;
 }

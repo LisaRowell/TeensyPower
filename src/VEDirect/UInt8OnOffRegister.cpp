@@ -17,29 +17,44 @@
  */
 
 #include "UInt8OnOffRegister.h"
+#include "VEDirectHexMessage.h"
 
 #include "../Util/Logger.h"
 
 #include <Embedded_Template_Library.h>
-#include <etl/flat_map.h>
 #include <etl/string_stream.h>
 
 #include <stdint.h>
 
 UInt8OnOffRegister::UInt8OnOffRegister(const char *deviceName, const char *name)
-    : UInt8Register(deviceName, name) {
+    : Register(deviceName, name) {
 }
 
-void UInt8OnOffRegister::log(Logger &logger) const {
-    switch (value) {
-        case 0:
-            logger << "Off";
-            break;
-        case 1:
-            logger << "On";
-            break;
-        default:
-            logger << etl::hex << etl::setw(2) << etl::setfill('0') << value
-                   << etl::setw(0);
+void UInt8OnOffRegister::set(VEDirectHexMessage &message) {
+    uint8_t flags = message.parseUInt8();
+    uint8_t value = message.parseUInt8();
+    message.expectedEnd();
+
+    if (message.hadParseError()) {
+        logger << deviceName << ": Badly formed " << name << " message: "
+               << message << eol;
+    } else if (flags != 0) {
+        logger << deviceName << ": " << name << " update with flags (0x"
+               << etl::hex << etl::setw(2) << etl::setfill('0') << flags
+               << ") set: " << message << eol;
+    } else {
+        logger << debug << deviceName << ": Updating " << name << " to ";
+        switch (value) {
+            case 0:
+                logger << "Off";
+                break;
+            case 1:
+                logger << "On";
+                break;
+            default:
+                logger << etl::hex << etl::setw(2) << etl::setfill('0') << value
+                       << etl::setw(0);
+        }
+        logger << eol;
     }
 }

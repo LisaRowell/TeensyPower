@@ -17,6 +17,7 @@
  */
 
 #include "UInt8EnumRegister.h"
+#include "VEDirectHexMessage.h"
 
 #include "../Util/Logger.h"
 
@@ -28,16 +29,31 @@
 
 UInt8EnumRegister::UInt8EnumRegister(const char *deviceName, const char *name,
                                      etl::iflat_map<uint8_t, const char *> &descriptions)
-    : UInt8Register(deviceName, name),
+    : Register(deviceName, name),
       descriptions(descriptions) {
 }
 
-void UInt8EnumRegister::log(Logger &logger) const {
-    const auto &mapping = descriptions.find(value);
-    if (mapping != descriptions.end()) {
-        logger << mapping->second;
+void UInt8EnumRegister::set(VEDirectHexMessage &message) {
+    uint8_t flags = message.parseUInt8();
+    uint8_t value = message.parseUInt8();
+    message.expectedEnd();
+
+    if (message.hadParseError()) {
+        logger << deviceName << ": Badly formed " << name << " message: "
+               << message << eol;
+    } else if (flags != 0) {
+        logger << deviceName << ": " << name << " update with flags (0x"
+               << etl::hex << etl::setw(2) << etl::setfill('0') << flags
+               << ") set: " << message << eol;
     } else {
-        logger << etl::hex << etl::setw(2) << etl::setfill('0') << value
-               << etl::setw(0);
+        logger << debug << deviceName << ": Updating " << name << " to ";
+        const auto &mapping = descriptions.find(value);
+        if (mapping != descriptions.end()) {
+            logger << mapping->second;
+        } else {
+            logger << "0x" << etl::hex << etl::setw(2) << etl::setfill('0') << value
+                   << etl::setw(0);
+        }
+        logger << eol;
     }
 }

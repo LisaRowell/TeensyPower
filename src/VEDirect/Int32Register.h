@@ -21,8 +21,6 @@
 
 #include "Register.h"
 
-#include "../FixedPoint/ScaledInt32.h"
-
 #include <stdint.h>
 
 class DataModelLeaf;
@@ -32,8 +30,8 @@ class Logger;
 class Int32Register : public Register {
     protected:
         DataModelLeaf *dataModelLeaf;
-        ScaledInt32 value;
         const char *label;
+        uint8_t denominatorExponent;
         const char *maxValueDescription;
 
     public:
@@ -47,7 +45,6 @@ class Int32Register : public Register {
                       uint8_t denominatorExponent = 0,
                       const char *maxValueDescription = nullptr);
         void set(VEDirectHexMessage &message) override;
-        void log(Logger &logger) const override;
 };
 
 #endif

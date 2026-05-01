@@ -20,21 +20,22 @@
 #include "Register.h"
 #include "VEDirectHexMessage.h"
 
+#include "../FixedPoint/ScaledUInt8.h"
+
 #include "../Util/Logger.h"
 
 #include <stdint.h>
 
 UInt8Register::UInt8Register(const char *deviceName, const char *name,
-                             const char *label, uint8_t precision)
+                             const char *label, uint8_t denominatorExponent)
     : Register(deviceName, name),
       label(label),
-      precision(precision) {
-    scale = powf(10, precision);
+      denominatorExponent(denominatorExponent) {
 }
 
 void UInt8Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    uint8_t value = message.parseUInt8();
+    ScaledUInt8 value(message.parseUInt8(), denominatorExponent);
     message.expectedEnd();
 
     if (message.hadParseError()) {
@@ -45,20 +46,11 @@ void UInt8Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->value = value;
-
         logger << debug << deviceName << ": Updating " << name << " to "
-               << *this << eol;
-    }
-}
-
-void UInt8Register::log(Logger &logger) const {
-    if (scale) {
-        logger << etl::setprecision(precision) << (float)value / scale;
-    } else {
-        logger << value;
-    }
-    if (label != nullptr) {
-        logger << label;
+               << value;
+        if (label != nullptr) {
+            logger << label;
+        }
+        logger << eol;
     }
 }

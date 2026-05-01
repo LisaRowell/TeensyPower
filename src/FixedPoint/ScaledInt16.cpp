@@ -38,6 +38,11 @@ ScaledInt16::ScaledInt16(uint8_t denominatorExponent)
     denominatorExponent(denominatorExponent) {
 }
 
+ScaledInt16::ScaledInt16(int16_t value, uint8_t denominatorExponent)
+  : value(value),
+    denominatorExponent(denominatorExponent) {
+}
+
 bool ScaledInt16::operator==(int16_t right) const {
     return value * pow(10, denominatorExponent) == right;
 }

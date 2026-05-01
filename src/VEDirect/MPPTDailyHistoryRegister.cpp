@@ -91,24 +91,3 @@ void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
                    powerMaximum, batteryCurrentMaximum, panelVoltageMaximum, daySequenceNumber);
     }
 }
-
-void MPPTDailyHistoryRegister::log(Logger &logger) const {
-#if 0
-        logger << deviceName << ": Updating Day " << daySequenceNumber <<" History:";
-        logger << "    Yield: " << yield << " kWh" << eol;
-        logger << "    Consumed: " << consumed << " kWh" << eol;
-        logger << "    Battery Voltage Maximum: " << (float)batteryVoltageMaximum / 100 << " V" << eol;
-        logger << "    Battery Voltage Minimum: " << (float)batteryVoltageMinimum / 100 << " V" << eol;
-        logger << "    Error Database: " << errorDatabase << eol;
-        logger << "    Error 0: " << error0 << eol;
-        logger << "    Error 1: " << error1 << eol;
-        logger << "    Error 2: " << error2 << eol;
-        logger << "    Error 3: " << error3 << eol;
-        logger << "    Time Bulk: " << timeBulk << " min" << eol;
-        logger << "    Time Absorption: " << timeAbsorption << " min" << eol;
-        logger << "    Time Float: " << timeFloat << " min" << eol;
-        logger << "    Power Maximum: " << powerMaximum << " W" << eol;
-        logger << "    Battery Current Maximum: " << (float)batteryCurrentMaximum / 10 << " A" << eol;
-        logger << "    Panel Voltage Maximum: " << (float)panelVoltageMaximum / 100 << " V" << eol;
-#endif
-}

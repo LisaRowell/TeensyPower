@@ -34,6 +34,7 @@ class ScaledInt16 : public LoggableItem {
     public:
         ScaledInt16();
         ScaledInt16(uint8_t denominatorExponent);
+        ScaledInt16(int16_t value, uint8_t denominatorExponent);
         bool operator == (int16_t right) const;
         void set(int16_t value);
         void set(int16_t value, uint8_t denominatorExponent);
