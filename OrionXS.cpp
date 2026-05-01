@@ -39,7 +39,7 @@ OrionXS::OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataMo
     : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel),
       deviceMode(name, "Device Mode", deviceModeDescriptions),
       deviceState(name, "Device State", deviceStateDescriptions),
-      inputPower(name, "Input Power", " W", 2) {
+      inputPower(name, "Input Power", 2) {
 }
 
 void OrionXS::service() {

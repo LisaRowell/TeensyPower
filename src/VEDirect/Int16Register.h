@@ -30,18 +30,15 @@ class Logger;
 class Int16Register : public Register {
     protected:
         DataModelLeaf *dataModelLeaf;
-        const char *label;
         uint8_t denominatorExponent;
         const char *maxValueDescription;
 
     public:
         Int16Register(const char *deviceName, const char *name,
-                      const char *label = nullptr,
                       uint8_t denominatorExponent = 0,
                       const char *maxValueDescription = nullptr);
         Int16Register(const char *deviceName, const char *name,
                       DataModelLeaf &dataModelLeaf,
-                      const char *label = nullptr,
                       uint8_t denominatorExponent = 0,
                       const char *maxValueDescription = nullptr);
         void set(VEDirectHexMessage &message) override;

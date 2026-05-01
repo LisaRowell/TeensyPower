@@ -27,12 +27,8 @@ class VEDirectHexMessage;
 class Logger;
 
 class UInt16RangeRegister : public Register {
-    private:
-        const char *label;
-
     public:
-        UInt16RangeRegister(const char *deviceName, const char *name,
-                            const char *label = nullptr);
+        UInt16RangeRegister(const char *deviceName, const char *name);
         void set(VEDirectHexMessage &message) override;
 };
 

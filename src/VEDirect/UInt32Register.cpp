@@ -27,9 +27,8 @@
 #include <stdint.h>
 
 UInt32Register::UInt32Register(const char *deviceName, const char *name,
-                               const char *label, uint8_t denominatorExponent)
+                               uint8_t denominatorExponent)
     : Register(deviceName, name),
-      label(label),
       denominatorExponent(denominatorExponent) {
 }
 
@@ -47,10 +46,6 @@ void UInt32Register::set(VEDirectHexMessage &message) {
                << ") set: " << message << eol;
     } else {
         logger << debug << deviceName << ": Updating " << name << " to "
-               << value;
-        if (label != nullptr) {
-            logger << label;
-        }
-        logger << eol;
+               << value << eol;
     }
 }

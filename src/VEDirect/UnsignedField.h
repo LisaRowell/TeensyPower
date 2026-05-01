@@ -31,13 +31,11 @@ class DataModelLeaf;
 class UnsignedField : public Field {
     protected:
         DataModelLeaf *dataModelLeaf;
-        const char *label;
         uint8_t denominatorExponent;
 
     public:
         UnsignedField(const char *deviceName, const char *name,
                       DataModelLeaf &dataModelLeaf,
-                      const char *label = nullptr,
                       uint8_t denominatorExponent = 0);
         void set(const etl::istring &message) override;
 };

@@ -31,11 +31,9 @@
 
 UnsignedField::UnsignedField(const char *deviceName, const char *name,
                              DataModelLeaf &dataModelLeaf,
-                             const char *label,
                              uint8_t denominatorExponent)
     : Field(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
-      label(label),
       denominatorExponent(denominatorExponent) {
 }
 

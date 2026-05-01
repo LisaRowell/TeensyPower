@@ -30,11 +30,10 @@
 #include <stdint.h>
 
 SignedField::SignedField(const char *deviceName, const char *name,
-                         DataModelLeaf &dataModelLeaf, const char *label,
+                         DataModelLeaf &dataModelLeaf,
                          uint8_t denominatorExponent, bool invert)
     : Field(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
-      label(label),
       denominatorExponent(denominatorExponent),
       invert(invert) {
 }

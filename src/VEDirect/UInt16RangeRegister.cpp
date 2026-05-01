@@ -23,10 +23,8 @@
 
 #include <stdint.h>
 
-UInt16RangeRegister::UInt16RangeRegister(const char *deviceName, const char *name,
-                                         const char *label)
-    : Register(deviceName, name),
-      label(label) {
+UInt16RangeRegister::UInt16RangeRegister(const char *deviceName, const char *name)
+    : Register(deviceName, name) {
 }
 
 void UInt16RangeRegister::set(VEDirectHexMessage &message) {
@@ -46,11 +44,7 @@ void UInt16RangeRegister::set(VEDirectHexMessage &message) {
         uint8_t lowValue = values & 0xff;
 
         logger << debug << deviceName << ": Updating " << name << " to "
-               << lowValue << "-" << highValue;
-        if (label != nullptr) {
-            logger << label;
-        }
-        logger << eol;
+               << lowValue << "-" << highValue << eol;
     }
 }
 

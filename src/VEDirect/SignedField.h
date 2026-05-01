@@ -31,14 +31,12 @@ class DataModelLeaf;
 class SignedField : public Field {
     protected:
         DataModelLeaf *dataModelLeaf;
-        const char *label;
         uint8_t denominatorExponent;
         bool invert;
 
     public:
         SignedField(const char *deviceName, const char *name,
                     DataModelLeaf &dataModelLeaf,
-                    const char *label = nullptr,
                     uint8_t denominatorExponent = 0,
                     bool invert = false);
         void set(const etl::istring &message) override;
