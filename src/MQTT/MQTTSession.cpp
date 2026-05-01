@@ -177,7 +177,7 @@ void MQTTSession::connectMessageReceived(const MQTTMessage &message) {
     }
     cleanSession = connectMessage.cleanSession();
 
-    logger << "Sending a CONNACK Accepted to " << clientID << eol;
+    logger << debug << "Sending a CONNACK Accepted to " << clientID << eol;
 
     if (sendMQTTConnectAckMessage(tcpClient, !freshSession, MQTT_CONNACK_ACCEPTED)) {
         _messagesSent++;
