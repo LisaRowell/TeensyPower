@@ -111,9 +111,12 @@ class VEDirectDevice {
                        etl::iflat_map<uint16_t, Register &> &registers,
                        etl::iflat_map<const char *, Field &, CStringCompare> &fields,
                        DataModel &dataModel);
+        void sendGet(uint16_t registerID);
+        void sendSet(uint16_t registerID, uint16_t value);
+        void sendSet(uint16_t registerID, int16_t value);
 
     public:
-        void setup();
+        virtual void setup();
         virtual void service();
 };
 

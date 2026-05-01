@@ -24,28 +24,14 @@
 #include <stdint.h>
 
 class VEDirectHexMessage;
+class MPPTDailyHistoryLeaves;
 
 class MPPTDailyHistoryRegister : public Register {
     protected:
-        uint32_t yield;
-        uint32_t consumed;
-        uint16_t batteryVoltageMaximum;
-        uint16_t batteryVoltageMinimum;
-        uint8_t errorDatabase;
-        uint8_t error0;
-        uint8_t error1;
-        uint8_t error2;
-        uint8_t error3;
-        uint16_t timeBulk;
-        uint16_t timeAbsorption;
-        uint16_t timeFloat;
-        uint32_t powerMaximum;
-        uint16_t batteryCurrentMaximum;
-        uint16_t panelVoltageMaximum;
-        uint16_t daySequenceNumber;
+        MPPTDailyHistoryLeaves &leaves;
 
     public:
-        MPPTDailyHistoryRegister(const char *deviceName);
+        MPPTDailyHistoryRegister(const char *deviceName, MPPTDailyHistoryLeaves &leaves);
         void set(VEDirectHexMessage &message) override;
         void log(Logger &logger) const override;
 };

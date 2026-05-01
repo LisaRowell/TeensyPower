@@ -21,20 +21,31 @@
 
 #include "Register.h"
 
+#include "../FixedPoint/ScaledInt32.h"
+
 #include <stdint.h>
 
+class DataModelLeaf;
 class VEDirectHexMessage;
+class Logger;
 
 class Int32Register : public Register {
     protected:
-        int32_t value;
+        DataModelLeaf *dataModelLeaf;
+        ScaledInt32 value;
         const char *label;
-        uint16_t scale;
-        uint8_t precision;
+        const char *maxValueDescription;
 
     public:
         Int32Register(const char *deviceName, const char *name,
-                      const char *label = nullptr, uint8_t precision = 0);
+                      const char *label = nullptr,
+                      uint8_t denominatorExponent = 0,
+                      const char *maxValueDescription = nullptr);
+        Int32Register(const char *deviceName, const char *name,
+                      DataModelLeaf &dataModelLeaf,
+                      const char *label = nullptr,
+                      uint8_t denominatorExponent = 0,
+                      const char *maxValueDescription = nullptr);
         void set(VEDirectHexMessage &message) override;
         void log(Logger &logger) const override;
 };

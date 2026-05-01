@@ -30,20 +30,24 @@
 #include <stdint.h>
 
 Int16Register::Int16Register(const char *deviceName, const char *name,
-                             const char *label, uint8_t denominatorExponent)
+                             const char *label, uint8_t denominatorExponent,
+                             const char *maxValueDescription)
     : Register(deviceName, name),
       dataModelLeaf(nullptr),
       value(denominatorExponent),
-      label(label) {
+      label(label),
+      maxValueDescription(maxValueDescription) {
 }
 
 Int16Register::Int16Register(const char *deviceName, const char *name,
                              DataModelLeaf &dataModelLeaf,
-                             const char *label, uint8_t denominatorExponent)
+                             const char *label, uint8_t denominatorExponent,
+                             const char *maxValueDescription)
     : Register(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
       value(denominatorExponent),
-      label(label) {
+      label(label),
+      maxValueDescription(maxValueDescription) {
 }
 
 void Int16Register::set(VEDirectHexMessage &message) {
@@ -72,8 +76,12 @@ void Int16Register::set(VEDirectHexMessage &message) {
 }
 
 void Int16Register::log(Logger &logger) const {
-    logger << value;
-    if (label != nullptr) {
-        logger << label;
+    if ((value == (int16_t)0x07fff) && (maxValueDescription != nullptr)) {
+        logger << maxValueDescription;
+    } else {
+        logger << value;
+        if (label != nullptr) {
+            logger << label;
+        }
     }
 }

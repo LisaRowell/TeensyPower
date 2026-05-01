@@ -16,31 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VE_DIRECT_HEX_COMMAND_MESSAGE_H
-#define VE_DIRECT_HEX_COMMAND_MESSAGE_H
+#ifndef SCALED_INT32_H
+#define SCALED_INT32_H
 
-#include "VEDirectHexProtocol.h"
+#include "../Util/LoggableItem.h"
 
 #include <Embedded_Template_Library.h>
 #include <etl/string.h>
 
 #include <stdint.h>
 
-class VEDirectHexCommandMessage {
+class ScaledInt32 : public LoggableItem {
     private:
-        etl::string<HEX_PROTOCOL_MAX_MESSAGE_LENGTH> message;
-        uint8_t checksum;
-
-        char nibbleToHexChar(uint8_t nibble);
-        void appendByte(uint8_t byte);
-        void appendNibble(uint8_t nibble);
+        int32_t value;
+        uint8_t denominatorExponent;
 
     public:
-        void setCommand(VEDirectHexCommand command);
-        void appendUInt16(uint16_t value);
-        void appendFlags(uint8_t flags = 0);
-        void appendChecksum();
-        const char *cString();
+        ScaledInt32();
+        ScaledInt32(uint8_t denominatorExponent);
+        bool operator == (int32_t right) const;
+        void set(int32_t value);
+        void set(int32_t value, uint8_t denominatorExponent);
+        void toString(etl::istring &string) const;
+        virtual void log(Logger &logger) const override;
 };
 
 #endif

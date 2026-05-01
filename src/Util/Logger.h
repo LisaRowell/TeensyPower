@@ -29,7 +29,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-static constexpr bool debugging = true;
+static constexpr bool debugging = false;
 
 struct EndOfLine {};
 const EndOfLine eol = EndOfLine();

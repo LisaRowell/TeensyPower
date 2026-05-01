@@ -1,3 +1,4 @@
+#include <sys/_stdint.h>
 /* 
  * This file is part of the TeensyPower distribution
  * (https://github.com/LisaRowell/TeensyPower).
@@ -229,7 +230,8 @@ void VEDirectDevice::processTextBlock() {
         if (mapping != fields.end()) {
             mapping->second.set(textField.value());
         } else {
-            logger << debug << "Unhandled text field " << textField.label() << eol;
+            logger << debug << "Unhandled text field " << textField.label() << ":"
+                   << textField.value() << eol;
         }
     }
 }
@@ -320,15 +322,38 @@ void VEDirectDevice::hexProtocolPingResponseReceived() {
             break;
     }
 
-    logger << "Ping Response version = " << versionString.data() << eol;
+    logger << debug << "Ping Response version = " << versionString.data() << eol;
 }
 
 void VEDirectDevice::hexProtocolGetResponseReceived() {
     logger << debug << name << ": Received GET Response: " << hexMessage << eol;
+
+    uint16_t registerID = hexMessage.parseUInt16();
+    const auto &mapping = registers.find(registerID);
+    if (mapping != registers.end()) {
+        mapping->second.set(hexMessage);
+    } else {
+        logger << name << ": Ignoring GET response for unimplemented register 0x"
+               << etl::hex << etl::setw(4) << etl::setfill('0') << registerID
+               << etl::setw(0) << ": " << hexMessage << eol;
+    }
 }
 
 void VEDirectDevice::hexProtocolSetResponseReceived() {
     logger << debug << name << ": Received SET Response: " << hexMessage << eol;
+
+    // Since we don't seem to get an ASYNC message for changes to registers that
+    // we make, make sure and call the set for the register and propagate the
+    // new value.
+    uint16_t registerID = hexMessage.parseUInt16();
+    const auto &mapping = registers.find(registerID);
+    if (mapping != registers.end()) {
+        mapping->second.set(hexMessage);
+    } else {
+        logger << name << ": Ignoring SET response for unimplemented register 0x"
+               << etl::hex << etl::setw(4) << etl::setfill('0') << registerID
+               << etl::setw(0) << ": " << hexMessage << eol;
+    }
 }
 
 void VEDirectDevice::hexProtocolAsyncResponseReceived() {
@@ -354,7 +379,35 @@ void VEDirectDevice::resendPing() {
     pingTimer.setSeconds(PING_RESEND_DELAY);
 }
 
+void VEDirectDevice::sendGet(uint16_t registerID) {
+    VEDirectHexCommandMessage getCommand;
+
+    getCommand.setCommand(GET_CMD);
+    getCommand.appendUInt16(registerID);
+    getCommand.appendFlags();
+    getCommand.appendChecksum();
+
+    sendCommand(getCommand);
+}
+
+void VEDirectDevice::sendSet(uint16_t registerID, uint16_t value) {
+    VEDirectHexCommandMessage setCommand;
+
+    setCommand.setCommand(SET_CMD);
+    setCommand.appendUInt16(registerID);
+    setCommand.appendFlags();
+    setCommand.appendUInt16(value);
+    setCommand.appendChecksum();
+
+    sendCommand(setCommand);
+}
+
+void VEDirectDevice::sendSet(uint16_t registerID, int16_t value) {
+    sendSet(registerID, (uint16_t) value);
+}
+
 void VEDirectDevice::sendCommand(VEDirectHexCommandMessage &command) {
+    logger << debug << name << ": sending command '" << command.cString() << "'" << eol;
     // For now we just chuck this at the serial port, without
     // looking if there's butffer space and we don't worry about
     // multiple outstanding commands. Later this will change.

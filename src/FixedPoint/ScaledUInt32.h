@@ -19,16 +19,26 @@
 #ifndef SCALED_UINT32_H
 #define SCALED_UINT32_H
 
+#include "../Util/LoggableItem.h"
+
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+
 #include <stdint.h>
 
-class ScaledUInt32 {
+class ScaledUInt32 : public LoggableItem {
     private:
         uint32_t value;
         uint8_t denominatorExponent;
 
     public:
         ScaledUInt32();
+        ScaledUInt32(uint8_t denominatorExponent);
+        ScaledUInt32(uint32_t value, uint8_t denominatorExponent);
+        bool operator != (const ScaledUInt32 &right) const;
         void set(uint32_t value, uint8_t denominatorExponent = 0);
+        void toString(etl::istring &string) const;
+        virtual void log(Logger &logger) const override;
 };
 
 #endif

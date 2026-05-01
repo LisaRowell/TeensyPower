@@ -128,7 +128,6 @@ bool TenthsInt16::operator <(int16_t value) {
     }
 }
 
-
 void TenthsInt16::toString(etl::istring &string) const {
     etl::string_stream stringStream(string);
 

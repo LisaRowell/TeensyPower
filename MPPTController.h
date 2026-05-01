@@ -20,6 +20,7 @@
 #define MPPT_CONTROLLER_H
 
 #include "VEDirectDevice.h"
+#include "MPPTDailyHistoryLeaves.h"
 
 #include "src/VEDirect/VEDirectHexMessage.h"
 
@@ -32,12 +33,20 @@
 #include "src/VEDirect/UInt32Register.h"
 #include "src/VEDirect/UInt32EnumRegister.h"
 #include "src/VEDirect/Int16Register.h"
+#include "src/VEDirect/Int32Register.h"
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
 #include "src/VEDirect/Field.h"
+#include "src/VEDirect/UnsignedField.h"
+#include "src/VEDirect/SignedField.h"
+#include "src/VEDirect/OnOffField.h"
+#include "src/VEDirect/StringField.h"
 
 #include "src/DataModel/DataModelNode.h"
 #include "src/DataModel/DataModelLeaf.h"
+#include "src/DataModel/DataModelScaledUInt32Leaf.h"
+
+#include "src/Util/PassiveTimer.h"
 
 #include <Arduino.h>
 
@@ -50,9 +59,73 @@ class DataModel;
 
 class MPPTController : public VEDirectDevice {
     private:
+        static constexpr uint32_t historyWalkSeconds = 60;
+        static constexpr uint8_t numberHistoryRegisters = 31;
+        static constexpr uint16_t firstHistoryRegisterID = 0x1050;
+
         DataModelNode deviceNode;
         DataModelNode chargerNode;
         DataModelLeaf chargerVoltageLeaf;
+        DataModelLeaf chargerCurrentLeaf;
+        DataModelNode batteryNode;
+        DataModelLeaf batteryVoltageLeaf;
+        DataModelLeaf batteryCurrentLeaf;
+        DataModelLeaf batteryTemperatureLeaf;
+        DataModelNode panelNode;
+        DataModelLeaf panelVoltageLeaf;
+        DataModelLeaf panelPowerLeaf;
+        DataModelNode loadNode;
+        DataModelLeaf loadCurrentLeaf;
+        DataModelLeaf loadStateLeaf;
+        DataModelNode relayNode;
+        DataModelLeaf relayStateLeaf;
+        DataModelLeaf offReasonLeaf;
+        DataModelNode yieldNode;
+        DataModelLeaf yieldHistoricLeaf;
+        DataModelLeaf yieldTodayLeaf;
+        DataModelLeaf yieldYesterdayLeaf;
+        DataModelNode powerNode;
+        DataModelLeaf maxPowerTodayLeaf;
+        DataModelLeaf maxPowerYesterdayLeaf;
+        DataModelLeaf errorCodeLeaf;
+        DataModelLeaf stateOfOperationLeaf;
+        DataModelLeaf firmwareLeaf;
+        DataModelLeaf pidLeaf;
+        DataModelLeaf serialNumberLeaf;
+        DataModelLeaf trackerOperationModeLeaf;
+        DataModelNode historyNode;
+        DataModelLeaf daySequenceNumberLeaf;
+        MPPTDailyHistoryLeaves history0Leaves;
+        MPPTDailyHistoryLeaves history1Leaves;
+        MPPTDailyHistoryLeaves history2Leaves;
+        MPPTDailyHistoryLeaves history3Leaves;
+        MPPTDailyHistoryLeaves history4Leaves;
+        MPPTDailyHistoryLeaves history5Leaves;
+        MPPTDailyHistoryLeaves history6Leaves;
+        MPPTDailyHistoryLeaves history7Leaves;
+        MPPTDailyHistoryLeaves history8Leaves;
+        MPPTDailyHistoryLeaves history9Leaves;
+        MPPTDailyHistoryLeaves history10Leaves;
+        MPPTDailyHistoryLeaves history11Leaves;
+        MPPTDailyHistoryLeaves history12Leaves;
+        MPPTDailyHistoryLeaves history13Leaves;
+        MPPTDailyHistoryLeaves history14Leaves;
+        MPPTDailyHistoryLeaves history15Leaves;
+        MPPTDailyHistoryLeaves history16Leaves;
+        MPPTDailyHistoryLeaves history17Leaves;
+        MPPTDailyHistoryLeaves history18Leaves;
+        MPPTDailyHistoryLeaves history19Leaves;
+        MPPTDailyHistoryLeaves history20Leaves;
+        MPPTDailyHistoryLeaves history21Leaves;
+        MPPTDailyHistoryLeaves history22Leaves;
+        MPPTDailyHistoryLeaves history23Leaves;
+        MPPTDailyHistoryLeaves history24Leaves;
+        MPPTDailyHistoryLeaves history25Leaves;
+        MPPTDailyHistoryLeaves history26Leaves;
+        MPPTDailyHistoryLeaves history27Leaves;
+        MPPTDailyHistoryLeaves history28Leaves;
+        MPPTDailyHistoryLeaves history29Leaves;
+        MPPTDailyHistoryLeaves history30Leaves;
 
         UInt32EnumRegister productID;
         UInt8Register groupID;
@@ -183,6 +256,30 @@ class MPPTController : public VEDirectDevice {
         MPPTDailyHistoryRegister dailyHistory28;
         MPPTDailyHistoryRegister dailyHistory29;
         MPPTDailyHistoryRegister dailyHistory30;
+        UInt16Register batteryVoltageSense;
+        Int16Register batteryTemperatureSense;
+        Int32Register batteryCurrentSense;
+
+        UnsignedField chargerVoltageField;
+        SignedField chargerCurrentField;
+        UnsignedField panelVoltageField;
+        UnsignedField panelPowerField;
+        UnsignedField loadCurrentField;
+        OnOffField loadStateField;
+        OnOffField relayStateField;
+        StringField offReasonField;
+        UnsignedField yieldHistoricField;
+        UnsignedField yieldTodayField;
+        UnsignedField yieldYesterdayField;
+        UnsignedField maxPowerTodayField;
+        UnsignedField maxPowerYesterdayField;
+        UnsignedField errorCodeField;
+        UnsignedField stateOfOperationField;
+        StringField firmwareField;
+        StringField pidField;
+        StringField serialNumberField;
+        UnsignedField trackerOperationModeField;
+        UnsignedField daySequenceNumberField;
 
         etl::flat_map<uint32_t, const char *, 86> productIDDescriptions = {
             { 0x0300, "BlueSolar MPPT 70|15" },
@@ -428,7 +525,7 @@ class MPPTController : public VEDirectDevice {
             { 3, "Load output on/off remote control (normal)" },
         };
 
-        etl::flat_map<uint16_t, Register &, 129> registerMap = {
+        etl::flat_map<uint16_t, Register &, 132> registerMap = {
             { 0x0100, productID },
             { 0x0104, groupID },
             { 0x0140, capabilities },
@@ -475,6 +572,9 @@ class MPPTController : public VEDirectDevice {
             { 0x106C, dailyHistory28 },
             { 0x106D, dailyHistory29 },
             { 0x106E, dailyHistory30 },
+            { 0x2002, batteryVoltageSense },
+            { 0x2003, batteryTemperatureSense },
+            { 0x200A, batteryCurrentSense },
             { 0x2211, adjustableVoltageMinimum },
             { 0x2212, adjustableVoltageMaximum },
             { 0xECC3, tracker1Mode },
@@ -537,7 +637,7 @@ class MPPTController : public VEDirectDevice {
             { 0xEDDD, systemYield },
             { 0xEDDF, chargerMaximumCurrent },
             { 0xEDE0, batteryLowTempLevel },
-            { 0xEDE2, rebulkVoltage },     // Assumed there was a type in doc
+            { 0xEDE2, rebulkVoltage },     // Assumed there was a typo in doc
             { 0xEDE3, equalizationDuration },
             { 0xEDE4, equalizationCurrentLevel },
             { 0xEDE5, autoEqualizationStopOnVoltage },
@@ -560,12 +660,43 @@ class MPPTController : public VEDirectDevice {
             { 0xEDFF, batterySafeMode }
         };
 
-        etl::flat_map<const char *, Field &, 2, CStringCompare> fieldMap = {
+        etl::flat_map<const char *, Field &, 20, CStringCompare> fieldMap = {
+            { "CS", stateOfOperationField },
+            { "ERR", errorCodeField },
+            { "FW", firmwareField },
+            { "H19", yieldHistoricField },
+            { "H20", yieldTodayField },
+            { "H21", maxPowerTodayField },
+            { "H22", yieldYesterdayField },
+            { "H23", maxPowerYesterdayField },
+            { "HSDS", daySequenceNumberField },
+            // While the Victron VE.Direct protocol manual states that the "I" field
+            // is "battery current", it would appear that it's actually the current
+            // at the battery output of the MPPT and the battery current given to the
+            // unit from a BMV device.
+            { "I", chargerCurrentField },
+            { "IL", loadCurrentField },
+            { "LOAD", loadStateField },
+            { "MPPT", trackerOperationModeField },
+            { "OR", offReasonField },
+            { "PID", pidField },
+            { "PPV", panelPowerField },
+            { "Relay", relayStateField },
+            { "SER#", serialNumberField },
+            { "V", chargerVoltageField },
+            { "VPV", panelVoltageField }
         };
+
+        PassiveTimer historyTimer;
+        uint8_t nextHistoryRegister;
+
+        void requestHistoryRegister(uint8_t historyRegisterNumber);
 
     public:
         MPPTController(const char *name, const char *nodeName,
                        HardwareSerial &serialPort, DataModel &dataModel);
+        virtual void setup() override;
+        virtual void service() override;
 };
 
 #endif

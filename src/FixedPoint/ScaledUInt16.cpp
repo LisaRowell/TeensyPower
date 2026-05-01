@@ -38,8 +38,18 @@ ScaledUInt16::ScaledUInt16(uint8_t denominatorExponent)
     denominatorExponent(denominatorExponent) {
 }
 
+ScaledUInt16::ScaledUInt16(uint16_t value, uint8_t denominatorExponent)
+    : value(value),
+      denominatorExponent(denominatorExponent) {
+}
+
 bool ScaledUInt16::operator==(uint16_t right) const {
     return value * pow(10, denominatorExponent) == right;
+}
+
+// Should this shift to match unequal denominatorExponents?
+bool ScaledUInt16::operator != (const ScaledUInt16 &right) const {
+    return value != right.value || denominatorExponent != right.denominatorExponent;
 }
 
 void ScaledUInt16::set(uint16_t value) {

@@ -1,3 +1,4 @@
+#include "WProgram.h"
 /* 
  * This file is part of the TeensyPower distribution
  * (https://github.com/LisaRowell/TeensyPower).
@@ -17,6 +18,7 @@
  */
 
 #include "MPPTController.h"
+#include "MPPTDailyHistoryLeaves.h"
 
 #include "src/VEDirect/VEDirectHexMessage.h"
 #include "src/VEDirect/UInt8Register.h"
@@ -29,6 +31,11 @@
 #include "src/VEDirect/Int16Register.h"
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
+#include "src/VEDirect/Field.h"
+#include "src/VEDirect/UnsignedField.h"
+#include "src/VEDirect/SignedField.h"
+#include "src/VEDirect/OnOffField.h"
+#include "src/VEDirect/StringField.h"
 
 #include "src/DataModel/DataModel.h"
 #include "src/DataModel/DataModelNode.h"
@@ -48,6 +55,67 @@ MPPTController::MPPTController(const char *name, const char *nodeName,
       deviceNode(nodeName, &dataModel.rootNode()),
       chargerNode("charger", &deviceNode),
       chargerVoltageLeaf("voltage", &chargerNode),
+      chargerCurrentLeaf("current", &chargerNode),
+      batteryNode("battery", &deviceNode),
+      batteryVoltageLeaf("voltage", &batteryNode),
+      batteryCurrentLeaf("current", &batteryNode),
+      batteryTemperatureLeaf("temperature", &batteryNode),
+      panelNode("panel", &deviceNode),
+      panelVoltageLeaf("voltage", &panelNode),
+      panelPowerLeaf("power", &panelNode),
+      loadNode("load", &deviceNode),
+      loadCurrentLeaf("current", &loadNode),
+      loadStateLeaf("state", &loadNode),
+      relayNode("relay", &deviceNode),
+      relayStateLeaf("state", &relayNode),
+      offReasonLeaf("offReason", &deviceNode),
+      yieldNode("yield", &deviceNode),
+      yieldHistoricLeaf("historic", &yieldNode),
+      yieldTodayLeaf("today", &yieldNode),
+      yieldYesterdayLeaf("yesterday", &yieldNode),
+      powerNode("power", &deviceNode),
+      maxPowerTodayLeaf("maxToday", &powerNode),
+      maxPowerYesterdayLeaf("maxYesterday", &powerNode),
+      errorCodeLeaf("errorCode", &deviceNode),
+      stateOfOperationLeaf("stateOfOperation", &deviceNode),
+      firmwareLeaf("firmware", &deviceNode),
+      pidLeaf("pid", &deviceNode),
+      serialNumberLeaf("serialNumber", &deviceNode),
+      trackerOperationModeLeaf("trackerOperationMode", &deviceNode),
+      historyNode("history", &deviceNode),
+      daySequenceNumberLeaf("daySequenceNumber", &historyNode),
+      history0Leaves("0", &historyNode),
+      history1Leaves("1", &historyNode),
+      history2Leaves("2", &historyNode),
+      history3Leaves("3", &historyNode),
+      history4Leaves("4", &historyNode),
+      history5Leaves("5", &historyNode),
+      history6Leaves("6", &historyNode),
+      history7Leaves("7", &historyNode),
+      history8Leaves("8", &historyNode),
+      history9Leaves("9", &historyNode),
+      history10Leaves("10", &historyNode),
+      history11Leaves("11", &historyNode),
+      history12Leaves("12", &historyNode),
+      history13Leaves("13", &historyNode),
+      history14Leaves("14", &historyNode),
+      history15Leaves("15", &historyNode),
+      history16Leaves("16", &historyNode),
+      history17Leaves("17", &historyNode),
+      history18Leaves("18", &historyNode),
+      history19Leaves("19", &historyNode),
+      history20Leaves("20", &historyNode),
+      history21Leaves("21", &historyNode),
+      history22Leaves("22", &historyNode),
+      history23Leaves("23", &historyNode),
+      history24Leaves("24", &historyNode),
+      history25Leaves("25", &historyNode),
+      history26Leaves("26", &historyNode),
+      history27Leaves("27", &historyNode),
+      history28Leaves("28", &historyNode),
+      history29Leaves("29", &historyNode),
+      history30Leaves("30", &historyNode),
+
       productID(name, "Product ID", productIDDescriptions),
       groupID(name, "Groupd ID"),
       capabilities(name, "Capabilities"),
@@ -86,8 +154,10 @@ MPPTController::MPPTController(const char *name, const char *nodeName,
       userYield(name, "User Yield", " kWh", 2),
       chargerInternalTemp(name, "Charger Internal Temp", " C", 2),
       chargerErrorCode(name, "Charger Error Code", chargerErrorCodeDescriptions),
+      // We pick up the following two registers from the text messages, so we don't
+      // a data model leaf for them
       chargerCurrent(name, "Charger Current", " A", 1),
-      chargerVoltage(name, "Charger Voltage", chargerVoltageLeaf, " V", 2),
+      chargerVoltage(name, "Charger Voltage", " V", 2),
       additionalChargerStateInfo(name, "Additional Charger State Info"),
       yieldToday(name, "Yield Today", " kWh", 2),
       maximumPowerToday(name, "Max Power Today", " W"),
@@ -148,35 +218,101 @@ MPPTController::MPPTController(const char *name, const char *nodeName,
       txPortOperationMode(name, "TX Port Operation Mode", txPortOperationModeDescriptions),
       rxPortOperationMode(name, "RX Port Operation Mode", txPortOperationModeDescriptions),
       totalHistory(name),
-      dailyHistory0(name),
-      dailyHistory1(name),
-      dailyHistory2(name),
-      dailyHistory3(name),
-      dailyHistory4(name),
-      dailyHistory5(name),
-      dailyHistory6(name),
-      dailyHistory7(name),
-      dailyHistory8(name),
-      dailyHistory9(name),
-      dailyHistory10(name),
-      dailyHistory11(name),
-      dailyHistory12(name),
-      dailyHistory13(name),
-      dailyHistory14(name),
-      dailyHistory15(name),
-      dailyHistory16(name),
-      dailyHistory17(name),
-      dailyHistory18(name),
-      dailyHistory19(name),
-      dailyHistory20(name),
-      dailyHistory21(name),
-      dailyHistory22(name),
-      dailyHistory23(name),
-      dailyHistory24(name),
-      dailyHistory25(name),
-      dailyHistory26(name),
-      dailyHistory27(name),
-      dailyHistory28(name),
-      dailyHistory29(name),
-      dailyHistory30(name) {
+      dailyHistory0(name, history0Leaves),
+      dailyHistory1(name, history1Leaves),
+      dailyHistory2(name, history2Leaves),
+      dailyHistory3(name, history3Leaves),
+      dailyHistory4(name, history4Leaves),
+      dailyHistory5(name, history5Leaves),
+      dailyHistory6(name, history6Leaves),
+      dailyHistory7(name, history7Leaves),
+      dailyHistory8(name, history8Leaves),
+      dailyHistory9(name, history9Leaves),
+      dailyHistory10(name, history10Leaves),
+      dailyHistory11(name, history11Leaves),
+      dailyHistory12(name, history12Leaves),
+      dailyHistory13(name, history13Leaves),
+      dailyHistory14(name, history14Leaves),
+      dailyHistory15(name, history15Leaves),
+      dailyHistory16(name, history16Leaves),
+      dailyHistory17(name, history17Leaves),
+      dailyHistory18(name, history18Leaves),
+      dailyHistory19(name, history19Leaves),
+      dailyHistory20(name, history20Leaves),
+      dailyHistory21(name, history21Leaves),
+      dailyHistory22(name, history22Leaves),
+      dailyHistory23(name, history23Leaves),
+      dailyHistory24(name, history24Leaves),
+      dailyHistory25(name, history25Leaves),
+      dailyHistory26(name, history26Leaves),
+      dailyHistory27(name, history27Leaves),
+      dailyHistory28(name, history28Leaves),
+      dailyHistory29(name, history29Leaves),
+      dailyHistory30(name, history30Leaves),
+      batteryVoltageSense(name, "Battery Voltage Sense", batteryVoltageLeaf,
+                          " V", 2, "NA"),
+      batteryTemperatureSense(name, "Battery Temperature Sense", batteryTemperatureLeaf,
+                              " C", 2, "NA"),
+      batteryCurrentSense(name, "Battery Current Sense", batteryCurrentLeaf,
+                          " A", 3, "NA"),
+
+      chargerVoltageField(name, "Battery Voltage", chargerVoltageLeaf, " V", 3),
+      chargerCurrentField(name, "Battery Current", chargerCurrentLeaf, " A", 3),
+      panelVoltageField(name, "Panel Voltage", panelVoltageLeaf, " V", 3),
+      panelPowerField(name, "Panel Power", panelPowerLeaf, " W"),
+      loadCurrentField(name, "Load Current", loadCurrentLeaf, " A", 3),
+      loadStateField(name, "Load State", loadStateLeaf),
+      relayStateField(name, "Relay State", relayStateLeaf),
+      offReasonField(name, "Off Reason", offReasonLeaf),
+      yieldHistoricField(name, "Total Yield", yieldHistoricLeaf, " kWh", 2),
+      yieldTodayField(name, "Yield Today", yieldTodayLeaf, " kWh", 2),
+      yieldYesterdayField(name, "Yield Yesterday", yieldYesterdayLeaf, " kWh", 2),
+      maxPowerTodayField(name, "Max Power Today", maxPowerTodayLeaf, " W"),
+      maxPowerYesterdayField(name, "Max Power Today", maxPowerYesterdayLeaf, " W"),
+      errorCodeField(name, "Error Code", errorCodeLeaf),
+      stateOfOperationField(name, "State of Operation", stateOfOperationLeaf),
+      firmwareField(name, "Firmware", firmwareLeaf),
+      pidField(name, "PID", pidLeaf),
+      serialNumberField(name, "Serial Number", serialNumberLeaf),
+      trackerOperationModeField(name, "Tracker Operation Mode", trackerOperationModeLeaf),
+      daySequenceNumberField(name, "Day Sequence Number", daySequenceNumberLeaf),
+      nextHistoryRegister(0) {
+}
+
+void MPPTController::setup() {
+    // To avoid getting history times from different controllers at the same time,
+    // we randomly start our walking through the registers
+    uint32_t historyWalkerStart = (uint32_t)random(1, 20);
+    historyTimer.setSeconds(historyWalkerStart);
+
+    VEDirectDevice::setup();
+}
+
+void MPPTController::service() {
+    if (historyTimer.expired()) {
+        // Testing hack. Delete me!!!
+        if (nextHistoryRegister / 2 == 0) {
+            uint16_t fakeBatteryVoltageX100 = random(1250, 1350);
+            sendSet(0x2002, fakeBatteryVoltageX100);
+        } else {
+            int16_t fakeBatteryTemperatureX100 = random(2000, 2030);
+            sendSet(0x2003, fakeBatteryTemperatureX100);
+        }
+#if 0
+        requestHistoryRegister(nextHistoryRegister);
+#endif
+        historyTimer.advanceSeconds(historyWalkSeconds);
+
+        nextHistoryRegister++;
+        if (nextHistoryRegister == numberHistoryRegisters) {
+            nextHistoryRegister = 0;
+        }
+    }
+
+    VEDirectDevice::service();
+}
+
+void MPPTController::requestHistoryRegister(uint8_t historyRegisterNumber) {
+    uint16_t historyRegisterID = firstHistoryRegisterID + historyRegisterNumber;
+    sendGet(historyRegisterID);
 }

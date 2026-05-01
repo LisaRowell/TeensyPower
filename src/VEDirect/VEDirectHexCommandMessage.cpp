@@ -34,6 +34,21 @@ void VEDirectHexCommandMessage::setCommand(VEDirectHexCommand command) {
     appendNibble(commandNibble);
 }
 
+void VEDirectHexCommandMessage::appendUInt16(uint16_t value) {
+    uint8_t byte0 = value & 0xff;
+    appendByte(byte0);
+    checksum -= byte0;
+
+    uint8_t byte1 = value >> 8;
+    appendByte(byte1);
+    checksum -= byte1;
+}
+
+void VEDirectHexCommandMessage::appendFlags(uint8_t flags) {
+    checksum -= flags;
+
+    appendByte(flags);
+}
 
 void VEDirectHexCommandMessage::appendChecksum() {
     appendByte(checksum);

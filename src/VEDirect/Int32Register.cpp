@@ -20,22 +20,39 @@
 #include "Register.h"
 #include "VEDirectHexMessage.h"
 
+#include "../DataModel/DataModelLeaf.h"
+
 #include "../Util/Logger.h"
 
+#include <Embedded_Template_Library.h>
+#include <etl/string.h>
+
 #include <stdint.h>
-#include <cmath>
 
 Int32Register::Int32Register(const char *deviceName, const char *name,
-                             const char *label, uint8_t precision)
+                             const char *label, uint8_t denominatorExponent,
+                             const char *maxValueDescription)
     : Register(deviceName, name),
+      dataModelLeaf(nullptr),
+      value(denominatorExponent),
       label(label),
-      precision(precision) {
-    scale = powf(10, precision);
+      maxValueDescription(maxValueDescription) {
+}
+
+Int32Register::Int32Register(const char *deviceName, const char *name,
+                             DataModelLeaf &dataModelLeaf,
+                             const char *label, uint8_t denominatorExponent,
+                             const char *maxValueDescription)
+    : Register(deviceName, name),
+      dataModelLeaf(&dataModelLeaf),
+      value(denominatorExponent),
+      label(label),
+      maxValueDescription(maxValueDescription) {
 }
 
 void Int32Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    int32_t value = message.parseInt32();
+    int16_t value = message.parseInt32();
     message.expectedEnd();
 
     if (message.hadParseError()) {
@@ -46,7 +63,12 @@ void Int32Register::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->value = value;
+        this->value.set(value);
+        if (dataModelLeaf != nullptr) {
+            etl::string<20> valueStr;
+            this->value.toString(valueStr);
+            *dataModelLeaf << valueStr;
+        }
 
         logger << debug << deviceName << ": Updating " << name << " to "
                << *this << eol;
@@ -54,12 +76,12 @@ void Int32Register::set(VEDirectHexMessage &message) {
 }
 
 void Int32Register::log(Logger &logger) const {
-    if (scale) {
-        logger << etl::setprecision(precision) << (float)value / scale;
+    if ((value == (int32_t)0x07fffffff) && (maxValueDescription != nullptr)) {
+        logger << maxValueDescription;
     } else {
         logger << value;
-    }
-    if (label != nullptr) {
-        logger << label;
+        if (label != nullptr) {
+            logger << label;
+        }
     }
 }

@@ -19,6 +19,11 @@
 #include "MPPTDailyHistoryRegister.h"
 #include "VEDirectHexMessage.h"
 
+#include "../../MPPTDailyHistoryLeaves.h"
+
+#include "../FixedPoint/ScaledUInt16.h"
+#include "../FixedPoint/ScaledUInt32.h"
+
 #include "../Util/Logger.h"
 
 #include <Embedded_Template_Library.h>
@@ -26,16 +31,19 @@
 
 #include <stdint.h>
 
-MPPTDailyHistoryRegister::MPPTDailyHistoryRegister(const char *deviceName)
-    : Register(deviceName, "Daily History") {
+MPPTDailyHistoryRegister::MPPTDailyHistoryRegister(const char *deviceName,
+                                                   MPPTDailyHistoryLeaves &leaves)
+    : Register(deviceName, "Daily History"),
+      leaves(leaves) {
 }
 
 void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
     uint8_t recordVersion = message.parseUInt8();
-    uint32_t consumed = message.parseUInt32();
-    uint16_t batteryVoltageMaximum = message.parseUInt16();
-    uint16_t batteryVoltageMinimum = message.parseUInt16();
+    ScaledUInt32 yield(message.parseUInt32(), 2);
+    ScaledUInt32 consumed(message.parseUInt32(), 2);
+    ScaledUInt16 batteryVoltageMaximum(message.parseUInt16(), 2);
+    ScaledUInt16 batteryVoltageMinimum(message.parseUInt16(), 2);
     uint8_t errorDatabase = message.parseUInt8();
     uint8_t error0 = message.parseUInt8();
     uint8_t error1 = message.parseUInt8();
@@ -45,8 +53,8 @@ void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
     uint16_t timeAbsorption = message.parseUInt16();
     uint16_t timeFloat = message.parseUInt16();
     uint32_t powerMaximum = message.parseUInt32();
-    uint16_t batteryCurrentMaximum = message.parseUInt16();
-    uint16_t panelVoltageMaximum = message.parseUInt16();
+    ScaledUInt16 batteryCurrentMaximum(message.parseUInt16(), 1);
+    ScaledUInt16 panelVoltageMaximum(message.parseUInt16(), 2);
     uint16_t daySequenceNumber = message.parseUInt16();
     message.expectedEnd();
 
@@ -61,28 +69,11 @@ void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
     } else {
-        this->yield = yield;
-        this->consumed = consumed;
-        this->batteryVoltageMaximum = batteryVoltageMaximum;
-        this->batteryVoltageMinimum = batteryVoltageMinimum;
-        this->errorDatabase = errorDatabase;
-        this->error0 = error0;
-        this->error1 = error1;
-        this->error2 = error2;
-        this->error3 = error3;
-        this->timeBulk = timeBulk;
-        this->timeAbsorption = timeAbsorption;
-        this->timeFloat = timeFloat;
-        this->powerMaximum = powerMaximum;
-        this->batteryCurrentMaximum = batteryCurrentMaximum;
-        this->panelVoltageMaximum = panelVoltageMaximum;
-        this->daySequenceNumber = daySequenceNumber;
-
-        logger << debug << deviceName << ": Updating Day " << daySequenceNumber <<" History:";
-        logger << debug << "    Yield: " << (float)yield / 100 << " kWh" << eol;
-        logger << debug << "    Consumed: " << (float)consumed / 100 << " kWh" << eol;
-        logger << debug << "    Battery Voltage Maximum: " << (float)batteryVoltageMaximum / 100 << " V" << eol;
-        logger << debug << "    Battery Voltage Minimum: " << (float)batteryVoltageMinimum / 100 << " V" << eol;
+        logger << debug << deviceName << ": Updating Day " << daySequenceNumber <<" History:" << eol;
+        logger << debug << "    Yield: " << yield << " kWh" << eol;
+        logger << debug << "    Consumed: " << consumed << " kWh" << eol;
+        logger << debug << "    Battery Voltage Maximum: " << batteryVoltageMaximum << " V" << eol;
+        logger << debug << "    Battery Voltage Minimum: " << batteryVoltageMinimum << " V" << eol;
         logger << debug << "    Error Database: " << errorDatabase << eol;
         logger << debug << "    Error 0: " << error0 << eol;
         logger << debug << "    Error 1: " << error1 << eol;
@@ -92,15 +83,20 @@ void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
         logger << debug << "    Time Absorption: " << timeAbsorption << " min" << eol;
         logger << debug << "    Time Float: " << timeFloat << " min" << eol;
         logger << debug << "    Power Maximum: " << powerMaximum << " W" << eol;
-        logger << debug << "    Battery Current Maximum: " << (float)batteryCurrentMaximum / 10 << " A" << eol;
-        logger << debug << "    Panel Voltage Maximum: " << (float)panelVoltageMaximum / 100 << " V" << eol;
+        logger << debug << "    Battery Current Maximum: " << batteryCurrentMaximum << " A" << eol;
+        logger << debug << "    Panel Voltage Maximum: " << panelVoltageMaximum << " V" << eol;
+
+        leaves.set(yield, consumed, batteryVoltageMaximum, batteryVoltageMinimum, errorDatabase,
+                   error0, error1, error2, error3, timeBulk, timeAbsorption, timeFloat,
+                   powerMaximum, batteryCurrentMaximum, panelVoltageMaximum, daySequenceNumber);
     }
 }
 
 void MPPTDailyHistoryRegister::log(Logger &logger) const {
+#if 0
         logger << deviceName << ": Updating Day " << daySequenceNumber <<" History:";
-        logger << "    Yield: " << (float)yield / 100 << " kWh" << eol;
-        logger << "    Consumed: " << (float)consumed / 100 << " kWh" << eol;
+        logger << "    Yield: " << yield << " kWh" << eol;
+        logger << "    Consumed: " << consumed << " kWh" << eol;
         logger << "    Battery Voltage Maximum: " << (float)batteryVoltageMaximum / 100 << " V" << eol;
         logger << "    Battery Voltage Minimum: " << (float)batteryVoltageMinimum / 100 << " V" << eol;
         logger << "    Error Database: " << errorDatabase << eol;
@@ -114,4 +110,5 @@ void MPPTDailyHistoryRegister::log(Logger &logger) const {
         logger << "    Power Maximum: " << powerMaximum << " W" << eol;
         logger << "    Battery Current Maximum: " << (float)batteryCurrentMaximum / 10 << " A" << eol;
         logger << "    Panel Voltage Maximum: " << (float)panelVoltageMaximum / 100 << " V" << eol;
+#endif
 }
