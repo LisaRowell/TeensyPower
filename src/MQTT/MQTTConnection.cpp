@@ -74,7 +74,6 @@ void MQTTConnection::service() {
     } else {
         MQTTMessage *message = packetReader.readInput(_tcpClient);
         if (message) {
-            logger << "Got a complete message" << eol;
             processMessage(*message);
             // need to handle return!
         }
