@@ -33,14 +33,14 @@ class MPPTController;
 class BMVCurrentField : public Field {
     private:
         DataModelLeaf &dataModelLeaf;
-        const etl::ivector<MPPTController *> &mppts;
+        const etl::ivector<MPPTController *> *mppts;
 
         void clearMPPTsCurrent();
         void setMPPTsCurrent(int32_t currentMA);
 
     public:
         BMVCurrentField(const char *deviceName, DataModelLeaf &dataModelLeaf,
-                        const etl::ivector<MPPTController *> &mppts);
+                        const etl::ivector<MPPTController *> *mppts = nullptr);
         void set(const etl::istring &message) override;
 };
 

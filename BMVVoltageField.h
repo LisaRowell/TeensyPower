@@ -33,14 +33,14 @@ class MPPTController;
 class BMVVoltageField : public Field {
     private:
         DataModelLeaf &dataModelLeaf;
-        const etl::ivector<MPPTController *> &mppts;
+        const etl::ivector<MPPTController *> *mppts;
 
         void clearMPPTsVoltage();
         void setMPPTsVoltage(uint32_t voltageMV);
 
     public:
         BMVVoltageField(const char *deviceName, DataModelLeaf &dataModelLeaf,
-                        const etl::ivector<MPPTController *> &mppts);
+                        const etl::ivector<MPPTController *> *mppts = nullptr);
         void set(const etl::istring &message) override;
 };
 

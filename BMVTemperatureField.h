@@ -33,14 +33,14 @@ class MPPTController;
 class BMVTemperatureField : public Field {
     private:
         DataModelLeaf &dataModelLeaf;
-        const etl::ivector<MPPTController *> &mppts;
+        const etl::ivector<MPPTController *> *mppts;
 
         void clearMPPTsTemperature();
         void setMPPTsTemperature(int16_t temperatureC);
 
     public:
         BMVTemperatureField(const char *deviceName, DataModelLeaf &dataModelLeaf,
-                            const etl::ivector<MPPTController *> &mppts);
+                            const etl::ivector<MPPTController *> *mppts = nullptr);
         void set(const etl::istring &message) override;
 };
 

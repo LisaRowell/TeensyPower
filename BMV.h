@@ -63,14 +63,14 @@ class MPPTController;
 class BMV : public VEDirectDevice {
     private:
         DataModelNode deviceNode;
-        DataModelNode batteryNode;
-        DataModelLeaf batterySOCLeaf;
-        DataModelLeaf batteryVoltageLeaf;
-        DataModelLeaf batteryTemperatureLeaf;
-        DataModelLeaf batteryCurrentLeaf;
-        DataModelLeaf batteryConsumedAmpHoursLeaf;
-        DataModelLeaf batteryPowerLeaf;
-        DataModelLeaf batteryTimeToGoLeaf;
+        DataModelNode mainNode;
+        DataModelLeaf mainSOCLeaf;
+        DataModelLeaf mainVoltageLeaf;
+        DataModelLeaf mainTemperatureLeaf;
+        DataModelLeaf mainCurrentLeaf;
+        DataModelLeaf mainConsumedAmpHoursLeaf;
+        DataModelLeaf mainPowerLeaf;
+        DataModelLeaf mainTimeToGoLeaf;
         DataModelNode alarmNode;
         DataModelLeaf alarmStateLeaf;
         DataModelLeaf alarmReasonLeaf;
@@ -97,6 +97,8 @@ class BMV : public VEDirectDevice {
         DataModelLeaf monitorModeLeaf;
         DataModelLeaf historyMinimumAuxVoltageLeaf;
         DataModelLeaf historyMaximumAuxVoltageLeaf;
+        DataModelNode auxNode;
+        DataModelLeaf auxVoltageLeaf;
 
         UInt32EnumRegister productID;
         UInt24Register productRevision;
@@ -232,8 +234,9 @@ class BMV : public VEDirectDevice {
         StringField modelDescriptionField;
         StringField firmwareField;
         SignedField monitorModeField;
-        UnsignedField minimumAuxVoltageField;
-        UnsignedField maximumAuxVoltageField;
+        SignedField minimumAuxVoltageField;
+        SignedField maximumAuxVoltageField;
+        SignedField auxVoltageField;
 
         etl::flat_map<uint32_t, const char *, 9> productIDDescriptions = {
             { 0x0200, "BMV600S" },
@@ -398,7 +401,7 @@ class BMV : public VEDirectDevice {
             { 0xEEFF, consumedAmpHours }
         };
 
-        etl::flat_map<const char *, Field &, 30, CStringCompare> fieldMap = {
+        etl::flat_map<const char *, Field &, 31, CStringCompare> fieldMap = {
             { "AR", alarmReasonField },
             { "Alarm", alarmField },
             { "BMV", modelDescriptionField},
@@ -428,13 +431,14 @@ class BMV : public VEDirectDevice {
             { "SOC", socField },
             { "T", temperatureField },
             { "TTG", timeToGoField },
-            { "V", voltageField }
+            { "V", voltageField },
+            { "VS", auxVoltageField }
         };
 
     public:
         BMV(const char *name, const char *nodeName,
             HardwareSerial &serialPort, DataModel &dataModel,
-            const etl::ivector<MPPTController *> &mppts);
+            const etl::ivector<MPPTController *> *mppts = nullptr);
 };
 
 #endif

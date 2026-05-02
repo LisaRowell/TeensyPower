@@ -32,7 +32,7 @@
 
 BMVTemperatureField::BMVTemperatureField(const char *deviceName,
                                          DataModelLeaf &dataModelLeaf,
-                                         const etl::ivector<MPPTController *> &mppts)
+                                         const etl::ivector<MPPTController *> *mppts)
     : Field(deviceName, "Temperature"),
       dataModelLeaf(dataModelLeaf),
       mppts(mppts) {
@@ -68,13 +68,17 @@ void BMVTemperatureField::set(const etl::istring &message) {
 }
 
 void BMVTemperatureField::clearMPPTsTemperature() {
-    for (MPPTController *mppt : mppts) {
-        mppt->clearBatteryTemperature();
+    if (mppts != nullptr) {
+        for (MPPTController *mppt : *mppts) {
+            mppt->clearBatteryTemperature();
+        }
     }
 }
 
 void BMVTemperatureField::setMPPTsTemperature(int16_t temperatureC) {
-    for (MPPTController *mppt : mppts) {
-        mppt->setBatteryTemperature(temperatureC * 100);
+    if (mppts != nullptr) {
+        for (MPPTController *mppt : *mppts) {
+            mppt->setBatteryTemperature(temperatureC * 100);
+        }
     }
 }

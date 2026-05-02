@@ -31,7 +31,7 @@
 #include <stdint.h>
 
 BMVCurrentField::BMVCurrentField(const char *deviceName, DataModelLeaf &dataModelLeaf,
-                                 const etl::ivector<MPPTController *> &mppts)
+                                 const etl::ivector<MPPTController *> *mppts)
     : Field(deviceName, "Current"),
       dataModelLeaf(dataModelLeaf),
       mppts(mppts) {
@@ -66,13 +66,17 @@ void BMVCurrentField::set(const etl::istring &message) {
 }
 
 void BMVCurrentField::clearMPPTsCurrent() {
-    for (MPPTController *mppt : mppts) {
-        mppt->clearBatteryCurrent();
+    if (mppts != nullptr) {
+        for (MPPTController *mppt : *mppts) {
+            mppt->clearBatteryCurrent();
+        }
     }
 }
 
 void BMVCurrentField::setMPPTsCurrent(int32_t currentMA) {
-    for (MPPTController *mppt : mppts) {
-        mppt->setBatteryCurrent(currentMA);
+    if (mppts != nullptr) {
+        for (MPPTController *mppt : *mppts) {
+            mppt->setBatteryCurrent(currentMA);
+        }
     }
 }

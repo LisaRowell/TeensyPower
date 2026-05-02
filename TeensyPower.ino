@@ -38,9 +38,10 @@ DataModel dataModel(statsManager);
 NetworkInterface networkInterface;
 MQTTBroker mqttBroker(dataModel);
 
-MPPTController mppt1("mppt1", "mppt1", Serial2, dataModel);
-const etl::vector<MPPTController *, 1> mppts = { &mppt1 };
-BMV bmv("BMV", "bmv", Serial1, dataModel, mppts);
+MPPTController mppt1("mppt1", "mppt1", Serial3, dataModel);
+// const etl::vector<MPPTController *, 1> mppts = { &mppt1 };
+BMV bmv("BMV", "bmv", Serial1, dataModel /* , &mppts */);
+BMV windShunt("WindShunt", "windShunt", Serial2, dataModel);
 
 void setup() {
     Serial.begin(9600); // This number is ignored anyway
@@ -54,11 +55,14 @@ void setup() {
 
     bmv.setup();
     mppt1.setup();
+    windShunt.setup();
 }
 
 void loop() {
     bmv.service();
-    mppt1.service();
+//    mppt1.service();
+    windShunt.service();
+
     mqttBroker.service();
 
     statsManager.service();

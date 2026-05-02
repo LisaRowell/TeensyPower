@@ -31,7 +31,7 @@
 #include <stdint.h>
 
 BMVVoltageField::BMVVoltageField(const char *deviceName, DataModelLeaf &dataModelLeaf,
-                                 const etl::ivector<MPPTController *> &mppts)
+                                 const etl::ivector<MPPTController *> *mppts)
     : Field(deviceName, "Voltage"),
       dataModelLeaf(dataModelLeaf),
       mppts(mppts) {
@@ -67,13 +67,17 @@ void BMVVoltageField::set(const etl::istring &message) {
 }
 
 void BMVVoltageField::clearMPPTsVoltage() {
-    for (MPPTController *mppt : mppts) {
-        mppt->clearBatteryVoltage();
+    if (mppts != nullptr) {
+        for (MPPTController *mppt : *mppts) {
+            mppt->clearBatteryVoltage();
+        }
     }
 }
 
 void BMVVoltageField::setMPPTsVoltage(uint32_t voltageMV) {
-    for (MPPTController *mppt : mppts) {
-        mppt->setBatteryVoltage(voltageMV);
+    if (mppts != nullptr) {
+        for (MPPTController *mppt : *mppts) {
+            mppt->setBatteryVoltage(voltageMV);
+        }
     }
 }
