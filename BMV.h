@@ -431,8 +431,6 @@ class BMV : public VEDirectDevice {
             { "V", voltageField }
         };
 
-        const etl::ivector<MPPTController *> &mppts;
-
     public:
         BMV(const char *name, const char *nodeName,
             HardwareSerial &serialPort, DataModel &dataModel,

@@ -235,6 +235,5 @@ BMV::BMV(const char *name, const char *nodeName,
       firmwareField(name, "Firmware", firmwareLeaf),
       monitorModeField(name, "Monitor Mode", monitorModeLeaf),
       minimumAuxVoltageField(name, "Min Aux Voltage", historyMinimumAuxVoltageLeaf),
-      maximumAuxVoltageField(name, "Max Aux Voltage", historyMaximumAuxVoltageLeaf),
-      mppts(mppts) {
+      maximumAuxVoltageField(name, "Max Aux Voltage", historyMaximumAuxVoltageLeaf) {
 }
