@@ -30,13 +30,17 @@
 
 #include <Arduino.h>
 
+#include <Embedded_Template_Library.h>
+#include <etl/vector.h>
+
 StatsManager statsManager;
 DataModel dataModel(statsManager);
 NetworkInterface networkInterface;
 MQTTBroker mqttBroker(dataModel);
 
-BMV bmv("BMV", "bmv", Serial2, dataModel);
-MPPTController mppt1("mppt1", "mppt1", Serial1, dataModel);
+MPPTController mppt1("mppt1", "mppt1", Serial2, dataModel);
+const etl::vector<MPPTController *, 1> mppts = { &mppt1 };
+BMV bmv("BMV", "bmv", Serial1, dataModel, mppts);
 
 void setup() {
     Serial.begin(9600); // This number is ignored anyway

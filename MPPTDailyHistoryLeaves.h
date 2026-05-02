@@ -1,4 +1,3 @@
-#include <stdint.h>
 /* 
  * This file is part of the TeensyPower distribution
  * (https://github.com/LisaRowell/TeensyPower).
@@ -26,6 +25,8 @@
 #include "src/DataModel/DataModelUInt32Leaf.h"
 #include "src/DataModel/DataModelScaledUInt16Leaf.h"
 #include "src/DataModel/DataModelScaledUInt32Leaf.h"
+
+#include <stdint.h>
 
 class ScaledUInt16;
 class ScaledUInt32;

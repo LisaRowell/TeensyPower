@@ -44,6 +44,24 @@ void VEDirectHexCommandMessage::appendUInt16(uint16_t value) {
     checksum -= byte1;
 }
 
+void VEDirectHexCommandMessage::appendUInt32(uint32_t value) {
+    uint8_t byte0 = value & 0xff;
+    appendByte(byte0);
+    checksum -= byte0;
+
+    uint8_t byte1 = (value >> 8) & 0xff;
+    appendByte(byte1);
+    checksum -= byte1;
+
+    uint8_t byte2 = (value >> 16) & 0xff;
+    appendByte(byte2);
+    checksum -= byte2;
+
+    uint8_t byte3 = value >> 24;
+    appendByte(byte3);
+    checksum -= byte3;
+}
+
 void VEDirectHexCommandMessage::appendFlags(uint8_t flags) {
     checksum -= flags;
 

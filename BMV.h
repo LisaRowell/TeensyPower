@@ -20,6 +20,9 @@
 #define BMV_H
 
 #include "VEDirectDevice.h"
+#include "BMVVoltageField.h"
+#include "BMVTemperatureField.h"
+#include "BMVCurrentField.h"
 
 #include "src/VEDirect/Register.h"
 #include "src/VEDirect/UInt8Register.h"
@@ -49,11 +52,13 @@
 #include <etl/flat_map.h>
 #include <etl/map.h>
 #include <etl/string.h>
+#include <etl/vector.h>
 
 #include <stdint.h>
 #include <string.h>
 
 class DataModel;
+class MPPTController;
 
 class BMV : public VEDirectDevice {
     private:
@@ -200,9 +205,9 @@ class BMV : public VEDirectDevice {
         Int16EnumRegister dcMonitorMode;
 
         UnsignedField socField;
-        UnsignedField voltageField;
-        UnsignedField temperatureField;
-        SignedField currentField;
+        BMVVoltageField voltageField;
+        BMVTemperatureField temperatureField;
+        BMVCurrentField currentField;
         SignedField consumedAmpHoursField;
         SignedField powerField;
         UnsignedField timeToGoField;
@@ -426,9 +431,12 @@ class BMV : public VEDirectDevice {
             { "V", voltageField }
         };
 
+        const etl::ivector<MPPTController *> &mppts;
+
     public:
         BMV(const char *name, const char *nodeName,
-            HardwareSerial &serialPort, DataModel &dataModel);
+            HardwareSerial &serialPort, DataModel &dataModel,
+            const etl::ivector<MPPTController *> &mppts);
 };
 
 #endif

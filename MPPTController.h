@@ -689,14 +689,30 @@ class MPPTController : public VEDirectDevice {
 
         PassiveTimer historyTimer;
         uint8_t nextHistoryRegister;
+        bool batteryVoltageUpdatePending;
+        uint16_t batteryVoltageUpdate;
+        bool batteryTemperatureUpdatePending;
+        uint16_t batteryTemperatureUpdate;
+        bool batteryCurrentUpdatePending;
+        int32_t batteryCurrentUpdate;
 
+        void walkThroughHistory();
         void requestHistoryRegister(uint8_t historyRegisterNumber);
+        void sendBatteryVoltage();
+        void sendBatteryTemperature();
+        void sendBatteryCurrent();
 
     public:
         MPPTController(const char *name, const char *nodeName,
                        HardwareSerial &serialPort, DataModel &dataModel);
         virtual void setup() override;
         virtual void service() override;
+        void clearBatteryVoltage();
+        void setBatteryVoltage(uint32_t voltageMV);
+        void clearBatteryTemperature();
+        void setBatteryTemperature(int16_t temperatureCX100);
+        void clearBatteryCurrent();
+        void setBatteryCurrent(int32_t currentMA);
 };
 
 #endif

@@ -16,32 +16,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VE_DIRECT_HEX_COMMAND_MESSAGE_H
-#define VE_DIRECT_HEX_COMMAND_MESSAGE_H
+#ifndef BMV_CURRENT_FIELD_H
+#define BMV_CURRENT_FIELD_H
 
-#include "VEDirectHexProtocol.h"
+#include "src/VEDirect/Field.h"
 
 #include <Embedded_Template_Library.h>
+#include <etl/vector.h>
 #include <etl/string.h>
 
 #include <stdint.h>
 
-class VEDirectHexCommandMessage {
-    private:
-        etl::string<HEX_PROTOCOL_MAX_MESSAGE_LENGTH> message;
-        uint8_t checksum;
+class DataModelLeaf;
+class MPPTController;
 
-        char nibbleToHexChar(uint8_t nibble);
-        void appendByte(uint8_t byte);
-        void appendNibble(uint8_t nibble);
+class BMVCurrentField : public Field {
+    private:
+        DataModelLeaf &dataModelLeaf;
+        const etl::ivector<MPPTController *> &mppts;
+
+        void clearMPPTsCurrent();
+        void setMPPTsCurrent(int32_t currentMA);
 
     public:
-        void setCommand(VEDirectHexCommand command);
-        void appendUInt16(uint16_t value);
-        void appendUInt32(uint32_t value);
-        void appendFlags(uint8_t flags = 0);
-        void appendChecksum();
-        const char *cString();
+        BMVCurrentField(const char *deviceName, DataModelLeaf &dataModelLeaf,
+                        const etl::ivector<MPPTController *> &mppts);
+        void set(const etl::istring &message) override;
 };
 
 #endif

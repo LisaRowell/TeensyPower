@@ -50,6 +50,7 @@ VEDirectDevice::VEDirectDevice(const char *name, HardwareSerial &serialPort,
       state(IDLE),
       runtMessages(0),
       textChecksumErrors(0),
+      commandOutstanding(false),
       name(name),
       deviceNode(name, &dataModel.rootNode()) {
     // We periodically ping each device so that we keep them in HEX
@@ -68,8 +69,13 @@ void VEDirectDevice::setup() {
 void VEDirectDevice::service() {
     processInput();
 
-    if (pingTimer.expired()) {
+    if (pingTimer.expired() && clearToSend()) {
         resendPing();
+    }
+
+    if (commandOutstanding && commandTimeout.expired()) {
+        logger << name << ": Command timed out" << eol;
+        commandOutstanding = false;
     }
 }
 
@@ -279,17 +285,25 @@ void VEDirectDevice::hexMessageCompleted() {
 void VEDirectDevice::hexProtocolDoneReceived() {
     logger << name << ": Ignored HEX Protocol response Done: "
            << hexMessage << eol;
+
+    commandOutstanding = false;
 }
 
 void VEDirectDevice::unknownResponseReceived() {
     logger << name << ": Received UNKNOWN Response: " << hexMessage << eol;
+
+    commandOutstanding = false;
 }
 
 void VEDirectDevice::errorResponseReceived() {
     logger << name << ": Received ERROR Response: " << hexMessage << eol;
+
+    commandOutstanding = false;
 }
 
 void VEDirectDevice::hexProtocolPingResponseReceived() {
+    commandOutstanding = false;
+
     if (hexMessage.remainingBytes() != 2) {
         logger << name << ": Bad PING Response length " << hexMessage.length()
                << hexMessage << eol;
@@ -328,6 +342,8 @@ void VEDirectDevice::hexProtocolPingResponseReceived() {
 void VEDirectDevice::hexProtocolGetResponseReceived() {
     logger << debug << name << ": Received GET Response: " << hexMessage << eol;
 
+    commandOutstanding = false;
+
     uint16_t registerID = hexMessage.parseUInt16();
     const auto &mapping = registers.find(registerID);
     if (mapping != registers.end()) {
@@ -341,6 +357,8 @@ void VEDirectDevice::hexProtocolGetResponseReceived() {
 
 void VEDirectDevice::hexProtocolSetResponseReceived() {
     logger << debug << name << ": Received SET Response: " << hexMessage << eol;
+
+    commandOutstanding = false;
 
     // Since we don't seem to get an ASYNC message for changes to registers that
     // we make, make sure and call the set for the register and propagate the
@@ -402,16 +420,39 @@ void VEDirectDevice::sendSet(uint16_t registerID, uint16_t value) {
     sendCommand(setCommand);
 }
 
+void VEDirectDevice::sendSet(uint16_t registerID, uint32_t value) {
+    VEDirectHexCommandMessage setCommand;
+
+    setCommand.setCommand(SET_CMD);
+    setCommand.appendUInt16(registerID);
+    setCommand.appendFlags();
+    setCommand.appendUInt32(value);
+    setCommand.appendChecksum();
+
+    sendCommand(setCommand);
+}
+
+
 void VEDirectDevice::sendSet(uint16_t registerID, int16_t value) {
-    sendSet(registerID, (uint16_t) value);
+    sendSet(registerID, (uint16_t)value);
+}
+
+void VEDirectDevice::sendSet(uint16_t registerID, int32_t value) {
+    sendSet(registerID, (uint32_t)value);
+}
+
+bool VEDirectDevice::clearToSend() const {
+    return !commandOutstanding;
 }
 
 void VEDirectDevice::sendCommand(VEDirectHexCommandMessage &command) {
-    logger << debug << name << ": sending command '" << command.cString() << "'" << eol;
     // For now we just chuck this at the serial port, without
     // looking if there's butffer space and we don't worry about
     // multiple outstanding commands. Later this will change.
     serialPort.write(command.cString());
+
+    commandOutstanding = true;
+    commandTimeout.setMilliSeconds(commandTimeoutMSec);
 }
 
 void VEDirectDevice::addToTextCheckSum(char input) {

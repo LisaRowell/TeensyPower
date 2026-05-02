@@ -275,7 +275,10 @@ MPPTController::MPPTController(const char *name, const char *nodeName,
       serialNumberField(name, "Serial Number", serialNumberLeaf),
       trackerOperationModeField(name, "Tracker Operation Mode", trackerOperationModeLeaf),
       daySequenceNumberField(name, "Day Sequence Number", daySequenceNumberLeaf),
-      nextHistoryRegister(0) {
+      nextHistoryRegister(0),
+      batteryVoltageUpdatePending(false),
+      batteryTemperatureUpdatePending(false),
+      batteryCurrentUpdatePending(false) {
 }
 
 void MPPTController::setup() {
@@ -288,27 +291,76 @@ void MPPTController::setup() {
 }
 
 void MPPTController::service() {
-    if (historyTimer.expired()) {
-        // Testing hack. Delete me!!!
-        if (nextHistoryRegister / 2 == 0) {
-            uint16_t fakeBatteryVoltageX100 = random(1250, 1350);
-            sendSet(0x2002, fakeBatteryVoltageX100);
-        } else {
-            int16_t fakeBatteryTemperatureX100 = random(2000, 2030);
-            sendSet(0x2003, fakeBatteryTemperatureX100);
-        }
-#if 0
-        requestHistoryRegister(nextHistoryRegister);
-#endif
-        historyTimer.advanceSeconds(historyWalkSeconds);
+    if (batteryVoltageUpdatePending && clearToSend()) {
+        sendBatteryVoltage();
+    }
+    if (batteryTemperatureUpdatePending && clearToSend()) {
+        sendBatteryTemperature();
+    }
+    if (batteryCurrentUpdatePending && clearToSend()) {
+        sendBatteryCurrent();
+    }
 
-        nextHistoryRegister++;
-        if (nextHistoryRegister == numberHistoryRegisters) {
-            nextHistoryRegister = 0;
-        }
+    if (historyTimer.expired() && clearToSend()) {
+        walkThroughHistory();
     }
 
     VEDirectDevice::service();
+}
+
+void MPPTController::clearBatteryVoltage() {
+    batteryVoltageUpdatePending = true;
+    batteryVoltageUpdate = 0xFFFF;
+}
+
+void MPPTController::setBatteryVoltage(uint32_t voltageMV) {
+    batteryVoltageUpdatePending = true;
+    batteryVoltageUpdate = voltageMV / 10;
+}
+
+void MPPTController::clearBatteryTemperature() {
+    batteryTemperatureUpdatePending = true;
+    batteryTemperatureUpdate = 0x7FFF;
+}
+
+void MPPTController::setBatteryTemperature(int16_t temperatureCX100) {
+    batteryTemperatureUpdatePending = true;
+    batteryTemperatureUpdate = temperatureCX100;
+}
+
+void MPPTController::clearBatteryCurrent() {
+    batteryCurrentUpdatePending = true;
+    batteryCurrentUpdate = 0x7FFFFFFF;
+}
+
+void MPPTController::setBatteryCurrent(int32_t currentMA) {
+    batteryCurrentUpdatePending = true;
+    batteryCurrentUpdate = currentMA;
+}
+
+void MPPTController::sendBatteryVoltage() {
+    sendSet(0x2002, batteryVoltageUpdate);
+    batteryVoltageUpdatePending = false;
+}
+
+void MPPTController::sendBatteryTemperature() {
+    sendSet(0x2003, batteryTemperatureUpdate);
+    batteryTemperatureUpdatePending = false;
+}
+
+void MPPTController::sendBatteryCurrent() {
+    sendSet(0x200A, batteryCurrentUpdate);
+    batteryCurrentUpdatePending = false;
+}
+
+void MPPTController::walkThroughHistory() {
+    requestHistoryRegister(nextHistoryRegister);
+
+    nextHistoryRegister++;
+    if (nextHistoryRegister == numberHistoryRegisters) {
+        nextHistoryRegister = 0;
+        historyTimer.advanceSeconds(historyWalkSeconds);
+    }
 }
 
 void MPPTController::requestHistoryRegister(uint8_t historyRegisterNumber) {

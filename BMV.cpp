@@ -18,6 +18,10 @@
 
 #include "BMV.h"
 #include "VEDirectDevice.h"
+#include "MPPTController.h"
+#include "BMVVoltageField.h"
+#include "BMVTemperatureField.h"
+#include "BMVCurrentField.h"
 
 #include "src/VEDirect/UInt8Register.h"
 #include "src/VEDirect/UInt8EnumRegister.h"
@@ -41,8 +45,18 @@
 
 #include <Arduino.h>
 
+#include <Embedded_Template_Library.h>
+#include <etl/flat_map.h>
+#include <etl/map.h>
+#include <etl/string.h>
+#include <etl/vector.h>
+
+#include <stdint.h>
+#include <string.h>
+
 BMV::BMV(const char *name, const char *nodeName,
-         HardwareSerial &serialPort, DataModel &dataModel)
+         HardwareSerial &serialPort, DataModel &dataModel,
+         const etl::ivector<MPPTController *> &mppts)
     : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel),
       deviceNode(nodeName, &dataModel.rootNode()),
       batteryNode("battery", &deviceNode),
@@ -186,9 +200,9 @@ BMV::BMV(const char *name, const char *nodeName,
       bluetoothMode(name, "Bluetooth Mode"),
       dcMonitorMode(name, "DC Monitor Mode", dcMonitorModeDescriptions),
       socField(name, "SoC", batterySOCLeaf, 1),
-      voltageField(name, "Voltage", batteryVoltageLeaf, 3),
-      temperatureField(name, "Temperature", batteryTemperatureLeaf),
-      currentField(name, "Current", batteryCurrentLeaf, 3),
+      voltageField(name, batteryVoltageLeaf, mppts),
+      temperatureField(name, batteryTemperatureLeaf, mppts),
+      currentField(name, batteryCurrentLeaf, mppts),
       consumedAmpHoursField(name, "Consumed Amp Hours", batteryConsumedAmpHoursLeaf,
                             3, true),
       powerField(name, "Power", batteryPowerLeaf),
@@ -221,5 +235,6 @@ BMV::BMV(const char *name, const char *nodeName,
       firmwareField(name, "Firmware", firmwareLeaf),
       monitorModeField(name, "Monitor Mode", monitorModeLeaf),
       minimumAuxVoltageField(name, "Min Aux Voltage", historyMinimumAuxVoltageLeaf),
-      maximumAuxVoltageField(name, "Max Aux Voltage", historyMaximumAuxVoltageLeaf) {
+      maximumAuxVoltageField(name, "Max Aux Voltage", historyMaximumAuxVoltageLeaf),
+      mppts(mppts) {
 }

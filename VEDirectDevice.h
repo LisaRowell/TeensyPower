@@ -58,6 +58,7 @@ class VEDirectDevice {
         static constexpr char START_OF_HEX_CHAR    = ':';
         static constexpr size_t VE_DIRECT_MAX_TEXT_FIELDS_PER_BLOCK = 22;
         static constexpr uint8_t TEXT_PROTOCOL_CHECKSUM = 0x00;
+        static constexpr uint32_t commandTimeoutMSec = 200;
 
         enum State {
             IDLE,
@@ -81,6 +82,8 @@ class VEDirectDevice {
         int textChecksum;  // Victron uses an int...don't blame me
         uint32_t runtMessages;
         uint32_t textChecksumErrors;
+        bool commandOutstanding;
+        PassiveTimer commandTimeout;
 
         void processInput();
         void processCharInput(char input);
@@ -111,9 +114,12 @@ class VEDirectDevice {
                        etl::iflat_map<uint16_t, Register &> &registers,
                        etl::iflat_map<const char *, Field &, CStringCompare> &fields,
                        DataModel &dataModel);
+        bool clearToSend() const;
         void sendGet(uint16_t registerID);
         void sendSet(uint16_t registerID, uint16_t value);
+        void sendSet(uint16_t registerID, uint32_t value);
         void sendSet(uint16_t registerID, int16_t value);
+        void sendSet(uint16_t registerID, int32_t value);
 
     public:
         virtual void setup();
