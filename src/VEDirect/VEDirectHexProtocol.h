@@ -1,18 +1,18 @@
-/* 
+/*
  * This file is part of the TeensyPower distribution
  * (https://github.com/LisaRowell/TeensyPower).
  * Copyright (c) 2026 Lisa Rowell
- * 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License 
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -24,7 +24,7 @@
 
 // Victron doesn't specify a maximum message legnth for their
 // HEX Protocol, leaving the developer to just guess. There
-// exists history messages at least 57 bytes. 
+// exists history messages at least 57 bytes.
 static constexpr unsigned HEX_PROTOCOL_MAX_MESSAGE_LENGTH = 128;
 
 static constexpr char HEX_PROTOCOL_END_OF_MESSAGE_CHAR = 10;

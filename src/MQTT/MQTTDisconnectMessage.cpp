@@ -28,7 +28,7 @@ MQTTDisconnectMessage::MQTTDisconnectMessage(MQTTMessage const &message)
 
 // Returns false if there's a protocol error that requires dropping the connection flat out. We do
 // this anyway, despite a correct disconnect message yielding the same result so that we get log
-// messages for malformed packets. 
+// messages for malformed packets.
 bool MQTTDisconnectMessage::parse() {
     if (fixedHeaderFlags() != 0) {
         logger << "Received MQTT DISCONNECT message with non-zero Fixed Header Flags." << eol;
