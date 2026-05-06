@@ -31,18 +31,26 @@
 
 UnsignedField::UnsignedField(const char *deviceName, const char *name,
                              DataModelLeaf &dataModelLeaf,
-                             uint8_t denominatorExponent)
+                             uint8_t denominatorExponent,
+                             const char *exceptionMatch,
+                             const char *exceptionValue )
     : Field(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
-      denominatorExponent(denominatorExponent) {
+      denominatorExponent(denominatorExponent),
+      exceptionMatch(exceptionMatch),
+      exceptionValue(exceptionValue) {
 }
 
 void UnsignedField::set(const etl::istring &message) {
     etl::string<20> valueStr;
 
-    if (message == "---") {
-        valueStr.clear();
-
+    if ((exceptionMatch != nullptr && message == exceptionMatch) ||
+        (message == "---")) {
+        if (exceptionValue != nullptr) {
+            valueStr = exceptionValue;
+        } else {
+            valueStr.clear();
+        }
     } else {
         etl::to_arithmetic_result result = etl::to_arithmetic<uint32_t>(message);
         if (result.has_value()) {

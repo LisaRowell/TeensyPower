@@ -32,11 +32,15 @@ class UnsignedField : public Field {
     protected:
         DataModelLeaf *dataModelLeaf;
         uint8_t denominatorExponent;
+        const char *exceptionMatch;
+        const char *exceptionValue;
 
     public:
         UnsignedField(const char *deviceName, const char *name,
                       DataModelLeaf &dataModelLeaf,
-                      uint8_t denominatorExponent = 0);
+                      uint8_t denominatorExponent = 0,
+                      const char *exceptionMatch = nullptr,
+                      const char *exceptionValue = nullptr);
         void set(const etl::istring &message) override;
 };
 
