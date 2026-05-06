@@ -33,14 +33,16 @@ namespace qn = qindesign::network;
 
 TCPClient::TCPClient(qn::EthernetClient &client)
     : client(client) {
+    _address = client.remoteIP();
+    _port = client.remotePort();
 }
 
-IPAddress TCPClient::address() {
-    return client.remoteIP();
+IPAddress TCPClient::address() const {
+    return _address;
 }
 
-uint16_t TCPClient::port() {
-    return client.remotePort();
+uint16_t TCPClient::port() const {
+    return _port;
 }
 
 bool TCPClient::connected() {
@@ -90,8 +92,6 @@ void TCPClient::close() {
 }
 
 void TCPClient::log(Logger &logger) const {
-    IPAddress ipAddress = client.remoteIP();
-    uint16_t port = client.remotePort();
-    logger << ipAddress[0] << "." << ipAddress[1] << "." << ipAddress[2] << "."
-           << ipAddress[3] << ":" << port;
+    logger << _address[0] << "." << _address[1] << "." << _address[2] << "."
+           << _address[3] << ":" << _port;
 }

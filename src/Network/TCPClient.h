@@ -35,11 +35,18 @@ namespace qn = qindesign::network;
 class TCPClient : public LoggableItem {
     private:
         qn::EthernetClient client;
+        // Because LoggableItem's log method is constant, calling QNEthernet's we
+        // end up with warning messages when calling QNEthernet's EthernetClient::remoteIP
+        // and EthernetClient::remotePort as these were not declared const. While the
+        // correct thing to do would be for QNEthernet to fix there end, this isn't that
+        // liking, so we cache the values at connection creation.
+        IPAddress _address;
+        uint16_t _port;
 
     public:
         TCPClient(qn::EthernetClient &client);
-        IPAddress address();
-        uint16_t port();
+        IPAddress address() const;
+        uint16_t port() const;
         bool connected();
         size_t available();
         size_t read(uint8_t *buffer, size_t length);
