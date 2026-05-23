@@ -91,6 +91,10 @@ void TCPClient::close() {
     client.close();
 }
 
+void TCPClient::closeOutput() {
+    client.closeOutput();
+}
+
 void TCPClient::log(Logger &logger) const {
     logger << _address[0] << "." << _address[1] << "." << _address[2] << "."
            << _address[3] << ":" << _port;

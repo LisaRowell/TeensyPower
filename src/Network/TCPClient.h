@@ -53,6 +53,7 @@ class TCPClient : public LoggableItem {
         size_t skip(size_t length);
         bool write(const void *buffer, size_t length);
         void close();
+        void closeOutput();
         virtual void log(Logger &logger) const override;
 };
 

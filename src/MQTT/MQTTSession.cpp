@@ -64,6 +64,7 @@ void MQTTSession::connectionLost() {
     // session.
     _connection->disconnect();
     _connection = nullptr;
+    tcpClient = nullptr;
 
     if (cleanSession) {
         logger << debug << "Session lost connection to " << clientID

@@ -50,7 +50,12 @@ MQTTConnection::MQTTConnection(MQTTBroker &broker, TCPClient *tcpClient)
 }
 
 void MQTTConnection::service() {
+    if (!_tcpClient) {
+        return;
+    }
+
     if (!_tcpClient->connected()) {
+        logger << "Connection closed detected" << eol;
         broker.tcpClientClosed(_tcpClient);
         _tcpClient = nullptr;
         if (session) {
@@ -67,9 +72,6 @@ void MQTTConnection::service() {
             _tcpClient->close();
             broker.tcpClientClosed(_tcpClient);
             _tcpClient = nullptr;
-            if (session) {
-                session->connectionLost();
-            }
         }
     } else {
         MQTTMessage *message = packetReader.readInput(_tcpClient);
@@ -82,8 +84,11 @@ void MQTTConnection::service() {
 
 void MQTTConnection::disconnect() {
     session = nullptr;
-    _tcpClient->close();
-    closeTimeout.setSeconds(closeTimeoutSec);
+    if (_tcpClient != nullptr) {
+        _tcpClient->closeOutput();
+        closing = true;
+        closeTimeout.setSeconds(closeTimeoutSec);
+    }
 }
 
 bool MQTTConnection::isClosed() {
