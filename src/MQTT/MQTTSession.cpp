@@ -67,25 +67,25 @@ void MQTTSession::connectionLost() {
     tcpClient = nullptr;
 
     if (cleanSession) {
-        logger << debug << "Session lost connection to " << clientID
+        logger << debug << "Session lost connection to " << _clientID
                << ". Shutting down." << eol;
 
         dataModel.unsubscribeAll(*this);
-        clientID.clear();
+        _clientID.clear();
         broker.sessionEnded(*this);
     } else {
-        logger << debug << "Session lost connection to " << clientID
+        logger << debug << "Session lost connection to " << _clientID
                << ". Going into disconnected." << eol;
         broker.sessionLostConnection(*this);
     }
 }
 
 const etl::istring &MQTTSession::getClientID() const {
-    return clientID;
+    return _clientID;
 }
 
 bool MQTTSession::isForClient(const etl::istring &clientID) const {
-    return this->clientID == clientID;
+    return _clientID == clientID;
 }
 
 MQTTConnection *MQTTSession::connection() const {
@@ -102,7 +102,7 @@ void MQTTSession::newConnection(MQTTConnection *connection) {
 
     _connection = connection;
     tcpClient = connection->tcpClient();
-    clientID = _connection->clientID();
+    _clientID = _connection->clientID();
 
     if (freshSession) {
         // Until we suck in a CONNECT message from the connection, we mark the session as being a
@@ -110,9 +110,9 @@ void MQTTSession::newConnection(MQTTConnection *connection) {
         // reuse a session that shouldn't have been.
         cleanSession = true;
 
-        logger << debug << "Session for " << clientID << " paired with connection" << eol;
+        logger << debug << "Session for " << _clientID << " paired with connection" << eol;
     } else {
-        logger << debug << "Session for " << clientID << " repaired with connection" << eol;
+        logger << debug << "Session for " << _clientID << " repaired with connection" << eol;
     }
 }
 
@@ -156,7 +156,7 @@ void MQTTSession::processMessage(const MQTTMessage &message) {
         case MQTT_MSG_PUBREC:
             _publishMessagesReceived++;
             logger << "Received unimplemented message type " << message.messageTypeStr()
-                   << " from client " << clientID << eol;
+                   << " from client " << _clientID << eol;
             break;
 
         case MQTT_MSG_PUBACK:
@@ -164,7 +164,7 @@ void MQTTSession::processMessage(const MQTTMessage &message) {
         case MQTT_MSG_PUBCOMP:
         default:
             logger << "Received unimplemented message type " << message.messageTypeStr()
-                   << " from client " << clientID << eol;
+                   << " from client " << _clientID << eol;
     }
 }
 
@@ -173,17 +173,17 @@ void MQTTSession::connectMessageReceived(const MQTTMessage &message) {
     if (!connectMessage.parse()) {
         // Since the Connection had to already parse the CONNECT message, this should not have
         // failed.
-        logger << "Parsing of CONNECT message from " << clientID << " failed." << eol;
+        logger << "Parsing of CONNECT message from " << _clientID << " failed." << eol;
         errorExit();
     }
     cleanSession = connectMessage.cleanSession();
 
-    logger << debug << "Sending a CONNACK Accepted to " << clientID << eol;
+    logger << debug << "Sending a CONNACK Accepted to " << _clientID << eol;
 
     if (sendMQTTConnectAckMessage(tcpClient, !freshSession, MQTT_CONNACK_ACCEPTED)) {
         _messagesSent++;
     } else {
-        logger << "Failed to send CONNACK message to client " << clientID
+        logger << "Failed to send CONNACK message to client " << _clientID
                << ". Closing connection." << eol;
         handleConnectionSendFailure();
     }
@@ -192,7 +192,7 @@ void MQTTSession::connectMessageReceived(const MQTTMessage &message) {
 void MQTTSession::subscribeMessageReceived(const MQTTMessage &message) {
     MQTTSubscribeMessage subscribeMessage(message);
     if (!subscribeMessage.parse()) {
-        logger << "Bad subscribe message from client '" << clientID
+        logger << "Bad subscribe message from client '" << _clientID
                << "'. Terminating connection." << eol;
         shutdown();
         return;
@@ -204,7 +204,7 @@ void MQTTSession::subscribeMessageReceived(const MQTTMessage &message) {
     // message.
     unsigned topicFilterCount = subscribeMessage.numTopicFilters();
     if (topicFilterCount > maxTopicsPerSubscribeMessage) {
-        logger << "MQTT SUBSCRIBE from client " << clientID << " has too many topic filters ("
+        logger << "MQTT SUBSCRIBE from client " << _clientID << " has too many topic filters ("
                << topicFilterCount << "). Terminating connection." << eol;
         shutdown();
     }
@@ -216,13 +216,13 @@ void MQTTSession::subscribeMessageReceived(const MQTTMessage &message) {
         MQTTString *topicFilterStr;
         uint8_t maxQoS;
         if (!subscribeMessage.getTopicFilter(topicFilterStr, maxQoS)) {
-            logger << "MQTT SUBSCRIBE from client " << clientID
+            logger << "MQTT SUBSCRIBE from client " << _clientID
                    << " has a messed up number of topic filters. Terminating connection." << eol;
             shutdown();
             return;
         }
 
-        logger << debug << "MQTT Client '" << clientID << "' wants to subscribe to '"
+        logger << debug << "MQTT Client '" << _clientID << "' wants to subscribe to '"
                << *topicFilterStr << "' with max QoS " << maxQoS << eol;
 
         char topicFilter[maxTopicNameLength + 1];
@@ -233,10 +233,10 @@ void MQTTSession::subscribeMessageReceived(const MQTTMessage &message) {
         } else {
             if (dataModel.subscribe(topicFilter, *this, (uint32_t)maxQoS)) {
                 logger << debug << "Topic Filter '" << topicFilter << "' subscribed to by '"
-                       << clientID << "'" << eol;
+                       << _clientID << "'" << eol;
                 subscribeResults[topicFilterIndex] = subscribeResult(true, 0);
             } else {
-                logger << "Client '" << clientID << "' failed to subscribe to Topic Filter '"
+                logger << "Client '" << _clientID << "' failed to subscribe to Topic Filter '"
                        << topicFilter << "'" << eol;
                 subscribeResults[topicFilterIndex] = subscribeResult(false, 0);
            }
@@ -244,9 +244,9 @@ void MQTTSession::subscribeMessageReceived(const MQTTMessage &message) {
     }
 
     logger << debug << "Sending SUBACK message with " << topicFilterCount
-           << " results to Client '" << clientID << "'" << eol;
+           << " results to Client '" << _clientID << "'" << eol;
     if (!sendSubscribeAckMessage(subscribeMessage.packetId(), topicFilterCount, subscribeResults)) {
-        logger << "Failed to send SUBACK message to Client '" << clientID << "': "
+        logger << "Failed to send SUBACK message to Client '" << _clientID << "': "
                << strerror(errno) << eol;
         handleConnectionSendFailure();
     }
@@ -255,7 +255,7 @@ void MQTTSession::subscribeMessageReceived(const MQTTMessage &message) {
 void MQTTSession::unsubscribeMessageReceived(const MQTTMessage &message) {
     MQTTUnsubscribeMessage unsubscribeMessage(message);
     if (!unsubscribeMessage.parse()) {
-        logger << "Bad unsubscribe message from client '" << clientID
+        logger << "Bad unsubscribe message from client '" << _clientID
                << "'. Terminating connection." << eol;
         shutdown();
         return;
@@ -268,13 +268,13 @@ void MQTTSession::unsubscribeMessageReceived(const MQTTMessage &message) {
     for (topicFilterIndex = 0; topicFilterIndex < topicFilterCount; topicFilterIndex++) {
         MQTTString *topicFilterStr;
         if (!unsubscribeMessage.getTopicFilter(topicFilterStr)) {
-            logger << "MQTT UNSUBSCRIBE from client " << clientID
+            logger << "MQTT UNSUBSCRIBE from client " << _clientID
                    << " has a messed up number of topic filters. Terminating connection." << eol;
             shutdown();
             return;
         }
 
-        logger << debug << "MQTT Client '" << clientID
+        logger << debug << "MQTT Client '" << _clientID
                << "' wants to unsubscribe from '" << *topicFilterStr << "'" << eol;
 
         char topicFilter[maxTopicNameLength + 1];
@@ -284,24 +284,24 @@ void MQTTSession::unsubscribeMessageReceived(const MQTTMessage &message) {
         } else {
             dataModel.unsubscribe(topicFilter, *this);
             logger << debug << "Topic Filter '" << topicFilter << "' unsubscribed from by '"
-                   << clientID << "'" << eol;
+                   << _clientID << "'" << eol;
         }
     }
 
-    logger << debug << "Sending UNSUBACK message to client '" << clientID << "'" << eol;
+    logger << debug << "Sending UNSUBACK message to client '" << _clientID << "'" << eol;
     if (!sendUnsubscribeAckMessage(unsubscribeMessage.packetId())) {
-        logger << "Failed to send UNSUBACK message to client '" << clientID << "'" << eol;
+        logger << "Failed to send UNSUBACK message to client '" << _clientID << "'" << eol;
         handleConnectionSendFailure();
     }
 }
 
 void MQTTSession::pingRequestMessageReceived(const MQTTMessage &message) {
-    logger << debug << "Received ping request message from client " << clientID << "." << eol;
+    logger << debug << "Received ping request message from client " << _clientID << "." << eol;
 
     MQTTPingRequestMessage pingRequestMessage(message);
 
     if (!pingRequestMessage.parse()) {
-        logger << "Bad MQTT PINGREQ message from clent " << clientID
+        logger << "Bad MQTT PINGREQ message from clent " << _clientID
                << ". Terminating connection." << eol;
         shutdown();
         return;
@@ -309,10 +309,10 @@ void MQTTSession::pingRequestMessageReceived(const MQTTMessage &message) {
 
     resetKeepAliveTimer();
 
-    logger << debug << "Sending MQTT PINGRESP message to client '" << clientID << eol;
+    logger << debug << "Sending MQTT PINGRESP message to client '" << _clientID << eol;
 
     if (!sendPingResponseMessage()) {
-        logger << "Failed to send PINGRESP message to client " << clientID
+        logger << "Failed to send PINGRESP message to client " << _clientID
                << ". Closing connection." << eol;
         handleConnectionSendFailure();
     }
@@ -335,25 +335,25 @@ void MQTTSession::disconnectMessageReceived(const MQTTMessage &message) {
 
 void MQTTSession::serverOnlyMsgReceivedError(const MQTTMessage &message) {
     logger << "Received server->client only message " << message.messageTypeStr()
-           << " from client " << clientID << ". Terminating connection." << eol;
+           << " from client " << _clientID << ". Terminating connection." << eol;
     shutdown();
 }
 
 void MQTTSession::reservedMsgReceivedError(const MQTTMessage &message) {
     logger << "Received reserved message " << message.messageTypeStr()
-           << " from client " << clientID << ". Terminating connection." << eol;
+           << " from client " << _clientID << ". Terminating connection." << eol;
     shutdown();
 }
 
 void MQTTSession::publish(const char *topic, const char *value, bool retainedValue) {
     if (_connection != nullptr && tcpClient != nullptr) {
-        logger << debug << "Publishing Topic '" << topic << "' to Client '" << clientID
+        logger << debug << "Publishing Topic '" << topic << "' to Client '" << _clientID
                << "' with value '" << value << "' and retain " << retainedValue << eol;
 
         sendPublishMessage(topic, value, false, 0, retainedValue, 0);
     } else {
         logger << debug << "Skipping Publishing Topic '" << topic << "' to Client '"
-               << clientID << ": no connection." << eol;
+               << _clientID << ": no connection." << eol;
     }
 }
 
@@ -489,7 +489,11 @@ bool MQTTSession::sendPingResponseMessage() {
 }
 
 const etl::istring &MQTTSession::name() const {
-    return clientID;
+    return _clientID;
+}
+
+const etl::istring &MQTTSession::clientID() const {
+    return _clientID;
 }
 
 void MQTTSession::resetKeepAliveTimer() {
@@ -510,13 +514,13 @@ void MQTTSession::handleConnectionSendFailure() {
         broker.sessionLostConnection(*this);
     } else {
         dataModel.unsubscribeAll(*this);
-        clientID.clear();
+        _clientID.clear();
         broker.sessionEnded(*this);
     }
 }
 
 void MQTTSession::shutdown() {
-    logger << "Shutting down session for client id " << clientID << eol;
+    logger << "Shutting down session for client id " << _clientID << eol;
 
     dataModel.unsubscribeAll(*this);
 
@@ -527,7 +531,7 @@ void MQTTSession::shutdown() {
         _connection = nullptr;
         tcpClient = nullptr;
         tcpClient = nullptr;
-        clientID.clear();
+        _clientID.clear();
     }
 
     broker.sessionEnded(*this);

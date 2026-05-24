@@ -46,7 +46,7 @@ class MQTTSession : public DataModelSubscriber, public SessionLink {
 
         MQTTBroker &broker;
         DataModel &dataModel;
-        etl::string<MAX_MQTT_CLIENT_ID_LENGTH> clientID;
+        etl::string<MAX_MQTT_CLIENT_ID_LENGTH> _clientID;
         MQTTConnection *_connection;
         TCPClient *tcpClient;
         bool cleanSession;
@@ -90,6 +90,7 @@ class MQTTSession : public DataModelSubscriber, public SessionLink {
         uint32_t publishMessagesReceived() const;
         uint32_t publishMessagesSent() const;
         uint32_t publishMessagesDropped() const;
+        const etl::istring &clientID() const;
 };
 
 #endif // MQTT_SESSION_H

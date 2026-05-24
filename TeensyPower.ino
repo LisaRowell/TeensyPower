@@ -47,7 +47,7 @@ StatsManager statsManager;
 DataModel dataModel(statsManager);
 Logger logger(dataModel);
 NetworkInterface networkInterface;
-MQTTBroker mqttBroker(dataModel);
+MQTTBroker mqttBroker(dataModel, statsManager);
 
 MPPTController mppt1("mppt1", "mppt1", Serial3, dataModel);
 // const etl::vector<MPPTController *, 1> mppts = { &mppt1 };

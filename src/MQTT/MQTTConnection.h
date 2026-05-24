@@ -52,7 +52,8 @@ class MQTTConnection : public ConnectionLink {
         MQTTPacketReader packetReader;
         uint16_t keepAliveTime;
         bool cleanSession;
-        uint32_t messagesSent;
+        uint32_t _messagesReceived;
+        uint32_t _messagesSent;
         etl::string<MAX_MQTT_CLIENT_ID_LENGTH> _clientID;
 
         bool processMessage(MQTTMessage &message);
@@ -65,6 +66,8 @@ class MQTTConnection : public ConnectionLink {
         bool isClosed();
         TCPClient *tcpClient();
         const etl::istring &clientID() const;
+        uint32_t messagesReceived() const;
+        uint32_t messagesSent() const;
 };
 
 #endif

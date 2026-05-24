@@ -46,7 +46,8 @@ MQTTConnection::MQTTConnection(MQTTBroker &broker, TCPClient *tcpClient)
       id(nextId++),
       session(nullptr),
       closing(false),
-      messagesSent(0) {
+      _messagesReceived(0),
+      _messagesSent(0) {
 }
 
 void MQTTConnection::service() {
@@ -99,6 +100,8 @@ bool MQTTConnection::processMessage(MQTTMessage &message) {
     logger << debug << message.messageTypeStr() << " message received on connection #"
            << id << " (" << _tcpClient->address() << ")" << eol;
 
+    _messagesReceived++;
+
     // We process messages at the connection level until we successfully associate the connection
     // with either a pre-existing session or a new one. After that, we let the session handle the
     // message.
@@ -136,7 +139,7 @@ bool MQTTConnection::processConnectMessage(const MQTTMessage &message) {
         // While we're refusing the connection, we don't terminate here and instead let it close out
         // naturally as we want the client to receive the NACK.
         if (sendMQTTConnectAckMessage(_tcpClient, false, errorCode)) {
-            messagesSent++;
+            _messagesSent++;
             return true;
         } else {
             return false;
@@ -150,7 +153,7 @@ bool MQTTConnection::processConnectMessage(const MQTTMessage &message) {
         logger << "MQTT CONNECT with Will: Currently unsupported" << eol;
         if (sendMQTTConnectAckMessage(_tcpClient, false,
                                       MQTT_CONNACK_REFUSED_SERVER_UNAVAILABLE)) {
-            messagesSent++;
+            _messagesSent++;
             return true;
         } else {
             return false;
@@ -160,7 +163,7 @@ bool MQTTConnection::processConnectMessage(const MQTTMessage &message) {
         logger << "MQTT CONNECT message with Password set" << eol;
         if (sendMQTTConnectAckMessage(_tcpClient, false,
                                       MQTT_CONNACK_REFUSED_USERNAME_OR_PASSWORD)) {
-            messagesSent++;
+            _messagesSent++;
             return true;
         } else {
             return false;
@@ -170,7 +173,7 @@ bool MQTTConnection::processConnectMessage(const MQTTMessage &message) {
         logger << "MQTT CONNECT message with Password set" << eol;
         if (sendMQTTConnectAckMessage(_tcpClient, false,
                                       MQTT_CONNACK_REFUSED_USERNAME_OR_PASSWORD)) {
-            messagesSent++;
+            _messagesSent++;
             return true;
         } else {
             return false;
@@ -183,7 +186,7 @@ bool MQTTConnection::processConnectMessage(const MQTTMessage &message) {
                << eol;
         if (sendMQTTConnectAckMessage(_tcpClient, false,
                                       MQTT_CONNACK_REFUSED_IDENTIFIER_REJECTED)) {
-            messagesSent++;
+            _messagesSent++;
             return true;
         } else {
             return false;
@@ -200,7 +203,7 @@ bool MQTTConnection::processConnectMessage(const MQTTMessage &message) {
                       " false. Rejecting." << eol;
             if (sendMQTTConnectAckMessage(_tcpClient, false,
                                           MQTT_CONNACK_REFUSED_IDENTIFIER_REJECTED)) {
-                messagesSent++;
+                _messagesSent++;
                 return true;
             } else {
                 return false;
@@ -232,7 +235,7 @@ bool MQTTConnection::processConnectMessage(const MQTTMessage &message) {
         logger << "Failed to get a session for connection from " << _clientID << eol;
         if (sendMQTTConnectAckMessage(_tcpClient, false,
                                       MQTT_CONNACK_REFUSED_SERVER_UNAVAILABLE)) {
-            messagesSent++;
+            _messagesSent++;
             return true;
         } else {
             return false;
@@ -249,4 +252,12 @@ TCPClient *MQTTConnection::tcpClient() {
 
 const etl::istring &MQTTConnection::clientID() const {
     return _clientID;
+}
+
+uint32_t MQTTConnection::messagesReceived() const {
+    return _messagesReceived;
+}
+
+uint32_t MQTTConnection::messagesSent() const {
+    return _messagesSent;
 }
