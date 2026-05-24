@@ -19,151 +19,242 @@
 #include "Logger.h"
 #include "LoggableItem.h"
 
+#include "../DataModel/DataModel.h"
+#include "../DataModel/DataModelNode.h"
+#include "../DataModel/DataModelStringLeaf.h"
+
 #include <Arduino.h>
 #include <QNEthernet.h>
 
 #include <Embedded_Template_Library.h>
 #include <etl/string.h>
+#include <etl/string_view.h>
 #include <etl/string_stream.h>
 
 #include <stddef.h>
+#include <stdint.h>
 
-Logger::Logger()
+Logger::Logger(DataModel &dataModel)
     : lineStream(lineString),
-      outputCurrentLine(true) {}
+      lineIsDebug(false),
+      logging(false),
+      logNode("log", &dataModel.sysNode()),
+      log1Leaf("1", &logNode, log1Buffer),
+      log2Leaf("2", &logNode, log2Buffer),
+      log3Leaf("3", &logNode, log3Buffer),
+      log4Leaf("4", &logNode, log4Buffer),
+      log5Leaf("5", &logNode, log5Buffer),
+      logPosition(0) {
+    logLeaves[0] = &log1Leaf;
+    logLeaves[1] = &log2Leaf;
+    logLeaves[2] = &log3Leaf;
+    logLeaves[3] = &log4Leaf;
+    logLeaves[4] = &log5Leaf;
+}
 
 Logger & Logger::operator << (const Debug &debug) {
-    outputCurrentLine = debugging ? true : false;
+    if (!dontLog()) {
+        lineIsDebug = true;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (uint8_t value) {
-    lineStream << value;
+    if (!dontLog()) {
+        lineStream << value;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (uint16_t value) {
-    lineStream << value;
+    if (!dontLog()) {
+        lineStream << value;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (uint32_t value) {
-    lineStream << value;
+    if (!dontLog()) {
+        lineStream << value;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (char value) {
-    char cString[2];
-    cString[0] = value;
-    cString[1] = 0;
+    if (!dontLog()) {
+        char cString[2];
+        cString[0] = value;
+        cString[1] = 0;
 
-    lineStream << cString;
+        lineStream << cString;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (int16_t value) {
-    lineStream << value;
+    if (!dontLog()) {
+        lineStream << value;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (int32_t value) {
-    lineStream << value;
+    if (!dontLog()) {
+        lineStream << value;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (int value) {
-    lineStream << value;
+    if (!dontLog()) {
+        lineStream << value;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (size_t value) {
-    lineStream << value;
+    if (!dontLog()) {
+        lineStream << value;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (float value) {
-    lineStream << value;
+    if (!dontLog()) {
+        lineStream << value;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const char *string) {
-    lineStream << (string != nullptr ? string : "(nil)");
+    if (!dontLog()) {
+        lineStream << (string != nullptr ? string : "(nil)");
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const etl::istring &string) {
-    lineStream << string;
+    if (!dontLog()) {
+        lineStream << string;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const etl::string_view &stringView) {
-    lineStream << stringView;
+    if (!dontLog()) {
+        lineStream << stringView;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (IPAddress &ip) {
-    lineStream << ip[0] << "." << ip[1] << "." << ip[2] << "." << ip[3];
+    if (!dontLog()) {
+        lineStream << ip[0] << "." << ip[1] << "." << ip[2] << "." << ip[3];
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const LoggableItem &item) {
-    item.log(*this);
+    if (!dontLog()) {
+        item.log(*this);
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const LoggableItem *item) {
-    item->log(*this);
+    if (!dontLog()) {
+        item->log(*this);
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const etl::private_basic_format_spec::base_spec &format) {
-    lineStream << format;
+    if (!dontLog()) {
+        lineStream << format;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const etl::private_basic_format_spec::width_spec &format) {
-    lineStream << format;
+    if (!dontLog()) {
+        lineStream << format;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const etl::private_basic_format_spec::fill_spec<char> &format) {
-    lineStream << format;
+    if (!dontLog()) {
+        lineStream << format;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const etl::private_basic_format_spec::precision_spec &format) {
-    lineStream << format;
+    if (!dontLog()) {
+        lineStream << format;
+    }
 
     return *this;
 }
 
 Logger & Logger::operator << (const EndOfLine &eol) {
-    if (outputCurrentLine) {
-        Serial.println(lineString.data());
+    // If the act of logging a message causes a log to be triggered, we don't want to
+    // cause recursion. We also don't want to have the line we're logging get stomped on.
+    if (!logging) {
+        logging = true;
+
+        if (!lineIsDebug || debugging) {
+            Serial.println(lineString.data());
+        }
+        if (!lineIsDebug) {
+            addLineToLog();
+        }
+
+        lineIsDebug = false;
+        lineStream.str("");
+
+        logging = false;
     }
-    outputCurrentLine = true;
-    lineStream.str("");
 
     return *this;
 }
 
-Logger logger;
+bool Logger::dontLog() const {
+    return logging || (lineIsDebug && !debugging);
+}
+
+void Logger::addLineToLog() {
+    if (logPosition == logDepth) {
+        scrollUpLog();
+        logPosition = logDepth - 1;
+    }
+
+    *(logLeaves[logPosition]) = lineString;
+
+    logPosition++;
+}
+
+void Logger::scrollUpLog() {
+    for (size_t pos = 0; pos < logDepth - 1; pos++) {
+        *(logLeaves[pos]) = *(logLeaves[pos + 1]);
+    }
+}

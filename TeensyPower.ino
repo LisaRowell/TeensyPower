@@ -45,6 +45,7 @@ static constexpr const char *version = "0.1.1";
 
 StatsManager statsManager;
 DataModel dataModel(statsManager);
+Logger logger(dataModel);
 NetworkInterface networkInterface;
 MQTTBroker mqttBroker(dataModel);
 

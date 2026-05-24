@@ -19,6 +19,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include "../DataModel/DataModelNode.h"
+#include "../DataModel/DataModelStringLeaf.h"
+
 #include <Arduino.h>
 
 #include <Embedded_Template_Library.h>
@@ -37,19 +40,40 @@ const EndOfLine eol = EndOfLine();
 struct Debug {};
 const Debug debug = Debug();
 
+class DataModel;
 class IPAddress;
 class LoggableItem;
 
 class Logger {
     private:
         static constexpr size_t MAX_LOG_STRING_LENGTH = 128;
+        static constexpr size_t logDepth = 5;
 
         etl::string<MAX_LOG_STRING_LENGTH> lineString;
         etl::string_stream lineStream;
-        bool outputCurrentLine;
+        bool lineIsDebug;
+        bool logging;
+
+        DataModelNode logNode;
+        etl::string<MAX_LOG_STRING_LENGTH> log1Buffer;
+        DataModelStringLeaf log1Leaf;
+        etl::string<MAX_LOG_STRING_LENGTH> log2Buffer;
+        DataModelStringLeaf log2Leaf;
+        etl::string<MAX_LOG_STRING_LENGTH> log3Buffer;
+        DataModelStringLeaf log3Leaf;
+        etl::string<MAX_LOG_STRING_LENGTH> log4Buffer;
+        DataModelStringLeaf log4Leaf;
+        etl::string<MAX_LOG_STRING_LENGTH> log5Buffer;
+        DataModelStringLeaf log5Leaf;
+        uint8_t logPosition;
+        DataModelStringLeaf *logLeaves[logDepth];
+
+        bool dontLog() const;
+        void addLineToLog();
+        void scrollUpLog();
 
     public:
-        Logger();
+        Logger(DataModel &dataModel);
         Logger & operator << (const Debug &debug);
         Logger & operator << (uint8_t value);
         Logger & operator << (uint16_t value);
