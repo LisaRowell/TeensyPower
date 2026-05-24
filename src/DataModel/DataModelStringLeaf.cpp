@@ -54,7 +54,7 @@ DataModelStringLeaf & DataModelStringLeaf::operator = (const char *newString) {
 
 DataModelStringLeaf & DataModelStringLeaf::operator = (const DataModelStringLeaf &otherLeaf) {
     if (!hasValue() || value.compare(otherLeaf.value) != 0) {
-        this->value = otherLeaf.value;
+        value = otherLeaf.value;
         updated();
         *this << value;
     }
