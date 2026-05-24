@@ -232,7 +232,7 @@ void MQTTSession::subscribeMessageReceived(const MQTTMessage &message) {
             subscribeResults[topicFilterIndex] = subscribeResult(false, 0);
         } else {
             if (dataModel.subscribe(topicFilter, *this, (uint32_t)maxQoS)) {
-                logger << "Topic Filter '" << topicFilter << "' subscribed to by '"
+                logger << debug << "Topic Filter '" << topicFilter << "' subscribed to by '"
                        << clientID << "'" << eol;
                 subscribeResults[topicFilterIndex] = subscribeResult(true, 0);
             } else {
