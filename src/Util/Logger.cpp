@@ -44,12 +44,9 @@ Logger::Logger(DataModel &dataModel)
       log3Leaf("3", &logNode, log3Buffer),
       log4Leaf("4", &logNode, log4Buffer),
       log5Leaf("5", &logNode, log5Buffer),
-      logPosition(0) {
-    logLeaves[0] = &log1Leaf;
-    logLeaves[1] = &log2Leaf;
-    logLeaves[2] = &log3Leaf;
-    logLeaves[3] = &log4Leaf;
-    logLeaves[4] = &log5Leaf;
+      logPosition(0),
+      logLeaves { &log1Leaf, &log2Leaf, &log3Leaf,
+                  &log4Leaf, &log5Leaf } {
 }
 
 Logger & Logger::operator << (const Debug &debug) {
