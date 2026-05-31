@@ -51,7 +51,7 @@ void BMVTemperatureField::set(const etl::istring &message) {
 
             logger << debug << deviceName << ":" << "Setting Temperature to '"
                    << temperatureC << "' C" << eol;
-            dataModelLeaf << temperatureC;
+            dataModelLeaf = temperatureC;
 
             setMPPTsTemperature(temperatureC);
         } else {
