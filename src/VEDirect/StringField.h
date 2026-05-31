@@ -28,7 +28,7 @@ class DataModelStringLeaf;
 
 class StringField : public Field {
     protected:
-        DataModelStringLeaf *dataModelLeaf;
+        DataModelStringLeaf &dataModelLeaf;
 
     public:
         StringField(const char *deviceName, const char *name,

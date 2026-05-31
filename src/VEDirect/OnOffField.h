@@ -28,7 +28,7 @@ class DataModelBoolLeaf;
 
 class OnOffField : public Field {
     protected:
-        DataModelBoolLeaf *dataModelLeaf;
+        DataModelBoolLeaf &dataModelLeaf;
 
     public:
         OnOffField(const char *deviceName, const char *name,

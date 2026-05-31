@@ -33,7 +33,7 @@ Int16Field::Int16Field(const char *deviceName, const char *name,
                        DataModelInt16Leaf &dataModelLeaf,
                        bool invert)
     : Field(deviceName, name),
-      dataModelLeaf(&dataModelLeaf),
+      dataModelLeaf(dataModelLeaf),
       invert(invert) {
 }
 
@@ -43,10 +43,10 @@ void Int16Field::set(const etl::istring &message) {
         int16_t value = invert ? -result.value() : result.value();
         logger << debug << deviceName << ":" << "Setting " << name << " to "
                << value << eol;
-        *dataModelLeaf = value;
+        dataModelLeaf = value;
     } else {
         logger << deviceName << ": Bad value '" << message << "' for field "
                << name << eol;
-        dataModelLeaf->removeValue();
+        dataModelLeaf.removeValue();
     }
 }

@@ -34,7 +34,7 @@ UInt16Field::UInt16Field(const char *deviceName, const char *name,
                          const char *exceptionMatch,
                          uint16_t exceptionValue)
     : Field(deviceName, name),
-      dataModelLeaf(&dataModelLeaf),
+      dataModelLeaf(dataModelLeaf),
       exceptionMatch(exceptionMatch),
       exceptionValue(exceptionValue) {
 }
@@ -42,19 +42,19 @@ UInt16Field::UInt16Field(const char *deviceName, const char *name,
 void UInt16Field::set(const etl::istring &message) {
     if ((exceptionMatch != nullptr && message == exceptionMatch) ||
         (message == "---")) {
-        *dataModelLeaf = exceptionValue;
+        dataModelLeaf = exceptionValue;
         logger << debug << deviceName << ":" << "Setting " << name << " to '"
                << exceptionValue << "'" << eol;
     } else {
         etl::to_arithmetic_result result = etl::to_arithmetic<uint16_t>(message);
         if (result.has_value()) {
-            *dataModelLeaf = result.value();
+            dataModelLeaf = result.value();
             logger << debug << deviceName << ":" << "Setting " << name << " to '"
                    << result.value() << "'" << eol;
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field "
                    << name << eol;
-            dataModelLeaf->removeValue();
+            dataModelLeaf.removeValue();
         }
     }
 }

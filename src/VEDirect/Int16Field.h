@@ -30,7 +30,7 @@ class DataModelInt16Leaf;
 
 class Int16Field : public Field {
     protected:
-        DataModelInt16Leaf *dataModelLeaf;
+        DataModelInt16Leaf &dataModelLeaf;
         bool invert;
 
     public:

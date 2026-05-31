@@ -30,7 +30,7 @@ class DataModelUInt32Leaf;
 
 class UInt32Field : public Field {
     protected:
-        DataModelUInt32Leaf *dataModelLeaf;
+        DataModelUInt32Leaf &dataModelLeaf;
         const char *exceptionMatch;
         uint16_t exceptionValue;
 

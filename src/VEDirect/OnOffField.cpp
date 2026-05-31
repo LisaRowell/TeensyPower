@@ -29,19 +29,19 @@
 OnOffField::OnOffField(const char *deviceName, const char *name,
                        DataModelBoolLeaf &dataModelLeaf)
     : Field(deviceName, name),
-      dataModelLeaf(&dataModelLeaf) {
+      dataModelLeaf(dataModelLeaf) {
 }
 
 void OnOffField::set(const etl::istring &message) {
     if (message == "ON") {
-        *dataModelLeaf = true;
+        dataModelLeaf = true;
         logger << debug << deviceName << ":" << "Setting " << name << " to true" << eol;
     } else if (message == "OFF") {
-        *dataModelLeaf = false;
+        dataModelLeaf = false;
         logger << debug << deviceName << ":" << "Setting " << name << " to false" << eol;
     } else {
         logger << deviceName << ": Bad value '" << message << "' for field "
                << name << eol;
-        dataModelLeaf->removeValue();
+        dataModelLeaf.removeValue();
     }
 }

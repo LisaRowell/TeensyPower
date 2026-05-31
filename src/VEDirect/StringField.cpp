@@ -29,11 +29,11 @@
 StringField::StringField(const char *deviceName, const char *name,
                          DataModelStringLeaf &dataModelLeaf)
     : Field(deviceName, name),
-      dataModelLeaf(&dataModelLeaf) {
+      dataModelLeaf(dataModelLeaf) {
 }
 
 void StringField::set(const etl::istring &message) {
-    *dataModelLeaf = message;
+    dataModelLeaf = message;
 
     logger << debug << deviceName << ":" << "Setting " << name << " to '"
            << message << "'" << eol;
