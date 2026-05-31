@@ -19,7 +19,7 @@
 #include "BMVTemperatureField.h"
 #include "MPPTController.h"
 
-#include "src/DataModel/DataModelLeaf.h"
+#include "src/DataModel/DataModelInt16Leaf.h"
 
 #include "src/Util/Logger.h"
 
@@ -31,7 +31,7 @@
 #include <stdint.h>
 
 BMVTemperatureField::BMVTemperatureField(const char *deviceName,
-                                         DataModelLeaf &dataModelLeaf,
+                                         DataModelInt16Leaf &dataModelLeaf,
                                          const etl::ivector<MPPTController *> *mppts)
     : Field(deviceName, "Temperature"),
       dataModelLeaf(dataModelLeaf),
@@ -41,7 +41,7 @@ BMVTemperatureField::BMVTemperatureField(const char *deviceName,
 void BMVTemperatureField::set(const etl::istring &message) {
     if (message == "---") {
         logger << debug << deviceName << ":" << "Clearing Temperature" << eol;
-        dataModelLeaf << "";
+        dataModelLeaf.removeValue();
 
         clearMPPTsTemperature();
     } else {
@@ -49,18 +49,15 @@ void BMVTemperatureField::set(const etl::istring &message) {
         if (result.has_value()) {
             int16_t temperatureC = result.value();
 
-            etl::string<20> valueStr;
-            etl::to_string(temperatureC, 0, valueStr, etl::format_spec().precision(0));
-
-            logger << debug << deviceName << ":" << "Setting Temperature to '" << valueStr << "'"
-                   << eol;
-            dataModelLeaf << valueStr;
+            logger << debug << deviceName << ":" << "Setting Temperature to '"
+                   << temperatureC << "' C" << eol;
+            dataModelLeaf << temperatureC;
 
             setMPPTsTemperature(temperatureC);
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field Temperature"
                    << eol;
-            dataModelLeaf << "";
+            dataModelLeaf.removeValue();
 
             clearMPPTsTemperature();
         }

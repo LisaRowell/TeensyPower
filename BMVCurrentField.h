@@ -27,19 +27,20 @@
 
 #include <stdint.h>
 
-class DataModelLeaf;
+class DataModelScaledInt32Leaf;
 class MPPTController;
 
 class BMVCurrentField : public Field {
     private:
-        DataModelLeaf &dataModelLeaf;
+        DataModelScaledInt32Leaf &dataModelLeaf;
         const etl::ivector<MPPTController *> *mppts;
 
         void clearMPPTsCurrent();
         void setMPPTsCurrent(int32_t currentMA);
 
     public:
-        BMVCurrentField(const char *deviceName, DataModelLeaf &dataModelLeaf,
+        BMVCurrentField(const char *deviceName,
+                        DataModelScaledInt32Leaf &dataModelLeaf,
                         const etl::ivector<MPPTController *> *mppts = nullptr);
         void set(const etl::istring &message) override;
 };

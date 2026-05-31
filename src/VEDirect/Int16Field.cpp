@@ -16,29 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- #include "OnOffField.h"
+ #include "Int16Field.h"
  #include "Field.h"
 
-#include "../DataModel/DataModelBoolLeaf.h"
+#include "../DataModel/DataModelInt16Leaf.h"
 
 #include "../Util/Logger.h"
 
 #include <Embedded_Template_Library.h>
 #include <etl/string.h>
+#include <etl/to_arithmetic.h>
 
-OnOffField::OnOffField(const char *deviceName, const char *name,
-                       DataModelBoolLeaf &dataModelLeaf)
+#include <stdint.h>
+
+Int16Field::Int16Field(const char *deviceName, const char *name,
+                       DataModelInt16Leaf &dataModelLeaf,
+                       bool invert)
     : Field(deviceName, name),
-      dataModelLeaf(&dataModelLeaf) {
+      dataModelLeaf(&dataModelLeaf),
+      invert(invert) {
 }
 
-void OnOffField::set(const etl::istring &message) {
-    if (message == "ON") {
-        *dataModelLeaf = true;
-        logger << debug << deviceName << ":" << "Setting " << name << " to true" << eol;
-    } else if (message == "OFF") {
-        *dataModelLeaf = false;
-        logger << debug << deviceName << ":" << "Setting " << name << " to false" << eol;
+void Int16Field::set(const etl::istring &message) {
+    etl::to_arithmetic_result result = etl::to_arithmetic<int32_t>(message);
+    if (result.has_value()) {
+        int16_t value = invert ? -result.value() : result.value();
+        logger << debug << deviceName << ":" << "Setting " << name << " to "
+               << value << eol;
+        *dataModelLeaf = value;
     } else {
         logger << deviceName << ": Bad value '" << message << "' for field "
                << name << eol;

@@ -19,7 +19,9 @@
 #include "BMVCurrentField.h"
 #include "MPPTController.h"
 
-#include "src/DataModel/DataModelLeaf.h"
+#include "src/DataModel/DataModelScaledInt32Leaf.h"
+
+#include "src/FixedPoint/ScaledInt32.h"
 
 #include "src/Util/Logger.h"
 
@@ -30,7 +32,8 @@
 
 #include <stdint.h>
 
-BMVCurrentField::BMVCurrentField(const char *deviceName, DataModelLeaf &dataModelLeaf,
+BMVCurrentField::BMVCurrentField(const char *deviceName,
+                                 DataModelScaledInt32Leaf &dataModelLeaf,
                                  const etl::ivector<MPPTController *> *mppts)
     : Field(deviceName, "Current"),
       dataModelLeaf(dataModelLeaf),
@@ -40,25 +43,23 @@ BMVCurrentField::BMVCurrentField(const char *deviceName, DataModelLeaf &dataMode
 void BMVCurrentField::set(const etl::istring &message) {
     if (message == "---") {
         logger << debug << deviceName << ":" << "Clearing Current" << eol;
-        dataModelLeaf << "";
+        dataModelLeaf.removeValue();
 
         clearMPPTsCurrent();
     } else {
         etl::to_arithmetic_result result = etl::to_arithmetic<int32_t>(message);
         if (result.has_value()) {
             int32_t currentMA = result.value();
+            ScaledInt32 current(currentMA, 3);
 
-            etl::string<20> valueStr;
-            etl::to_string(currentMA, 3, valueStr, etl::format_spec().precision(3));
-
-            logger << debug << deviceName << ":" << "Setting Current to '" << valueStr << "'"
+            logger << debug << deviceName << ":" << "Setting Current to '" << current << "'"
                    << eol;
-            dataModelLeaf << valueStr;
+            dataModelLeaf = current;
 
             setMPPTsCurrent(currentMA);
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field Current" << eol;
-            dataModelLeaf << "";
+            dataModelLeaf.removeValue();
 
             clearMPPTsCurrent();
         }

@@ -16,23 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_FIELD_H
-#define STRING_FIELD_H
+#ifndef INT16_FIELD_H
+#define INT16_FIELD_H
 
 #include "Field.h"
 
 #include <Embedded_Template_Library.h>
 #include <etl/string.h>
 
-class DataModelStringLeaf;
+#include <stdint.h>
 
-class StringField : public Field {
+class DataModelInt16Leaf;
+
+class Int16Field : public Field {
     protected:
-        DataModelStringLeaf *dataModelLeaf;
+        DataModelInt16Leaf *dataModelLeaf;
+        bool invert;
 
     public:
-        StringField(const char *deviceName, const char *name,
-                    DataModelStringLeaf &dataModelLeaf);
+        Int16Field(const char *deviceName, const char *name,
+                   DataModelInt16Leaf &dataModelLeaf,
+                   bool invert = false);
         void set(const etl::istring &message) override;
 };
 

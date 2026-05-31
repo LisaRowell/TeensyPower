@@ -32,14 +32,21 @@
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
 #include "src/VEDirect/Field.h"
+#include "src/VEDirect/HexUInt16Field.h"
+#include "src/VEDirect/HexUInt32Field.h"
 #include "src/VEDirect/UnsignedField.h"
 #include "src/VEDirect/SignedField.h"
 #include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/StringField.h"
+#include "src/VEDirect/UInt16Field.h"
 
 #include "src/DataModel/DataModel.h"
 #include "src/DataModel/DataModelNode.h"
 #include "src/DataModel/DataModelLeaf.h"
+#include "src/DataModel/DataModelBoolLeaf.h"
+#include "src/DataModel/DataModelScaledUInt32Leaf.h"
+#include "src/DataModel/DataModelUInt16Leaf.h"
+#include "src/DataModel/DataModelUInt32Leaf.h"
 
 #include <Arduino.h>
 
@@ -78,9 +85,9 @@ MPPTController::MPPTController(const char *name, const char *nodeName,
       maxPowerYesterdayLeaf("maxYesterday", &powerNode),
       errorCodeLeaf("errorCode", &deviceNode),
       stateOfOperationLeaf("stateOfOperation", &deviceNode),
-      firmwareLeaf("firmware", &deviceNode),
+      firmwareLeaf("firmware", &deviceNode, firmwareBuffer),
       pidLeaf("pid", &deviceNode),
-      serialNumberLeaf("serialNumber", &deviceNode),
+      serialNumberLeaf("serialNumber", &deviceNode, serialNumberBuffer),
       trackerOperationModeLeaf("trackerOperationMode", &deviceNode),
       historyNode("history", &deviceNode),
       daySequenceNumberLeaf("daySequenceNumber", &historyNode),

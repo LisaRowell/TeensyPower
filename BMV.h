@@ -38,13 +38,29 @@
 #include "src/VEDirect/String20Register.h"
 #include "src/VEDirect/String32Register.h"
 #include "src/VEDirect/Field.h"
+#include "src/VEDirect/HexUInt16Field.h"
+#include "src/VEDirect/Int16Field.h"
+#include "src/VEDirect/ScaledInt32Field.h"
+#include "src/VEDirect/ScaledUInt16Field.h"
+#include "src/VEDirect/ScaledUInt32Field.h"
+#include "src/VEDirect/UInt16Field.h"
+#include "src/VEDirect/UInt32Field.h"
 #include "src/VEDirect/UnsignedField.h"
 #include "src/VEDirect/SignedField.h"
 #include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/StringField.h"
 
 #include "src/DataModel/DataModelNode.h"
-#include "src/DataModel/DataModelLeaf.h"
+#include "src/DataModel/DataModelBoolLeaf.h"
+#include "src/DataModel/DataModelInt16Leaf.h"
+#include "src/DataModel/DataModelInt32Leaf.h"
+#include "src/DataModel/DataModelScaledInt16Leaf.h"
+#include "src/DataModel/DataModelScaledInt32Leaf.h"
+#include "src/DataModel/DataModelScaledUInt16Leaf.h"
+#include "src/DataModel/DataModelScaledUInt32Leaf.h"
+#include "src/DataModel/DataModelStringLeaf.h"
+#include "src/DataModel/DataModelUInt16Leaf.h"
+#include "src/DataModel/DataModelUInt32Leaf.h"
 
 #include <Arduino.h>
 
@@ -64,41 +80,43 @@ class BMV : public VEDirectDevice {
     private:
         DataModelNode deviceNode;
         DataModelNode mainNode;
-        DataModelLeaf mainSOCLeaf;
-        DataModelLeaf mainVoltageLeaf;
-        DataModelLeaf mainTemperatureLeaf;
-        DataModelLeaf mainCurrentLeaf;
-        DataModelLeaf mainConsumedAmpHoursLeaf;
-        DataModelLeaf mainPowerLeaf;
-        DataModelLeaf mainTimeToGoLeaf;
+        DataModelScaledUInt16Leaf mainSOCLeaf;
+        DataModelScaledInt16Leaf mainVoltageLeaf;
+        DataModelInt16Leaf mainTemperatureLeaf;
+        DataModelScaledInt32Leaf mainCurrentLeaf;
+        DataModelScaledInt32Leaf mainConsumedAmpHoursLeaf;
+        DataModelInt16Leaf mainPowerLeaf;
+        DataModelUInt16Leaf mainTimeToGoLeaf;
         DataModelNode alarmNode;
-        DataModelLeaf alarmStateLeaf;
-        DataModelLeaf alarmReasonLeaf;
+        DataModelBoolLeaf alarmStateLeaf;
+        DataModelUInt16Leaf alarmReasonLeaf;
         DataModelNode relayNode;
-        DataModelLeaf relayStateLeaf;
+        DataModelBoolLeaf relayStateLeaf;
         DataModelNode historyNode;
-        DataModelLeaf historyDeepestDischargeLeaf;
-        DataModelLeaf historyLastDischargeLeaf;
-        DataModelLeaf historyAverageDischargeLeaf;
-        DataModelLeaf historyCyclesLeaf;
-        DataModelLeaf historyFullDischargesLeaf;
-        DataModelLeaf historyCumulativeAmpHoursDrawnLeaf;
-        DataModelLeaf historyMinimumVoltageLeaf;
-        DataModelLeaf historyMaximumVoltageLeaf;
-        DataModelLeaf historyTimeSinceLastFullChargeLeaf;
-        DataModelLeaf historyAutomaticSynchronizationsLeaf;
-        DataModelLeaf historyLowVoltageAlarmsLeaf;
-        DataModelLeaf historyHighVoltageAlarmsLeaf;
-        DataModelLeaf historyDischargedEnergyLeaf;
-        DataModelLeaf historyChargedEnergyLeaf;
-        DataModelLeaf pidLeaf;
-        DataModelLeaf modelDescriptionLeaf;
-        DataModelLeaf firmwareLeaf;
-        DataModelLeaf monitorModeLeaf;
-        DataModelLeaf historyMinimumAuxVoltageLeaf;
-        DataModelLeaf historyMaximumAuxVoltageLeaf;
+        DataModelScaledInt32Leaf historyDeepestDischargeLeaf;
+        DataModelScaledInt32Leaf historyLastDischargeLeaf;
+        DataModelScaledUInt32Leaf historyAverageDischargeLeaf;
+        DataModelUInt32Leaf historyCyclesLeaf;
+        DataModelUInt32Leaf historyFullDischargesLeaf;
+        DataModelScaledInt32Leaf historyCumulativeAmpHoursDrawnLeaf;
+        DataModelScaledInt32Leaf historyMinimumVoltageLeaf;
+        DataModelScaledInt32Leaf historyMaximumVoltageLeaf;
+        DataModelUInt32Leaf historyTimeSinceLastFullChargeLeaf;
+        DataModelUInt32Leaf historyAutomaticSynchronizationsLeaf;
+        DataModelUInt32Leaf historyLowVoltageAlarmsLeaf;
+        DataModelUInt32Leaf historyHighVoltageAlarmsLeaf;
+        DataModelScaledInt32Leaf historyDischargedEnergyLeaf;
+        DataModelScaledInt32Leaf historyChargedEnergyLeaf;
+        DataModelUInt16Leaf pidLeaf;
+        etl::string<40> modelDescriptionBuffer;
+        DataModelStringLeaf modelDescriptionLeaf;
+        etl::string<10> firmwareBuffer;
+        DataModelStringLeaf firmwareLeaf;
+        DataModelInt16Leaf monitorModeLeaf;
+        DataModelScaledInt32Leaf historyMinimumAuxVoltageLeaf;
+        DataModelScaledInt32Leaf historyMaximumAuxVoltageLeaf;
         DataModelNode auxNode;
-        DataModelLeaf auxVoltageLeaf;
+        DataModelScaledInt32Leaf auxVoltageLeaf;
 
         UInt32EnumRegister productID;
         UInt24Register productRevision;
@@ -206,36 +224,36 @@ class BMV : public VEDirectDevice {
         UInt8OnOffRegister bluetoothMode;
         Int16EnumRegister dcMonitorMode;
 
-        UnsignedField socField;
+        ScaledUInt16Field socField;
         BMVVoltageField voltageField;
         BMVTemperatureField temperatureField;
         BMVCurrentField currentField;
-        SignedField consumedAmpHoursField;
-        SignedField powerField;
-        UnsignedField timeToGoField;
+        ScaledInt32Field consumedAmpHoursField;
+        Int16Field powerField;
+        UInt16Field timeToGoField;
         OnOffField alarmField;
-        UnsignedField alarmReasonField;
+        UInt16Field alarmReasonField;
         OnOffField relayField;
-        SignedField deepestDischargeField;
-        SignedField lastDischargeField;
-        UnsignedField averageDischargeField;
-        UnsignedField cyclesField;
-        UnsignedField fullDischargesField;
-        SignedField cumulativeAmpHoursDrawnField;
-        UnsignedField minimumVoltageField;
-        UnsignedField maximumVoltageField;
-        UnsignedField timeSinceLastFullChargeField;
-        UnsignedField automaticSynchronizationsField;
-        UnsignedField lowVoltageAlarmsField;
-        UnsignedField highVoltageAlarmsField;
-        UnsignedField dischargedEnergyField;
-        UnsignedField chargedEnergyField;
-        StringField pidField;
+        ScaledInt32Field deepestDischargeField;
+        ScaledInt32Field lastDischargeField;
+        ScaledUInt32Field averageDischargeField;
+        UInt32Field cyclesField;
+        UInt32Field fullDischargesField;
+        ScaledInt32Field cumulativeAmpHoursDrawnField;
+        ScaledInt32Field minimumVoltageField;
+        ScaledInt32Field maximumVoltageField;
+        UInt32Field timeSinceLastFullChargeField;
+        UInt32Field automaticSynchronizationsField;
+        UInt32Field lowVoltageAlarmsField;
+        UInt32Field highVoltageAlarmsField;
+        ScaledInt32Field dischargedEnergyField;
+        ScaledInt32Field chargedEnergyField;
+        HexUInt16Field pidField;
         StringField modelDescriptionField;
         StringField firmwareField;
-        SignedField monitorModeField;
-        SignedField minimumAuxVoltageField;
-        SignedField maximumAuxVoltageField;
+        Int16Field monitorModeField;
+        ScaledInt32Field minimumAuxVoltageField;
+        ScaledInt32Field maximumAuxVoltageField;
         SignedField auxVoltageField;
 
         etl::flat_map<uint32_t, const char *, 9> productIDDescriptions = {

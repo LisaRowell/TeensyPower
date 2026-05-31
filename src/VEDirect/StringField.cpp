@@ -19,7 +19,7 @@
  #include "StringField.h"
  #include "Field.h"
 
-#include "../DataModel/DataModelLeaf.h"
+#include "../DataModel/DataModelStringLeaf.h"
 
 #include "../Util/Logger.h"
 
@@ -27,15 +27,14 @@
 #include <etl/string.h>
 
 StringField::StringField(const char *deviceName, const char *name,
-                         DataModelLeaf &dataModelLeaf)
+                         DataModelStringLeaf &dataModelLeaf)
     : Field(deviceName, name),
       dataModelLeaf(&dataModelLeaf) {
 }
 
 void StringField::set(const etl::istring &message) {
-    if (dataModelLeaf != nullptr) {
-        *dataModelLeaf << message;
-    }
+    *dataModelLeaf = message;
+
     logger << debug << deviceName << ":" << "Setting " << name << " to '"
            << message << "'" << eol;
 }

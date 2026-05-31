@@ -27,19 +27,20 @@
 
 #include <stdint.h>
 
-class DataModelLeaf;
+class DataModelScaledInt16Leaf;
 class MPPTController;
 
 class BMVVoltageField : public Field {
     private:
-        DataModelLeaf &dataModelLeaf;
+        DataModelScaledInt16Leaf &dataModelLeaf;
         const etl::ivector<MPPTController *> *mppts;
 
         void clearMPPTsVoltage();
         void setMPPTsVoltage(uint32_t voltageMV);
 
     public:
-        BMVVoltageField(const char *deviceName, DataModelLeaf &dataModelLeaf,
+        BMVVoltageField(const char *deviceName,
+                        DataModelScaledInt16Leaf &dataModelLeaf,
                         const etl::ivector<MPPTController *> *mppts = nullptr);
         void set(const etl::istring &message) override;
 };

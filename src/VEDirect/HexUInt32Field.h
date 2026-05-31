@@ -16,23 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_FIELD_H
-#define STRING_FIELD_H
+#ifndef HEX_UINT32_FIELD_H
+#define HEX_UINT32_FIELD_H
 
 #include "Field.h"
 
 #include <Embedded_Template_Library.h>
 #include <etl/string.h>
 
-class DataModelStringLeaf;
+#include <stdint.h>
 
-class StringField : public Field {
+class DataModelUInt32Leaf;
+
+class HexUInt32Field : public Field {
     protected:
-        DataModelStringLeaf *dataModelLeaf;
+        DataModelUInt32Leaf *dataModelLeaf;
+        const char *exceptionMatch;
+        uint32_t exceptionValue;
 
     public:
-        StringField(const char *deviceName, const char *name,
-                    DataModelStringLeaf &dataModelLeaf);
+        HexUInt32Field(const char *deviceName, const char *name,
+                       DataModelUInt32Leaf &dataModelLeaf,
+                       const char *exceptionMatch = nullptr,
+                       uint32_t exceptionValue = 0xffffffff);
         void set(const etl::istring &message) override;
 };
 

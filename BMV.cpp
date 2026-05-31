@@ -35,13 +35,28 @@
 #include "src/VEDirect/Int32Register.h"
 #include "src/VEDirect/String20Register.h"
 #include "src/VEDirect/String32Register.h"
+#include "src/VEDirect/HexUInt16Field.h"
+#include "src/VEDirect/Int16Field.h"
+#include "src/VEDirect/ScaledUInt16Field.h"
+#include "src/VEDirect/ScaledInt32Field.h"
+#include "src/VEDirect/UInt16Field.h"
+#include "src/VEDirect/UInt32Field.h"
 #include "src/VEDirect/UnsignedField.h"
 #include "src/VEDirect/SignedField.h"
+#include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/StringField.h"
 
-#include "src/DataModel/DataModel.h"
 #include "src/DataModel/DataModelNode.h"
-#include "src/DataModel/DataModelLeaf.h"
+#include "src/DataModel/DataModelBoolLeaf.h"
+#include "src/DataModel/DataModelInt16Leaf.h"
+#include "src/DataModel/DataModelInt32Leaf.h"
+#include "src/DataModel/DataModelScaledInt16Leaf.h"
+#include "src/DataModel/DataModelScaledInt32Leaf.h"
+#include "src/DataModel/DataModelScaledUInt16Leaf.h"
+#include "src/DataModel/DataModelScaledUInt32Leaf.h"
+#include "src/DataModel/DataModelStringLeaf.h"
+#include "src/DataModel/DataModelUInt16Leaf.h"
+#include "src/DataModel/DataModelUInt32Leaf.h"
 
 #include <Arduino.h>
 
@@ -88,8 +103,8 @@ BMV::BMV(const char *name, const char *nodeName,
       historyDischargedEnergyLeaf("dischargedEnergy", &historyNode),
       historyChargedEnergyLeaf("chargedEnergy", &historyNode),
       pidLeaf("pid", &deviceNode),
-      modelDescriptionLeaf("modelDescription", &deviceNode),
-      firmwareLeaf("firmware", &deviceNode),
+      modelDescriptionLeaf("modelDescription", &deviceNode, modelDescriptionBuffer),
+      firmwareLeaf("firmware", &deviceNode, firmwareBuffer),
       monitorModeLeaf("monitorMode", &deviceNode),
       historyMinimumAuxVoltageLeaf("minimumAuxVoltage", &historyNode),
       historyMaximumAuxVoltageLeaf("maximumAuxVoltage", &historyNode),
@@ -208,7 +223,7 @@ BMV::BMV(const char *name, const char *nodeName,
       consumedAmpHoursField(name, "Consumed Amp Hours", mainConsumedAmpHoursLeaf,
                             3, true),
       powerField(name, "Power", mainPowerLeaf),
-      timeToGoField(name, "TTG", mainTimeToGoLeaf, 0, "-1"),
+      timeToGoField(name, "TTG", mainTimeToGoLeaf, "-1", 0xffff),
       alarmField(name, "Alarm", alarmStateLeaf),
       alarmReasonField(name, "Alarm Reason", alarmReasonLeaf),
       relayField(name, "Relay", relayStateLeaf),

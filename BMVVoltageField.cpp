@@ -19,7 +19,9 @@
 #include "BMVVoltageField.h"
 #include "MPPTController.h"
 
-#include "src/DataModel/DataModelLeaf.h"
+#include "src/DataModel/DataModelScaledInt16Leaf.h"
+
+#include "src/FixedPoint/ScaledUInt16.h"
 
 #include "src/Util/Logger.h"
 
@@ -30,7 +32,8 @@
 
 #include <stdint.h>
 
-BMVVoltageField::BMVVoltageField(const char *deviceName, DataModelLeaf &dataModelLeaf,
+BMVVoltageField::BMVVoltageField(const char *deviceName,
+                                 DataModelScaledInt16Leaf &dataModelLeaf,
                                  const etl::ivector<MPPTController *> *mppts)
     : Field(deviceName, "Voltage"),
       dataModelLeaf(dataModelLeaf),
@@ -40,26 +43,24 @@ BMVVoltageField::BMVVoltageField(const char *deviceName, DataModelLeaf &dataMode
 void BMVVoltageField::set(const etl::istring &message) {
     if (message == "---") {
         logger << debug << deviceName << ":" << "Clearing Voltage" << eol;
-        dataModelLeaf << "";
+        dataModelLeaf.removeValue();
 
         clearMPPTsVoltage();
     } else {
-        etl::to_arithmetic_result result = etl::to_arithmetic<uint32_t>(message);
+        etl::to_arithmetic_result result = etl::to_arithmetic<int32_t>(message);
         if (result.has_value()) {
-            uint32_t voltageMV = result.value();
+            int32_t voltageMV = result.value();
+            ScaledInt16 voltage(voltageMV / 10, 2);
 
-            etl::string<20> valueStr;
-            etl::to_string(voltageMV, 3, valueStr, etl::format_spec().precision(3));
-
-            logger << debug << deviceName << ":" << "Setting Voltage to '" << valueStr << "'"
+            logger << debug << deviceName << ":" << "Setting Voltage to '" << voltage << "'"
                    << eol;
-            dataModelLeaf << valueStr;
+            dataModelLeaf = voltage;
 
             setMPPTsVoltage(voltageMV);
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field Voltage"
                    << eol;
-            dataModelLeaf << "";
+            dataModelLeaf.removeValue();
 
             clearMPPTsVoltage();
         }

@@ -36,6 +36,7 @@ class ScaledInt16 : public LoggableItem {
         ScaledInt16(uint8_t denominatorExponent);
         ScaledInt16(int16_t value, uint8_t denominatorExponent);
         bool operator == (int16_t right) const;
+        bool operator != (const ScaledInt16 &right) const;
         void set(int16_t value);
         void set(int16_t value, uint8_t denominatorExponent);
         void toString(etl::istring &string) const;

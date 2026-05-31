@@ -24,15 +24,15 @@
 #include <Embedded_Template_Library.h>
 #include <etl/string.h>
 
-class DataModelLeaf;
+class DataModelBoolLeaf;
 
 class OnOffField : public Field {
     protected:
-        DataModelLeaf *dataModelLeaf;
+        DataModelBoolLeaf *dataModelLeaf;
 
     public:
         OnOffField(const char *deviceName, const char *name,
-                   DataModelLeaf &dataModelLeaf);
+                   DataModelBoolLeaf &dataModelLeaf);
         void set(const etl::istring &message) override;
 };
 

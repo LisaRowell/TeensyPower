@@ -16,23 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_FIELD_H
-#define STRING_FIELD_H
+#ifndef SCALED_INT32_FIELD_H
+#define SCALED_INT32_FIELD_H
 
 #include "Field.h"
 
 #include <Embedded_Template_Library.h>
 #include <etl/string.h>
 
-class DataModelStringLeaf;
+#include <stdint.h>
 
-class StringField : public Field {
+class DataModelScaledInt32Leaf;
+
+class ScaledInt32Field : public Field {
     protected:
-        DataModelStringLeaf *dataModelLeaf;
+        DataModelScaledInt32Leaf &dataModelLeaf;
+        uint8_t denominatorExponent;
+        bool invert;
 
     public:
-        StringField(const char *deviceName, const char *name,
-                    DataModelStringLeaf &dataModelLeaf);
+        ScaledInt32Field(const char *deviceName, const char *name,
+                         DataModelScaledInt32Leaf &dataModelLeaf,
+                         uint8_t denominatorExponent = 0,
+                         bool invert = false);
         void set(const etl::istring &message) override;
 };
 

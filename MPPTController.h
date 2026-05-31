@@ -37,14 +37,22 @@
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
 #include "src/VEDirect/Field.h"
+#include "src/VEDirect/HexUInt16Field.h"
+#include "src/VEDirect/HexUInt32Field.h"
 #include "src/VEDirect/UnsignedField.h"
 #include "src/VEDirect/SignedField.h"
+#include "src/VEDirect/StringField.h"
 #include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/StringField.h"
+#include "src/VEDirect/UInt16Field.h"
 
 #include "src/DataModel/DataModelNode.h"
 #include "src/DataModel/DataModelLeaf.h"
+#include "src/DataModel/DataModelBoolLeaf.h"
 #include "src/DataModel/DataModelScaledUInt32Leaf.h"
+#include "src/DataModel/DataModelStringLeaf.h"
+#include "src/DataModel/DataModelUInt16Leaf.h"
+#include "src/DataModel/DataModelUInt32Leaf.h"
 
 #include "src/Util/PassiveTimer.h"
 
@@ -76,10 +84,10 @@ class MPPTController : public VEDirectDevice {
         DataModelLeaf panelPowerLeaf;
         DataModelNode loadNode;
         DataModelLeaf loadCurrentLeaf;
-        DataModelLeaf loadStateLeaf;
+        DataModelBoolLeaf loadStateLeaf;
         DataModelNode relayNode;
-        DataModelLeaf relayStateLeaf;
-        DataModelLeaf offReasonLeaf;
+        DataModelBoolLeaf relayStateLeaf;
+        DataModelUInt32Leaf offReasonLeaf;
         DataModelNode yieldNode;
         DataModelLeaf yieldHistoricLeaf;
         DataModelLeaf yieldTodayLeaf;
@@ -89,9 +97,11 @@ class MPPTController : public VEDirectDevice {
         DataModelLeaf maxPowerYesterdayLeaf;
         DataModelLeaf errorCodeLeaf;
         DataModelLeaf stateOfOperationLeaf;
-        DataModelLeaf firmwareLeaf;
-        DataModelLeaf pidLeaf;
-        DataModelLeaf serialNumberLeaf;
+        etl::string<10> firmwareBuffer;
+        DataModelStringLeaf firmwareLeaf;
+        DataModelUInt16Leaf pidLeaf;
+        etl::string<20> serialNumberBuffer;
+        DataModelStringLeaf serialNumberLeaf;
         DataModelLeaf trackerOperationModeLeaf;
         DataModelNode historyNode;
         DataModelLeaf daySequenceNumberLeaf;
@@ -267,7 +277,7 @@ class MPPTController : public VEDirectDevice {
         UnsignedField loadCurrentField;
         OnOffField loadStateField;
         OnOffField relayStateField;
-        StringField offReasonField;
+        HexUInt32Field offReasonField;
         UnsignedField yieldHistoricField;
         UnsignedField yieldTodayField;
         UnsignedField yieldYesterdayField;
@@ -276,7 +286,7 @@ class MPPTController : public VEDirectDevice {
         UnsignedField errorCodeField;
         UnsignedField stateOfOperationField;
         StringField firmwareField;
-        StringField pidField;
+        HexUInt16Field pidField;
         StringField serialNumberField;
         UnsignedField trackerOperationModeField;
         UnsignedField daySequenceNumberField;

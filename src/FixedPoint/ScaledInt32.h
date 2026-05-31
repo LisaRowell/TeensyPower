@@ -36,6 +36,7 @@ class ScaledInt32 : public LoggableItem {
         ScaledInt32(uint8_t denominatorExponent);
         ScaledInt32(int32_t value, uint8_t denominatorExponent);
         bool operator == (int32_t right) const;
+        bool operator != (const ScaledInt32 &right) const;
         void set(int32_t value);
         void set(int32_t value, uint8_t denominatorExponent);
         void toString(etl::istring &string) const;

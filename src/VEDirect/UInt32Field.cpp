@@ -16,10 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- #include "UnsignedField.h"
+ #include "UInt32Field.h"
  #include "Field.h"
 
-#include "../DataModel/DataModelLeaf.h"
+#include "../DataModel/DataModelUInt32Leaf.h"
 
 #include "../Util/Logger.h"
 
@@ -29,43 +29,32 @@
 
 #include <stdint.h>
 
-UnsignedField::UnsignedField(const char *deviceName, const char *name,
-                             DataModelLeaf &dataModelLeaf,
-                             uint8_t denominatorExponent,
-                             const char *exceptionMatch,
-                             const char *exceptionValue)
+UInt32Field::UInt32Field(const char *deviceName, const char *name,
+                         DataModelUInt32Leaf &dataModelLeaf,
+                         const char *exceptionMatch,
+                         uint32_t exceptionValue)
     : Field(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
-      denominatorExponent(denominatorExponent),
       exceptionMatch(exceptionMatch),
       exceptionValue(exceptionValue) {
 }
 
-void UnsignedField::set(const etl::istring &message) {
-    etl::string<20> valueStr;
-
+void UInt32Field::set(const etl::istring &message) {
     if ((exceptionMatch != nullptr && message == exceptionMatch) ||
         (message == "---")) {
-        if (exceptionValue != nullptr) {
-            valueStr = exceptionValue;
-        } else {
-            valueStr.clear();
-        }
+        *dataModelLeaf = exceptionValue;
+        logger << debug << deviceName << ":" << "Setting " << name << " to '"
+               << exceptionValue << "'" << eol;
     } else {
         etl::to_arithmetic_result result = etl::to_arithmetic<uint32_t>(message);
         if (result.has_value()) {
-            etl::to_string(result.value(), denominatorExponent, valueStr,
-                           etl::format_spec().precision(denominatorExponent));
+            *dataModelLeaf = result.value();
+            logger << debug << deviceName << ":" << "Setting " << name << " to '"
+                   << result.value() << "'" << eol;
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field "
                    << name << eol;
-            valueStr.clear();
+            dataModelLeaf->removeValue();
         }
     }
-
-    if (dataModelLeaf != nullptr) {
-        *dataModelLeaf << valueStr;
-    }
-    logger << debug << deviceName << ":" << "Setting " << name << " to '"
-           << valueStr << "'" << eol;
 }

@@ -47,6 +47,11 @@ bool ScaledInt32::operator==(int32_t right) const {
     return value * pow(10, denominatorExponent) == right;
 }
 
+// Should this shift to match unequal denominatorExponents?
+bool ScaledInt32::operator != (const ScaledInt32 &right) const {
+    return value != right.value || denominatorExponent != right.denominatorExponent;
+}
+
 void ScaledInt32::set(int32_t value) {
     this->value = value;
 }
