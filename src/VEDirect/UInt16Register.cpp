@@ -19,7 +19,7 @@
 #include "UInt16Register.h"
 #include "VEDirectHexMessage.h"
 
-#include "../DataModel/DataModelLeaf.h"
+#include "../DataModel/DataModelScaledUInt16Leaf.h"
 
 #include "../FixedPoint/ScaledUInt16.h"
 
@@ -40,7 +40,7 @@ UInt16Register::UInt16Register(const char *deviceName, const char *name,
 }
 
 UInt16Register::UInt16Register(const char *deviceName, const char *name,
-                               DataModelLeaf &dataModelLeaf,
+                               DataModelScaledUInt16Leaf &dataModelLeaf,
                                uint8_t denominatorExponent,
                                const char *maxValueDescription)
     : Register(deviceName, name),
@@ -57,24 +57,26 @@ void UInt16Register::set(VEDirectHexMessage &message) {
     if (message.hadParseError()) {
         logger << deviceName << ": Badly formed " << name << " message: "
                << message << eol;
+        if (dataModelLeaf != nullptr) {
+            dataModelLeaf->removeValue();
+        }
     } else if (flags != 0) {
         logger << deviceName << ": " << name << " update with flags (0x"
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
+        if (dataModelLeaf != nullptr) {
+            dataModelLeaf->removeValue();
+        }
     } else {
+        ScaledUInt16 value(rawValue, denominatorExponent);
+        if (dataModelLeaf != nullptr) {
+            *dataModelLeaf = value;
+        }
+
         if (maxValueDescription != nullptr && rawValue == UINT16_MAX) {
-            if (dataModelLeaf != nullptr) {
-                *dataModelLeaf << maxValueDescription;
-            }
             logger << debug << deviceName << ": Updating " << name << " to "
                    << maxValueDescription;
         } else {
-            ScaledUInt16 value(rawValue, denominatorExponent);
-            if (dataModelLeaf != nullptr) {
-                etl::string<20> valueStr;
-                value.toString(valueStr);
-                *dataModelLeaf << valueStr;
-            }
             logger << debug << deviceName << ": Updating " << name << " to "
                    << value << eol;
         }

@@ -1,4 +1,3 @@
-#include "WProgram.h"
 /* 
  * This file is part of the TeensyPower distribution
  * (https://github.com/LisaRowell/TeensyPower).
@@ -35,16 +34,24 @@
 #include "src/VEDirect/HexUInt16Field.h"
 #include "src/VEDirect/HexUInt32Field.h"
 #include "src/VEDirect/UnsignedField.h"
+#include "src/VEDirect/ScaledInt32Field.h"
+#include "src/VEDirect/ScaledUInt16Field.h"
+#include "src/VEDirect/ScaledUInt32Field.h"
 #include "src/VEDirect/SignedField.h"
 #include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/StringField.h"
 #include "src/VEDirect/UInt16Field.h"
+#include "src/VEDirect/UInt32Field.h"
 
 #include "src/DataModel/DataModel.h"
 #include "src/DataModel/DataModelNode.h"
-#include "src/DataModel/DataModelLeaf.h"
 #include "src/DataModel/DataModelBoolLeaf.h"
+#include "src/DataModel/DataModelScaledInt16Leaf.h"
+#include "src/DataModel/DataModelScaledInt32Leaf.h"
+#include "src/DataModel/DataModelScaledUInt16Leaf.h"
 #include "src/DataModel/DataModelScaledUInt32Leaf.h"
+#include "src/DataModel/DataModelStringLeaf.h"
+#include "src/DataModel/DataModelUInt8Leaf.h"
 #include "src/DataModel/DataModelUInt16Leaf.h"
 #include "src/DataModel/DataModelUInt32Leaf.h"
 

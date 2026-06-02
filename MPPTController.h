@@ -43,14 +43,22 @@
 #include "src/VEDirect/SignedField.h"
 #include "src/VEDirect/StringField.h"
 #include "src/VEDirect/OnOffField.h"
+#include "src/VEDirect/ScaledInt32Field.h"
+#include "src/VEDirect/ScaledUInt16Field.h"
+#include "src/VEDirect/ScaledUInt32Field.h"
 #include "src/VEDirect/StringField.h"
+#include "src/VEDirect/UInt8Field.h"
 #include "src/VEDirect/UInt16Field.h"
+#include "src/VEDirect/UInt32Field.h"
 
 #include "src/DataModel/DataModelNode.h"
-#include "src/DataModel/DataModelLeaf.h"
 #include "src/DataModel/DataModelBoolLeaf.h"
+#include "src/DataModel/DataModelScaledInt16Leaf.h"
+#include "src/DataModel/DataModelScaledInt32Leaf.h"
+#include "src/DataModel/DataModelScaledUInt16Leaf.h"
 #include "src/DataModel/DataModelScaledUInt32Leaf.h"
 #include "src/DataModel/DataModelStringLeaf.h"
+#include "src/DataModel/DataModelUInt8Leaf.h"
 #include "src/DataModel/DataModelUInt16Leaf.h"
 #include "src/DataModel/DataModelUInt32Leaf.h"
 
@@ -73,38 +81,38 @@ class MPPTController : public VEDirectDevice {
 
         DataModelNode deviceNode;
         DataModelNode chargerNode;
-        DataModelLeaf chargerVoltageLeaf;
-        DataModelLeaf chargerCurrentLeaf;
+        DataModelScaledUInt16Leaf chargerVoltageLeaf;
+        DataModelScaledInt32Leaf chargerCurrentLeaf;
         DataModelNode batteryNode;
-        DataModelLeaf batteryVoltageLeaf;
-        DataModelLeaf batteryCurrentLeaf;
-        DataModelLeaf batteryTemperatureLeaf;
+        DataModelScaledUInt16Leaf batteryVoltageLeaf;
+        DataModelScaledInt32Leaf batteryCurrentLeaf;
+        DataModelScaledInt16Leaf batteryTemperatureLeaf;
         DataModelNode panelNode;
-        DataModelLeaf panelVoltageLeaf;
-        DataModelLeaf panelPowerLeaf;
+        DataModelScaledUInt16Leaf panelVoltageLeaf;
+        DataModelUInt32Leaf panelPowerLeaf;
         DataModelNode loadNode;
-        DataModelLeaf loadCurrentLeaf;
+        DataModelScaledUInt32Leaf loadCurrentLeaf;
         DataModelBoolLeaf loadStateLeaf;
         DataModelNode relayNode;
         DataModelBoolLeaf relayStateLeaf;
         DataModelUInt32Leaf offReasonLeaf;
         DataModelNode yieldNode;
-        DataModelLeaf yieldHistoricLeaf;
-        DataModelLeaf yieldTodayLeaf;
-        DataModelLeaf yieldYesterdayLeaf;
+        DataModelScaledUInt32Leaf yieldHistoricLeaf;
+        DataModelScaledUInt32Leaf yieldTodayLeaf;
+        DataModelScaledUInt32Leaf yieldYesterdayLeaf;
         DataModelNode powerNode;
-        DataModelLeaf maxPowerTodayLeaf;
-        DataModelLeaf maxPowerYesterdayLeaf;
-        DataModelLeaf errorCodeLeaf;
-        DataModelLeaf stateOfOperationLeaf;
+        DataModelUInt32Leaf maxPowerTodayLeaf;
+        DataModelUInt32Leaf maxPowerYesterdayLeaf;
+        DataModelUInt8Leaf errorCodeLeaf;
+        DataModelUInt8Leaf stateOfOperationLeaf;
         etl::string<10> firmwareBuffer;
         DataModelStringLeaf firmwareLeaf;
         DataModelUInt16Leaf pidLeaf;
         etl::string<20> serialNumberBuffer;
         DataModelStringLeaf serialNumberLeaf;
-        DataModelLeaf trackerOperationModeLeaf;
+        DataModelUInt8Leaf trackerOperationModeLeaf;
         DataModelNode historyNode;
-        DataModelLeaf daySequenceNumberLeaf;
+        DataModelUInt16Leaf daySequenceNumberLeaf;
         MPPTDailyHistoryLeaves history0Leaves;
         MPPTDailyHistoryLeaves history1Leaves;
         MPPTDailyHistoryLeaves history2Leaves;
@@ -270,26 +278,26 @@ class MPPTController : public VEDirectDevice {
         Int16Register batteryTemperatureSense;
         Int32Register batteryCurrentSense;
 
-        UnsignedField chargerVoltageField;
-        SignedField chargerCurrentField;
-        UnsignedField panelVoltageField;
-        UnsignedField panelPowerField;
-        UnsignedField loadCurrentField;
+        ScaledUInt16Field chargerVoltageField;
+        ScaledInt32Field chargerCurrentField;
+        ScaledUInt16Field panelVoltageField;
+        UInt32Field panelPowerField;
+        ScaledUInt32Field loadCurrentField;
         OnOffField loadStateField;
         OnOffField relayStateField;
         HexUInt32Field offReasonField;
-        UnsignedField yieldHistoricField;
-        UnsignedField yieldTodayField;
-        UnsignedField yieldYesterdayField;
-        UnsignedField maxPowerTodayField;
-        UnsignedField maxPowerYesterdayField;
-        UnsignedField errorCodeField;
-        UnsignedField stateOfOperationField;
+        ScaledUInt32Field yieldHistoricField;
+        ScaledUInt32Field yieldTodayField;
+        ScaledUInt32Field yieldYesterdayField;
+        UInt32Field maxPowerTodayField;
+        UInt32Field maxPowerYesterdayField;
+        UInt8Field errorCodeField;
+        UInt8Field stateOfOperationField;
         StringField firmwareField;
         HexUInt16Field pidField;
         StringField serialNumberField;
-        UnsignedField trackerOperationModeField;
-        UnsignedField daySequenceNumberField;
+        UInt8Field trackerOperationModeField;
+        UInt16Field daySequenceNumberField;
 
         etl::flat_map<uint32_t, const char *, 86> productIDDescriptions = {
             { 0x0300, "BlueSolar MPPT 70|15" },

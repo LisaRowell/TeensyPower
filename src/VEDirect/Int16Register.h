@@ -23,13 +23,13 @@
 
 #include <stdint.h>
 
-class DataModelLeaf;
+class DataModelScaledInt16Leaf;
 class VEDirectHexMessage;
 class Logger;
 
 class Int16Register : public Register {
     protected:
-        DataModelLeaf *dataModelLeaf;
+        DataModelScaledInt16Leaf *dataModelLeaf;
         uint8_t denominatorExponent;
         const char *maxValueDescription;
 
@@ -38,7 +38,7 @@ class Int16Register : public Register {
                       uint8_t denominatorExponent = 0,
                       const char *maxValueDescription = nullptr);
         Int16Register(const char *deviceName, const char *name,
-                      DataModelLeaf &dataModelLeaf,
+                      DataModelScaledInt16Leaf &dataModelLeaf,
                       uint8_t denominatorExponent = 0,
                       const char *maxValueDescription = nullptr);
         void set(VEDirectHexMessage &message) override;
