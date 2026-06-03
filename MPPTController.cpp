@@ -28,6 +28,7 @@
 #include "src/VEDirect/UInt32Register.h"
 #include "src/VEDirect/UInt32EnumRegister.h"
 #include "src/VEDirect/Int16Register.h"
+#include "src/VEDirect/Int32Register.h"
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
 #include "src/VEDirect/MPPTDailyHistoryRegister.h"
 #include "src/VEDirect/Field.h"
@@ -129,12 +130,17 @@ MPPTController::MPPTController(const char *name, const char *nodeName,
       history28Leaves("28", &historyNode),
       history29Leaves("29", &historyNode),
       history30Leaves("30", &historyNode),
+      networkNode("network", &deviceNode),
+      networkInfoLeaf("info", &networkNode),
+      networkModeLeaf("mode", &networkNode),
+      networkStatusLeaf("status", &networkNode),
 
       productID(name, "Product ID", productIDDescriptions),
       groupID(name, "Groupd ID"),
       capabilities(name, "Capabilities"),
       deviceMode(name, "Device Mode", deviceModeDescriptions),
       deviceState(name, "Device State", deviceStateDescriptions),
+      deviceState2(name, "Device State 2", deviceState2Descriptions),
       remoteControlUsed(name, "Remote Control Used"),
       deviceOffReason8(name, "Device Off Reason", deviceOffReason8Descriptions),
       deviceOffReason32(name, "Device Off Reason", deviceOffReason32Descriptions),
@@ -268,6 +274,14 @@ MPPTController::MPPTController(const char *name, const char *nodeName,
       batteryTemperatureSense(name, "Battery Temperature Sense", batteryTemperatureLeaf,
                               2, "NA"),
       batteryCurrentSense(name, "Battery Current Sense", batteryCurrentLeaf, 3, "NA"),
+      batteryIdleVoltage(name, "Battery Idle Voltage", 2),
+      networkInfo(name, "Network Info", networkInfoLeaf),
+      networkMode(name, "Network Mode", networkModeLeaf),
+      networkStatus(name, "Network Status", networkStatusDescriptions),
+      totalChargeCurrent(name, "Total Charge Current", 3),
+      chargeCurrentLimit(name, "Charge Current Limit", 1),
+      manualEqualisationPending(name, "Manual Equalisation Pending"),
+      totalDCInputPower(name, "Total DC Input Power", 2),
 
       chargerVoltageField(name, "Battery Voltage", chargerVoltageLeaf, 3),
       chargerCurrentField(name, "Battery Current", chargerCurrentLeaf, 3),

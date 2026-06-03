@@ -144,12 +144,17 @@ class MPPTController : public VEDirectDevice {
         MPPTDailyHistoryLeaves history28Leaves;
         MPPTDailyHistoryLeaves history29Leaves;
         MPPTDailyHistoryLeaves history30Leaves;
+        DataModelNode networkNode;
+        DataModelUInt8Leaf networkInfoLeaf;
+        DataModelUInt8Leaf networkModeLeaf;
+        DataModelUInt8Leaf networkStatusLeaf;
 
         UInt32EnumRegister productID;
         UInt8Register groupID;
         UInt32Register capabilities;
         UInt8EnumRegister deviceMode;
         UInt8EnumRegister deviceState;
+        UInt8EnumRegister deviceState2;
         UInt32Register remoteControlUsed;
         UInt8EnumRegister deviceOffReason8;
         UInt32EnumRegister deviceOffReason32;
@@ -277,6 +282,14 @@ class MPPTController : public VEDirectDevice {
         UInt16Register batteryVoltageSense;
         Int16Register batteryTemperatureSense;
         Int32Register batteryCurrentSense;
+        UInt16Register batteryIdleVoltage;
+        UInt8Register networkInfo;
+        UInt8Register networkMode;
+        UInt8EnumRegister networkStatus;
+        Int32Register totalChargeCurrent;
+        UInt16Register chargeCurrentLimit;
+        UInt8Register manualEqualisationPending;
+        UInt32Register totalDCInputPower;
 
         ScaledUInt16Field chargerVoltageField;
         ScaledInt32Field chargerCurrentField;
@@ -405,6 +418,24 @@ class MPPTController : public VEDirectDevice {
             { 245, "Wake Up" },
             { 247, "Auto Equalise" },
             { 250, "Blocked" },
+            { 252, "External Control" },
+            { 255, "Unavailable" }
+        };
+
+        etl::flat_map<uint8_t, const char *, 15> deviceState2Descriptions = {
+            { 0, "Not Charging" },
+            { 2, "Fault" },
+            { 3, "Bulk" },
+            { 4, "Absorption" },
+            { 5, "Float" },
+            { 6, "Storage" },
+            { 7, "Manual Equalise" },
+            { 11, "Power Supply"},
+            { 245, "Wake Up" },
+            { 246, "Repeat Absorption" },
+            { 247, "Auto Equalise" },
+            { 248, "Battery Safe" },
+            { 249, "Load Detect" },
             { 252, "External Control" },
             { 255, "Unavailable" }
         };
@@ -540,10 +571,18 @@ class MPPTController : public VEDirectDevice {
             { 0, "Remote on/off" },
             { 1, "Load output configuration" },
             { 2, "Load output on/off remote control (inverted)" },
-            { 3, "Load output on/off remote control (normal)" },
+            { 3, "Load output on/off remote control (normal)" }
         };
 
-        etl::flat_map<uint16_t, Register &, 132> registerMap = {
+        etl::flat_map<uint8_t, const char *, 5> networkStatusDescriptions = {
+            { 0x00, "Slave mode" },
+            { 0x01, "Group master" },
+            { 0x02, "Instance master" },
+            { 0x03, "Group and instance master" },
+            { 0x04, "Stand-alone" }
+        };
+
+        etl::flat_map<uint16_t, Register &, 141> registerMap = {
             { 0x0100, productID },
             { 0x0104, groupID },
             { 0x0140, capabilities },
@@ -593,6 +632,15 @@ class MPPTController : public VEDirectDevice {
             { 0x2002, batteryVoltageSense },
             { 0x2003, batteryTemperatureSense },
             { 0x200A, batteryCurrentSense },
+            { 0x200B, batteryIdleVoltage },
+            { 0x200C, deviceState2 },
+            { 0x200D, networkInfo },
+            { 0x200E, networkMode },
+            { 0x200F, networkStatus },
+            { 0x2013, totalChargeCurrent },
+            { 0x2015, chargeCurrentLimit },
+            { 0x2018, manualEqualisationPending },
+            { 0x2027, totalDCInputPower },
             { 0x2211, adjustableVoltageMinimum },
             { 0x2212, adjustableVoltageMaximum },
             { 0xECC3, tracker1Mode },

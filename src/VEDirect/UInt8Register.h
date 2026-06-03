@@ -24,13 +24,18 @@
 #include <stdint.h>
 
 class VEDirectHexMessage;
+class DataModelScaledUInt8Leaf;
 
 class UInt8Register : public Register {
     protected:
+        DataModelScaledUInt8Leaf *dataModelLeaf;
         uint8_t denominatorExponent;
 
     public:
         UInt8Register(const char *deviceName, const char *name,
+                      uint8_t denominatorExponent = 0);
+        UInt8Register(const char *deviceName, const char *name,
+                      DataModelScaledUInt8Leaf &dataModelLeaf,
                       uint8_t denominatorExponent = 0);
         void set(VEDirectHexMessage &message) override;
 };

@@ -20,6 +20,8 @@
 #include "Register.h"
 #include "VEDirectHexMessage.h"
 
+#include "../DataModel/DataModelScaledUInt8Leaf.h"
+
 #include "../FixedPoint/ScaledUInt8.h"
 
 #include "../Util/Logger.h"
@@ -29,22 +31,42 @@
 UInt8Register::UInt8Register(const char *deviceName, const char *name,
                              uint8_t denominatorExponent)
     : Register(deviceName, name),
+      dataModelLeaf(nullptr),
+      denominatorExponent(denominatorExponent) {
+}
+
+UInt8Register::UInt8Register(const char *deviceName, const char *name,
+                             DataModelScaledUInt8Leaf &dataModelLeaf,
+                             uint8_t denominatorExponent)
+    : Register(deviceName, name),
+      dataModelLeaf(&dataModelLeaf),
       denominatorExponent(denominatorExponent) {
 }
 
 void UInt8Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
-    ScaledUInt8 value(message.parseUInt8(), denominatorExponent);
+    uint8_t rawValue = message.parseUInt8();
     message.expectedEnd();
 
     if (message.hadParseError()) {
         logger << deviceName << ": Badly formed " << name << " message: "
                << message << eol;
+        if (dataModelLeaf != nullptr) {
+            dataModelLeaf->removeValue();
+        }
     } else if (flags != 0) {
         logger << deviceName << ": " << name << " update with flags (0x"
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
+        if (dataModelLeaf != nullptr) {
+            dataModelLeaf->removeValue();
+        }
     } else {
+        ScaledUInt8 value(rawValue, denominatorExponent);
+        if (dataModelLeaf != nullptr) {
+            *dataModelLeaf = value;
+        }
+
         logger << debug << deviceName << ": Updating " << name << " to "
                << value << eol;
     }
