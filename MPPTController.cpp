@@ -287,7 +287,7 @@ MPPTController::MPPTController(const char *name, const char *nodeName,
       dailyHistory29(name),
       dailyHistory30(name),
 #endif
-      batteryVoltageSense(name, "Battery Voltage Sense", batteryVoltageLeaf),
+      batteryVoltageSense(name, "Battery Voltage Sense", batteryVoltageLeaf, 2),
       batteryTemperatureSense(name, "Battery Temperature Sense", batteryTemperatureLeaf,
                               2),
       batteryCurrentSense(name, "Battery Current Sense", batteryCurrentLeaf, 3),
