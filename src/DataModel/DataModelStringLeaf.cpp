@@ -85,7 +85,3 @@ void DataModelStringLeaf::sendRetainedValue(DataModelSubscriber &subscriber) {
 bool DataModelStringLeaf::isEmptyStr() const {
     return hasValue() && value.empty();
 }
-
-void DataModelStringLeaf::logValue(Logger &logger) {
-    logger << value;
-}

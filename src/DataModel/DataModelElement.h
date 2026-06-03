@@ -55,7 +55,6 @@ class DataModelElement : public siblingLink {
                                            DataModelSubscriber &subscriber) = 0;
         virtual bool subscribeAll(DataModelSubscriber &subscriber, uint32_t cookie) = 0;
         virtual void unsubscribeAll(DataModelSubscriber &subscriber) = 0;
-        virtual void dump();
 };
 
 #endif

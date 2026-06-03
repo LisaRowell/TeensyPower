@@ -73,7 +73,6 @@ class DataModel : public StatsHolder {
         DataModelNode &sysNode();
         DataModelNode &brokerNode();
         DataModelNode &messagesNode();
-        void dump();
 
         // The below method should probably be a friend method or something
         void leafUpdated();

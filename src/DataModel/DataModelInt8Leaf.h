@@ -31,8 +31,6 @@ class DataModelInt8Leaf : public DataModelRetainedValueLeaf {
    private:
         int8_t value;
 
-        virtual void logValue(Logger &logger) override;
-
     public:
         DataModelInt8Leaf(const char *name, DataModelNode *parent);
         DataModelInt8Leaf & operator = (const int8_t value);

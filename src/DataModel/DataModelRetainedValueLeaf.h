@@ -37,11 +37,9 @@ class DataModelRetainedValueLeaf : public DataModelLeaf {
         void updated();
         bool hasValue() const;
         virtual void sendRetainedValue(DataModelSubscriber &subscriber) = 0;
-        virtual void logValue(Logger &logger) = 0;
 
     public:
         void removeValue();
-        virtual void dump() override;
 };
 
 #endif

@@ -60,6 +60,3 @@ void DataModelScaledUInt8Leaf::sendRetainedValue(DataModelSubscriber &subscriber
     }
 }
 
-void DataModelScaledUInt8Leaf::logValue(Logger &logger) {
-    logger << value;
-}

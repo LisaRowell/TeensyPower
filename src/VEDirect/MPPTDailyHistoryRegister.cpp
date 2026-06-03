@@ -34,7 +34,11 @@
 MPPTDailyHistoryRegister::MPPTDailyHistoryRegister(const char *deviceName,
                                                    MPPTDailyHistoryLeaves &leaves)
     : Register(deviceName, "Daily History"),
-      leaves(leaves) {
+      leaves(&leaves) {
+}
+
+MPPTDailyHistoryRegister::MPPTDailyHistoryRegister(const char *deviceName)
+    : Register(deviceName, "Daily History") {
 }
 
 void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
@@ -86,8 +90,11 @@ void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
         logger << debug << "    Battery Current Maximum: " << batteryCurrentMaximum << " A" << eol;
         logger << debug << "    Panel Voltage Maximum: " << panelVoltageMaximum << " V" << eol;
 
-        leaves.set(yield, consumed, batteryVoltageMaximum, batteryVoltageMinimum, errorDatabase,
-                   error0, error1, error2, error3, timeBulk, timeAbsorption, timeFloat,
-                   powerMaximum, batteryCurrentMaximum, panelVoltageMaximum, daySequenceNumber);
+        if (leaves != nullptr) {
+            leaves->set(yield, consumed, batteryVoltageMaximum, batteryVoltageMinimum,
+                        errorDatabase, error0, error1, error2, error3, timeBulk, timeAbsorption,
+                        timeFloat, powerMaximum, batteryCurrentMaximum, panelVoltageMaximum,
+                        daySequenceNumber);
+        }
     }
 }

@@ -24,14 +24,11 @@
 #include "BMVCurrentField.h"
 
 #include "src/VEDirect/UInt8Register.h"
-#include "src/VEDirect/UInt8EnumRegister.h"
 #include "src/VEDirect/UInt8OnOffRegister.h"
 #include "src/VEDirect/UInt16Register.h"
 #include "src/VEDirect/UInt24Register.h"
 #include "src/VEDirect/UInt32Register.h"
-#include "src/VEDirect/UInt32EnumRegister.h"
 #include "src/VEDirect/Int16Register.h"
-#include "src/VEDirect/Int16EnumRegister.h"
 #include "src/VEDirect/Int32Register.h"
 #include "src/VEDirect/String20Register.h"
 #include "src/VEDirect/String32Register.h"
@@ -111,7 +108,7 @@ BMV::BMV(const char *name, const char *nodeName,
       auxNode("aux", &deviceNode),
       auxVoltageLeaf("voltage", &auxNode),
 
-      productID(name, "Product ID", productIDDescriptions),
+      productID(name, "Product ID"),
       productRevision(name, "Product Revision"),
       serialNumber(name, "Serial Number"),
       modelName(name, "Model Name"),
@@ -174,9 +171,9 @@ BMV::BMV(const char *name, const char *nodeName,
       alarmHighTemperatureClear(name, "Alarm High Temperature Clear", 2),
       alarmMidVoltage(name, "Alarm Mid Voltage", 1),
       alarmMidVoltageClear(name, "Alarm Mid Voltage Clear", 1),
-      relayMode(name, "Relay Mode", relayModeDescriptions),
+      relayMode(name, "Relay Mode"),
       relayInvert(name, "Relay Invert"),
-      relayState(name, "Relay State", relayStateDescriptions),
+      relayState(name, "Relay State"),
       relayMinimalEnableTime(name, "Relay Minimal Enable Time"),
       relayDisableTime(name, "Relay Disable Time"),
       relayLowVoltage(name, "Relay Low Voltage", 1),
@@ -209,13 +206,13 @@ BMV::BMV(const char *name, const char *nodeName,
       setupLock(name, "Setup Lock"),
       shuntAmps(name, "Shunt Amps"),
       shuntVolts(name, "Shunt Volts", 3),
-      temperatureUnit(name, "Temperature Unit", temperatureUnitDescriptions),
+      temperatureUnit(name, "Temperature Unit"),
       temperatureCoefficient(name, "Temperature Coefficient", 1),
-      auxiliaryInput(name, "Auxiliary Input", auxiliaryInputDescriptions),
+      auxiliaryInput(name, "Auxiliary Input"),
       startSynchronized(name, "Start Synchronized"),
       settingsChangedTimestamp(name, "Settings Changed Timestamp"),
       bluetoothMode(name, "Bluetooth Mode"),
-      dcMonitorMode(name, "DC Monitor Mode", dcMonitorModeDescriptions),
+      dcMonitorMode(name, "DC Monitor Mode"),
       socField(name, "SoC", mainSOCLeaf, 1),
       voltageField(name, mainVoltageLeaf, mppts),
       temperatureField(name, mainTemperatureLeaf, mppts),

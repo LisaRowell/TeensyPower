@@ -28,8 +28,6 @@ class Logger;
 
 class Field {
     protected:
-        static constexpr size_t MAX_REGISTER_DESCRIPTION = 80;
-
         const char *deviceName;
         const char *name;
 

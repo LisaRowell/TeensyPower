@@ -31,16 +31,13 @@ class Int16Register : public Register {
     protected:
         DataModelScaledInt16Leaf *dataModelLeaf;
         uint8_t denominatorExponent;
-        const char *maxValueDescription;
 
     public:
         Int16Register(const char *deviceName, const char *name,
-                      uint8_t denominatorExponent = 0,
-                      const char *maxValueDescription = nullptr);
+                      uint8_t denominatorExponent = 0);
         Int16Register(const char *deviceName, const char *name,
                       DataModelScaledInt16Leaf &dataModelLeaf,
-                      uint8_t denominatorExponent = 0,
-                      const char *maxValueDescription = nullptr);
+                      uint8_t denominatorExponent = 0);
         void set(VEDirectHexMessage &message) override;
 };
 

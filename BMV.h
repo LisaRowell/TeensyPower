@@ -26,14 +26,11 @@
 
 #include "src/VEDirect/Register.h"
 #include "src/VEDirect/UInt8Register.h"
-#include "src/VEDirect/UInt8EnumRegister.h"
 #include "src/VEDirect/UInt8OnOffRegister.h"
 #include "src/VEDirect/UInt16Register.h"
 #include "src/VEDirect/UInt24Register.h"
 #include "src/VEDirect/UInt32Register.h"
-#include "src/VEDirect/UInt32EnumRegister.h"
 #include "src/VEDirect/Int16Register.h"
-#include "src/VEDirect/Int16EnumRegister.h"
 #include "src/VEDirect/Int32Register.h"
 #include "src/VEDirect/String20Register.h"
 #include "src/VEDirect/String32Register.h"
@@ -118,7 +115,7 @@ class BMV : public VEDirectDevice {
         DataModelNode auxNode;
         DataModelScaledInt32Leaf auxVoltageLeaf;
 
-        UInt32EnumRegister productID;
+        UInt32Register productID;
         UInt24Register productRevision;
         String32Register serialNumber;
         String32Register modelName;
@@ -181,9 +178,9 @@ class BMV : public VEDirectDevice {
         UInt16Register alarmHighTemperatureClear;
         UInt16Register alarmMidVoltage;
         UInt16Register alarmMidVoltageClear;
-        UInt8EnumRegister relayMode;
+        UInt8Register relayMode;
         UInt8OnOffRegister relayInvert;
-        UInt8EnumRegister relayState;
+        UInt8Register relayState;
         UInt16Register relayMinimalEnableTime;
         UInt16Register relayDisableTime;
         UInt16Register relayLowVoltage;
@@ -216,13 +213,13 @@ class BMV : public VEDirectDevice {
         UInt8OnOffRegister setupLock;
         UInt16Register shuntAmps;
         UInt16Register shuntVolts;
-        UInt8EnumRegister temperatureUnit;
+        UInt8Register temperatureUnit;
         UInt16Register temperatureCoefficient;
-        UInt8EnumRegister auxiliaryInput;
+        UInt8Register auxiliaryInput;
         UInt8OnOffRegister startSynchronized;
         UInt32Register settingsChangedTimestamp;
         UInt8OnOffRegister bluetoothMode;
-        Int16EnumRegister dcMonitorMode;
+        Int16Register dcMonitorMode;
 
         ScaledUInt16Field socField;
         BMVVoltageField voltageField;
@@ -255,61 +252,6 @@ class BMV : public VEDirectDevice {
         ScaledInt32Field minimumAuxVoltageField;
         ScaledInt32Field maximumAuxVoltageField;
         SignedField auxVoltageField;
-
-        etl::flat_map<uint32_t, const char *, 9> productIDDescriptions = {
-            { 0x0200, "BMV600S" },
-            { 0x0201, "BMV602S" },
-            { 0x0202, "BMV600HS" },
-            { 0x0203, "BMV700" },
-            { 0x0204, "BMV702" },
-            { 0x0205, "BMV700H" },
-            { 0xA381, "BMV712" },
-            { 0xA382, "BMV710H" },
-            { 0xA383, "BMV712 Rev2" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 3> relayModeDescriptions = {
-            { 0, "Default" },
-            { 1, "Charge" },
-            { 2, "Remote" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 2> relayStateDescriptions = {
-            { 0, "Open" },
-            { 1, "Closed" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 2> temperatureUnitDescriptions = {
-            { 0, "Celsius" },
-            { 1, "Fahrenheit" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 3> auxiliaryInputDescriptions = {
-            { 0, "Starter" },
-            { 1, "Mid Voltage" },
-            { 2, "Temperature" }
-        };
-
-        etl::flat_map<int16_t, const char *, 18> dcMonitorModeDescriptions = {
-            { -9, "Solar Charger" },
-            { -8, "Wind Turbine" },
-            { -7, "Shaft Generator" },
-            { -6, "Alternator" },
-            { -5, "Fuel Cell" },
-            { -4, "Water Generator" },
-            { -3, "DC/DC Charger" },
-            { -2, "AC Charger" },
-            { -1, "Generic Source" },
-            { 0, "Battery Monitor" },
-            { 1, "Generic Load" },
-            { 2, "Electric Drive" },
-            { 3, "Fridge" },
-            { 4, "Water Pump" },
-            { 5, "Bilge Pump" },
-            { 6, "DC System" },
-            { 7, "Inverter" },
-            { 8, "Water Heater" }
-        };
 
         etl::flat_map<uint16_t, Register &, 105> registerMap = {
             { 0x0090, bluetoothMode },

@@ -44,8 +44,7 @@ MPPTDailyHistoryLeaves::MPPTDailyHistoryLeaves(const char *dayStr,
       timeFloatLeaf("timeFloat", &dayNode),
       powerMaximumLeaf("powerMaximum", &dayNode),
       batteryCurrentMaximumLeaf("batteryCurrentMaximum", &dayNode),
-      panelVoltageMaximumLeaf("panelVoltageMaximum", &dayNode),
-      daySequenceNumberLeaf("daySequenceNumber", &dayNode) {
+      panelVoltageMaximumLeaf("panelVoltageMaximum", &dayNode) {
 }
 
 void MPPTDailyHistoryLeaves::set(ScaledUInt32 &yield, ScaledUInt32 &consumed,
@@ -73,5 +72,4 @@ void MPPTDailyHistoryLeaves::set(ScaledUInt32 &yield, ScaledUInt32 &consumed,
     powerMaximumLeaf = powerMaximum;
     batteryCurrentMaximumLeaf = batteryCurrentMaximum;
     panelVoltageMaximumLeaf = panelVoltageMaximum;
-    daySequenceNumberLeaf = daySequenceNumber;
 }

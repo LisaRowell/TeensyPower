@@ -49,7 +49,6 @@ class MPPTDailyHistoryLeaves {
         DataModelUInt32Leaf powerMaximumLeaf;
         DataModelScaledUInt16Leaf batteryCurrentMaximumLeaf;
         DataModelScaledUInt16Leaf panelVoltageMaximumLeaf;
-        DataModelUInt16Leaf daySequenceNumberLeaf;
 
     public:
         MPPTDailyHistoryLeaves(const char *dayStr, DataModelNode *parentNode);

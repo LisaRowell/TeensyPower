@@ -28,10 +28,11 @@ class MPPTDailyHistoryLeaves;
 
 class MPPTDailyHistoryRegister : public Register {
     protected:
-        MPPTDailyHistoryLeaves &leaves;
+        MPPTDailyHistoryLeaves *leaves;
 
     public:
         MPPTDailyHistoryRegister(const char *deviceName, MPPTDailyHistoryLeaves &leaves);
+        MPPTDailyHistoryRegister(const char *deviceName);
         void set(VEDirectHexMessage &message) override;
 };
 

@@ -74,13 +74,6 @@ DataModelNode &DataModel::messagesNode() {
     return _messagesNode;
 }
 
-// Debuging method to dump out the data model tree. Useful debugging tree issues and verifying
-// updates. Not called, but shouldn't be removed.
-void DataModel::dump() {
-    logger << debug << "Datamodel:" << eol;
-    _rootNode.dump();
-}
-
 void DataModel::leafUpdated() {
     updates++;
 }

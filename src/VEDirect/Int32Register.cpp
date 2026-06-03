@@ -32,22 +32,18 @@
 #include <stdint.h>
 
 Int32Register::Int32Register(const char *deviceName, const char *name,
-                             uint8_t denominatorExponent,
-                             const char *maxValueDescription)
+                             uint8_t denominatorExponent)
     : Register(deviceName, name),
       dataModelLeaf(nullptr),
-      denominatorExponent(denominatorExponent),
-      maxValueDescription(maxValueDescription) {
+      denominatorExponent(denominatorExponent) {
 }
 
 Int32Register::Int32Register(const char *deviceName, const char *name,
                              DataModelScaledInt32Leaf &dataModelLeaf,
-                             uint8_t denominatorExponent,
-                             const char *maxValueDescription)
+                             uint8_t denominatorExponent)
     : Register(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
-      denominatorExponent(denominatorExponent),
-      maxValueDescription(maxValueDescription) {
+      denominatorExponent(denominatorExponent) {
 }
 
 void Int32Register::set(VEDirectHexMessage &message) {
@@ -73,13 +69,8 @@ void Int32Register::set(VEDirectHexMessage &message) {
         if (dataModelLeaf != nullptr) {
             *dataModelLeaf = value;
         }
-        if (maxValueDescription != nullptr && rawValue == INT32_MAX) {
-            logger << debug << deviceName << ": Updating " << name << " to "
-                   << maxValueDescription << eol;
-        } else {
-            logger << debug << deviceName << ": Updating " << name << " to "
-                   << value << eol;
-        }
+        logger << debug << deviceName << ": Updating " << name << " to "
+               << value << eol;
     }
 }
 

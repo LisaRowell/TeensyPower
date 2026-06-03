@@ -137,9 +137,3 @@ void DataModelNode::retainedValueCleared() {
     parent->retainedValueCleared();
 }
 
-void DataModelNode::dump() {
-    DataModelElement::dump();
-    for (DataModelElement &child : children) {
-        child.dump();
-    }
-}

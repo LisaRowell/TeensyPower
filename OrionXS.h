@@ -22,7 +22,6 @@
 #include "VEDirectDevice.h"
 #include "src/VEDirect/VEDirectHexMessage.h"
 #include "src/VEDirect//Register.h"
-#include "src/VEDirect/UInt8EnumRegister.h"
 #include "src/VEDirect/UInt8Register.h"
 #include "src/VEDirect/UInt32Register.h"
 #include "src/VEDirect/Field.h"
@@ -41,34 +40,9 @@ class DataModel;
 
 class OrionXS :public VEDirectDevice {
     private:
-        UInt8EnumRegister deviceMode;
-        UInt8EnumRegister deviceState;
+        UInt8Register deviceMode;
+        UInt8Register deviceState;
         UInt32Register inputPower;
-
-        etl::flat_map<uint8_t, const char *, 4> deviceModeDescriptions = {
-            { 0, "Charger Off (0)" },
-            { 1, "Charger On (1)" },
-            { 3, "Charger On (3)" },
-            { 4, "Charger Off (4)" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 15> deviceStateDescriptions = {
-            { 0, "Not Charging" },
-            { 2, "Fault" },
-            { 3, "Bulk" },
-            { 4, "Absorption" },
-            { 5, "Float" },
-            { 6, "Storage" },
-            { 7, "Manual Equalise" },
-            { 11, "PSU" },
-            { 245, "Wake Up" },
-            { 246, "Repeated Absorption" },
-            { 247, "Auto Equalise" },
-            { 248, "Battery Safe" },
-            { 250, "Blocked" },
-            { 252, "External Control" },
-            { 255, "Unavailable" }
-        };
 
         etl::flat_map<uint16_t, Register &, 3> registerMap = {
             { 0x0200, deviceMode },

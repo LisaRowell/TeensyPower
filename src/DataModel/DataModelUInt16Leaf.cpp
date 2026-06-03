@@ -71,7 +71,3 @@ void DataModelUInt16Leaf::sendRetainedValue(DataModelSubscriber &subscriber) {
         publishToSubscriber(subscriber, valueStr, true);
     }
 }
-
-void DataModelUInt16Leaf::logValue(Logger &logger) {
-    logger << value;
-}

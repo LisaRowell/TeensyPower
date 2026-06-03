@@ -63,15 +63,3 @@ void DataModelRetainedValueLeaf::removeValue() {
 bool DataModelRetainedValueLeaf::hasValue() const {
     return hasBeenSet;
 }
-
-void DataModelRetainedValueLeaf::dump() {
-    char topic[maxTopicNameLength];
-    buildTopicName(topic);
-    logger << debug << topic << ": ";
-    if (hasValue()) {
-        logValue(logger);
-    } else {
-        logger << "Unset";
-    }
-    logger << eol;
-}

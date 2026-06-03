@@ -46,7 +46,6 @@ class DataModelRoot : public DataModelNode {
         virtual void leafUnsubscribedFrom() override;
         virtual void valueRetained() override;
         virtual void retainedValueCleared() override;
-        virtual void dump() override;
 };
 
 #endif

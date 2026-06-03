@@ -77,7 +77,3 @@ void DataModelInt8Leaf::sendRetainedValue(DataModelSubscriber &subscriber) {
         publishToSubscriber(subscriber, valueStr, true);
     }
 }
-
-void DataModelInt8Leaf::logValue(Logger &logger) {
-    logger << value;
-}

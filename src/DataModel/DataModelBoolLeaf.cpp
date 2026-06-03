@@ -64,7 +64,3 @@ void DataModelBoolLeaf::sendRetainedValue(DataModelSubscriber &subscriber) {
         publishToSubscriber(subscriber, valueStr, true);
     }
 }
-
-void DataModelBoolLeaf::logValue(Logger &logger) {
-    logger << value;
-}

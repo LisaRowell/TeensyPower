@@ -52,7 +52,6 @@ class DataModelNode : public DataModelElement {
         virtual void leafUnsubscribedFrom();
         virtual void valueRetained();
         virtual void retainedValueCleared();
-        virtual void dump() override;
 };
 
 #endif

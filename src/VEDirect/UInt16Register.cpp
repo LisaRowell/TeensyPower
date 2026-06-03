@@ -31,22 +31,18 @@
 #include <stdint.h>
 
 UInt16Register::UInt16Register(const char *deviceName, const char *name,
-                               uint8_t denominatorExponent,
-                               const char *maxValueDescription)
+                               uint8_t denominatorExponent)
     : Register(deviceName, name),
       dataModelLeaf(nullptr),
-      denominatorExponent(denominatorExponent),
-      maxValueDescription(maxValueDescription) {
+      denominatorExponent(denominatorExponent) {
 }
 
 UInt16Register::UInt16Register(const char *deviceName, const char *name,
                                DataModelScaledUInt16Leaf &dataModelLeaf,
-                               uint8_t denominatorExponent,
-                               const char *maxValueDescription)
+                               uint8_t denominatorExponent)
     : Register(deviceName, name),
       dataModelLeaf(&dataModelLeaf),
-      denominatorExponent(denominatorExponent),
-      maxValueDescription(maxValueDescription) {
+      denominatorExponent(denominatorExponent) {
 }
 
 void UInt16Register::set(VEDirectHexMessage &message) {
@@ -73,12 +69,7 @@ void UInt16Register::set(VEDirectHexMessage &message) {
             *dataModelLeaf = value;
         }
 
-        if (maxValueDescription != nullptr && rawValue == UINT16_MAX) {
-            logger << debug << deviceName << ": Updating " << name << " to "
-                   << maxValueDescription;
-        } else {
-            logger << debug << deviceName << ": Updating " << name << " to "
-                   << value << eol;
-        }
+        logger << debug << deviceName << ": Updating " << name << " to "
+               << value << eol;
     }
 }

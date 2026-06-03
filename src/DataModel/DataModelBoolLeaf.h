@@ -31,8 +31,6 @@ class DataModelBoolLeaf : public DataModelRetainedValueLeaf {
    private:
         bool value;
 
-        virtual void logValue(Logger &logger) override;
-
     public:
         DataModelBoolLeaf(const char *name, DataModelNode *parent);
         DataModelBoolLeaf & operator = (const bool value);

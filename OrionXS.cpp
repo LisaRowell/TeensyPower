@@ -37,8 +37,8 @@
 
 OrionXS::OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataModel)
     : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel),
-      deviceMode(name, "Device Mode", deviceModeDescriptions),
-      deviceState(name, "Device State", deviceStateDescriptions),
+      deviceMode(name, "Device Mode"),
+      deviceState(name, "Device State"),
       inputPower(name, "Input Power", 2) {
 }
 

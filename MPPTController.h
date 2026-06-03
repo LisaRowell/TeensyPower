@@ -26,12 +26,10 @@
 
 #include "src/VEDirect/Register.h"
 #include "src/VEDirect/UInt8Register.h"
-#include "src/VEDirect/UInt8EnumRegister.h"
 #include "src/VEDirect/UInt8OnOffRegister.h"
 #include "src/VEDirect/UInt16Register.h"
 #include "src/VEDirect/UInt16RangeRegister.h"
 #include "src/VEDirect/UInt32Register.h"
-#include "src/VEDirect/UInt32EnumRegister.h"
 #include "src/VEDirect/Int16Register.h"
 #include "src/VEDirect/Int32Register.h"
 #include "src/VEDirect/MPPTTotalHistoryRegister.h"
@@ -127,6 +125,7 @@ class MPPTController : public VEDirectDevice {
         MPPTDailyHistoryLeaves history11Leaves;
         MPPTDailyHistoryLeaves history12Leaves;
         MPPTDailyHistoryLeaves history13Leaves;
+#ifdef INCLUDE_FULL_HISTORY
         MPPTDailyHistoryLeaves history14Leaves;
         MPPTDailyHistoryLeaves history15Leaves;
         MPPTDailyHistoryLeaves history16Leaves;
@@ -144,34 +143,35 @@ class MPPTController : public VEDirectDevice {
         MPPTDailyHistoryLeaves history28Leaves;
         MPPTDailyHistoryLeaves history29Leaves;
         MPPTDailyHistoryLeaves history30Leaves;
+#endif
         DataModelNode networkNode;
         DataModelUInt8Leaf networkInfoLeaf;
         DataModelUInt8Leaf networkModeLeaf;
         DataModelUInt8Leaf networkStatusLeaf;
 
-        UInt32EnumRegister productID;
+        UInt32Register productID;
         UInt8Register groupID;
         UInt32Register capabilities;
-        UInt8EnumRegister deviceMode;
-        UInt8EnumRegister deviceState;
-        UInt8EnumRegister deviceState2;
+        UInt8Register deviceMode;
+        UInt8Register deviceState;
+        UInt8Register deviceState2;
         UInt32Register remoteControlUsed;
-        UInt8EnumRegister deviceOffReason8;
-        UInt32EnumRegister deviceOffReason32;
+        UInt8Register deviceOffReason8;
+        UInt32Register deviceOffReason32;
         UInt8OnOffRegister batterySafeMode;
         UInt8OnOffRegister adaptiveMode;
-        UInt8EnumRegister automaticEqualizationMode;
+        UInt8Register automaticEqualizationMode;
         UInt16Register batteryBulkTimeLimit;
         UInt16Register batteryAbsorptionTimeLimit;
         UInt16Register batteryAbsorptionVoltage;
         UInt16Register batteryFloatVoltage;
         UInt16Register batteryEqualizationVoltage;
         Int16Register batteryTempCompensation;
-        UInt8EnumRegister batteryType;
+        UInt8Register batteryType;
         UInt16Register batteryMaximumCurrent;
-        UInt8EnumRegister batteryVoltage;
+        UInt8Register batteryVoltage;
         UInt16Register batteryTemperature;
-        UInt8EnumRegister batteryVoltageSetting;
+        UInt8Register batteryVoltageSetting;
         UInt8OnOffRegister bmsPresent;
         UInt16Register tailCurrent;
         UInt16Register lowTempChargeCurrent;
@@ -185,7 +185,7 @@ class MPPTController : public VEDirectDevice {
         UInt32Register systemYield;
         UInt32Register userYield;
         Int16Register chargerInternalTemp;
-        UInt8EnumRegister chargerErrorCode;
+        UInt8Register chargerErrorCode;
         UInt16Register chargerCurrent;
         UInt16Register chargerVoltage;
         UInt8Register additionalChargerStateInfo;
@@ -209,7 +209,7 @@ class MPPTController : public VEDirectDevice {
         UInt16Register panelVoltage;
         UInt16Register panelCurrent;
         UInt16Register panelMaximumVoltage;
-        UInt8EnumRegister trackerMode;
+        UInt8Register trackerMode;
         UInt16Register panelStartingVoltage;
         UInt32Register panelInputResistance;
         UInt32Register tracker1PanelPower;
@@ -224,20 +224,20 @@ class MPPTController : public VEDirectDevice {
         UInt16Register tracker2PanelCurrent;
         UInt16Register tracker3PanelCurrent;
         UInt16Register tracker4PanelCurrent;
-        UInt8EnumRegister tracker1Mode;
-        UInt8EnumRegister tracker2Mode;
-        UInt8EnumRegister tracker3Mode;
-        UInt8EnumRegister tracker4Mode;
+        UInt8Register tracker1Mode;
+        UInt8Register tracker2Mode;
+        UInt8Register tracker3Mode;
+        UInt8Register tracker4Mode;
         UInt16Register loadCurrent;
         UInt8Register loadOffsetVoltage;
-        UInt8EnumRegister loadOutputControl;
+        UInt8Register loadOutputControl;
         UInt16Register loadOutputVoltage;
         UInt8OnOffRegister loadOutputState;
         UInt16Register loadSwitchHighLevel;
         UInt16Register loadSwitchLowLevel;
-        UInt8EnumRegister loadOutputOffReason;
+        UInt8Register loadOutputOffReason;
         UInt16Register loadAESTimer;
-        UInt8EnumRegister relayOperationMode;
+        UInt8Register relayOperationMode;
         UInt16Register relayBatteryLowVoltageSet;
         UInt16Register relayBatteryLowVoltageClear;
         UInt16Register relayBatteryHighVoltageSet;
@@ -245,8 +245,8 @@ class MPPTController : public VEDirectDevice {
         UInt16Register relayPanelHighVoltageSet;
         UInt16Register relayPanelHighVoltageClear;
         UInt16Register relayMinimumEnabledTime;
-        UInt8EnumRegister txPortOperationMode;
-        UInt8EnumRegister rxPortOperationMode;
+        UInt8Register txPortOperationMode;
+        UInt8Register rxPortOperationMode;
         MPPTTotalHistoryRegister totalHistory;
         MPPTDailyHistoryRegister dailyHistory0;
         MPPTDailyHistoryRegister dailyHistory1;
@@ -285,7 +285,7 @@ class MPPTController : public VEDirectDevice {
         UInt16Register batteryIdleVoltage;
         UInt8Register networkInfo;
         UInt8Register networkMode;
-        UInt8EnumRegister networkStatus;
+        UInt8Register networkStatus;
         Int32Register totalChargeCurrent;
         UInt16Register chargeCurrentLimit;
         UInt8Register manualEqualisationPending;
@@ -311,276 +311,6 @@ class MPPTController : public VEDirectDevice {
         StringField serialNumberField;
         UInt8Field trackerOperationModeField;
         UInt16Field daySequenceNumberField;
-
-        etl::flat_map<uint32_t, const char *, 86> productIDDescriptions = {
-            { 0x0300, "BlueSolar MPPT 70|15" },
-            { 0xA040, "BlueSolar MPPT 75|50" },
-            { 0xA041, "BlueSolar MPPT 150|35" },
-            { 0xA042, "BlueSolar MPPT 75|15" },
-            { 0xA043, "BlueSolar MPPT 100|15" },
-            { 0xA044, "BlueSolar MPPT 100|30" },
-            { 0xA045, "BlueSolar MPPT 100|50" },
-            { 0xA046, "BlueSolar MPPT 150|70" },
-            { 0xA047, "BlueSolar MPPT 150|100" },
-            { 0xA048, "BlueSolar MPPT 75|50" },
-            { 0xA049, "BlueSolar MPPT 100|50" },
-            { 0xA04A, "BlueSolar MPPT 100|30" },
-            { 0xA04B, "BlueSolar MPPT 150|35" },
-            { 0xA04C, "BlueSolar MPPT 75|10" },
-            { 0xA04D, "BlueSolar MPPT 150|45" },
-            { 0xA04E, "BlueSolar MPPT 150|60" },
-            { 0xA04F, "BlueSolar MPPT 150|85" },
-            { 0xA050, "SmartSolar MPPT 250|100" },
-            { 0xA051, "SmartSolar MPPT 150|100" },
-            { 0xA052, "SmartSolar MPPT 150|85" },
-            { 0xA053, "SmartSolar MPPT 75|15" },
-            { 0xA054, "SmartSolar MPPT 75|10" },
-            { 0xA055, "SmartSolar MPPT 100|15" },
-            { 0xA056, "SmartSolar MPPT 100|30" },
-            { 0xA057, "SmartSolar MPPT 100|50" },
-            { 0xA058, "SmartSolar MPPT 150|35" },
-            { 0xA059, "SmartSolar MPPT 150|100 rev2" },
-            { 0xA05A, "SmartSolar MPPT 150|85 rev2" },
-            { 0xA05B, "SmartSolar MPPT 250|70" },
-            { 0xA05C, "SmartSolar MPPT 250|85" },
-            { 0xA05D, "SmartSolar MPPT 250|60" },
-            { 0xA05E, "SmartSolar MPPT 250|45" },
-            { 0xA05F, "SmartSolar MPPT 100|20" },
-            { 0xA060, "SmartSolar MPPT 100|20 48V" },
-            { 0xA061, "SmartSolar MPPT 150|45" },
-            { 0xA062, "SmartSolar MPPT 150|60" },
-            { 0xA063, "SmartSolar MPPT 150|70" },
-            { 0xA064, "SmartSolar MPPT 250|85 rev2" },
-            { 0xA065, "SmartSolar MPPT 250|100 rev2" },
-            { 0xA066, "BlueSolar MPPT 100|20" },
-            { 0xA067, "BlueSolar MPPT 100|20 48V" },
-            { 0xA068, "SmartSolar MPPT 250|60 rev2" },
-            { 0xA069, "SmartSolar MPPT 250|70 rev2" },
-            { 0xA06A, "SmartSolar MPPT 150|45 rev2" },
-            { 0xA06B, "SmartSolar MPPT 150|60 rev2" },
-            { 0xA06C, "SmartSolar MPPT 150|70 rev2" },
-            { 0xA06D, "SmartSolar MPPT 150|85 rev2" },
-            { 0xA06E, "SmartSolar MPPT 150|100 rev3" },
-            { 0xA06F, "BlueSolar MPPT 150|45 rev2" },
-            { 0xA070, "BlueSolar MPPT 150|60 rev2" },
-            { 0xA071, "BlueSolar MPPT 150|70 rev2" },
-            { 0xA072, "BlueSolar MPPT 150|45 rev3" },
-            { 0xA073, "SmartSolar MPPT 150|45 rev3" },
-            { 0xA074, "SmartSolar MPPT 75|10 rev2" },
-            { 0xA075, "SmartSolar MPPT 75|15 rev2" },
-            { 0xA076, "BlueSolar MPPT 100|30 rev3" },
-            { 0xA077, "BlueSolar MPPT 100|50 rev3" },
-            { 0xA078, "BlueSolar MPPT 150|35 rev2" },
-            { 0xA079, "BlueSolar MPPT 75|10 rev2" },
-            { 0xA07A, "BlueSolar MPPT 75|15 rev2" },
-            { 0xA07B, "BlueSolar MPPT 100|15 rev2" },
-            { 0xA07C, "BlueSolar MPPT 75/10 rev3" },
-            { 0xA07D, "BlueSolar MPPT 75/15 rev3" },
-            { 0xA07E, "SmartSolar Charger MPPT 100/30" },
-            { 0xA102, "SmartSolar MPPT VE.Can 150|70" },
-            { 0xA103, "SmartSolar MPPT VE.Can 150|45" },
-            { 0xA104, "SmartSolar MPPT VE.Can 150|60" },
-            { 0xA105, "SmartSolar MPPT VE.Can 150|85" },
-            { 0xA106, "SmartSolar MPPT VE.Can 150|100" },
-            { 0xA107, "SmartSolar MPPT VE.Can 250|45" },
-            { 0xA108, "SmartSolar MPPT VE.Can 250|60" },
-            { 0xA109, "SmartSolar MPPT VE.Can 250|70" },
-            { 0xA10A, "SmartSolar MPPT VE.Can 250|85" },
-            { 0xA10B, "SmartSolar MPPT VE.Can 250|100" },
-            { 0xA10C, "SmartSolar MPPT VE.Can 150|70 rev2" },
-            { 0xA10D, "SmartSolar MPPT VE.Can 150|85 rev2" },
-            { 0xA10E, "SmartSolar MPPT VE.Can 150|100 rev2" },
-            { 0xA10F, "BlueSolar MPPT VE.Can 150|100" },
-            { 0xA110, "SmartSolar MPPT RS 450/100" },
-            { 0xA111, "SmartSolar MPPT RS 450/200" },
-            { 0xA112, "BlueSolar MPPT VE.Can 250|70" },
-            { 0xA113, "BlueSolar MPPT VE.Can 250|100" },
-            { 0xA114, "SmartSolar MPPT VE.Can 250|70 rev2" },
-            { 0xA115, "SmartSolar MPPT VE.Can 250|100 rev2" },
-            { 0xA116, "SmartSolar MPPT VE.Can 250|85 rev2" },
-            { 0xA117, "BlueSolar MPPT VE.Can 150|100 rev2" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 3> deviceModeDescriptions = {
-            { 0, "Charger Off (0)" },
-            { 1, "Charger On (1)" },
-            { 4, "Charger Off (4)" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 12> deviceStateDescriptions = {
-            { 0, "Not Charging" },
-            { 2, "Fault" },
-            { 3, "Bulk" },
-            { 4, "Absorption" },
-            { 5, "Float" },
-            { 6, "Storage" },
-            { 7, "Manual Equalise" },
-            { 245, "Wake Up" },
-            { 247, "Auto Equalise" },
-            { 250, "Blocked" },
-            { 252, "External Control" },
-            { 255, "Unavailable" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 15> deviceState2Descriptions = {
-            { 0, "Not Charging" },
-            { 2, "Fault" },
-            { 3, "Bulk" },
-            { 4, "Absorption" },
-            { 5, "Float" },
-            { 6, "Storage" },
-            { 7, "Manual Equalise" },
-            { 11, "Power Supply"},
-            { 245, "Wake Up" },
-            { 246, "Repeat Absorption" },
-            { 247, "Auto Equalise" },
-            { 248, "Battery Safe" },
-            { 249, "Load Detect" },
-            { 252, "External Control" },
-            { 255, "Unavailable" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 10> deviceOffReason8Descriptions = {
-            { 0, "No input power" },
-            { 1, "Physical power switch" },
-            { 2, "Soft power switch" },
-            { 3, "Remote input" },
-            { 4, "Internal reason" },
-            { 5, "Pay-as-you-go out of credit" },
-            { 6, "BMS shutdown" },
-            { 7, "Reserved" },
-            { 8, "Reserved" },
-            { 9, "Battery temperature too low" }
-        };
-
-        etl::flat_map<uint32_t, const char *, 10> deviceOffReason32Descriptions = {
-            { 0, "No input power" },
-            { 1, "Physical power switch" },
-            { 2, "Soft power switch" },
-            { 3, "Remote input" },
-            { 4, "Internal reason" },
-            { 5, "Pay-as-you-go out of credit" },
-            { 6, "BMS shutdown" },
-            { 7, "Reserved" },
-            { 8, "Reserved" },
-            { 9, "Battery temperature too low" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 3> automaticEqualizationModeDescriptions = {
-            { 0, "Off" },
-            { 1, "Every Day" },
-            { 2, "Every Other Day" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 1> batteryTypeDescriptions = {
-            { 255, "User" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 5> batteryVoltageSettingDescriptions = {
-            { 0, "Auto detect" },
-            { 12, "12V Battery" },
-            { 24, "24V Battery" },
-            { 36, "36V Battery" },
-            { 48, "48V Battery" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 30> chargerErrorCodeDescriptions = {
-            { 0, "No error" },
-            { 2, "Battery voltage too high" },
-            { 3, "Battery temperature sensor issue (3)" },
-            { 4, "Battery temperature sensor issue (4)" },
-            { 5, "Battery temperature sensor issue (5)" },
-            { 6, "Battery voltage sensor issue (6)" },
-            { 7, "Battery voltage sensor issue (7)" },
-            { 8, "Battery voltage sensor issue (8)" },
-            { 14, "Battery temperature too low" },
-            { 17, "Charger internal temperature too high" },
-            { 18, "Charger excessive output current" },
-            { 19, "Charger current polarity reversed" },
-            { 20, "Charger bulk time expired" },
-            { 21, "Charger current sensor issue" },
-            { 22, "Charger internal temperature sensor issue (22)" },
-            { 23, "Charger internal temperature sensor issue (23)" },
-            { 26, "Charger terminals overheated" },
-            { 27, "Charger short-circuit" },
-            { 28, "Converter issue" },
-            { 29, "Battery over-charge protection" },
-            { 33, "Input voltage too high" },
-            { 34, "Input excessive current" },
-            { 38, "Input shutdown (38)" },
-            { 39, "Input shutdown (39)" },
-            { 66, "Incompatible device in the network" },
-            { 67, "BMS connection lost" },
-            { 68, "Network misconfigured" },
-            { 116, "Calibration data lost" },
-            { 117, "Incompatible firmware" },
-            { 119, "Settings data invalid / corrupted" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 3> trackerModeDescriptions = {
-            { 0, "Off" },
-            { 1, "Voltage / Current Limited" },
-            { 2, "MPP tracker" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 8> loadOutputControlDescriptions = {
-            { 0, "OFF" },
-            { 1, "AUTO" },
-            { 2, "ALT1" },
-            { 3, "ALT2" },
-            { 4, "ON" },
-            { 5, "USER1" },
-            { 6, "USER2" },
-            { 7, "AES" },
-        };
-
-        etl::flat_map<uint8_t, const char *, 8> loadOutputOffReasonDescriptions = {
-            { 0, "Battery Low" },
-            { 1, "Short Circuit" },
-            { 2, "Timer Program" },
-            { 3, "Remote Input" },
-            { 4, "Pay-As-You-Go Out of Credit" },
-            { 5, "Reserved (5)" },
-            { 6, "Reserved (6)" },
-            { 7, "Device Starting Up" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 11> relayOperationModeDescriptions = {
-            { 0, "Relay Always Off" },
-            { 1, "Panel Voltage High" },
-            { 2, "Internal Temperature High" },
-            { 3, "Battery Voltage Too Low" },
-            { 4, "Equalization Active" },
-            { 5, "Error Condition Present" },
-            { 6, "Internal Temperature Low" },
-            { 7, "Battery Voltage Too High" },
-            { 8, "Charger in Float or Storage" },
-            { 9, "Day Detection" },
-            { 10, "Load Control" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 5> txPortOperationModeDescriptions = {
-            { 0, "Normal VE.Direct Communication" },
-            { 1, "Pulse for Every 0.01kWh Harvested" },
-            { 2, "Lighting Control PWM Normal" },
-            { 3, "Lighting Control PWM Inverted" },
-            { 4, "Virtual Load Output" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 4> rxPortOperationModeDescriptions = {
-            { 0, "Remote on/off" },
-            { 1, "Load output configuration" },
-            { 2, "Load output on/off remote control (inverted)" },
-            { 3, "Load output on/off remote control (normal)" }
-        };
-
-        etl::flat_map<uint8_t, const char *, 5> networkStatusDescriptions = {
-            { 0x00, "Slave mode" },
-            { 0x01, "Group master" },
-            { 0x02, "Instance master" },
-            { 0x03, "Group and instance master" },
-            { 0x04, "Stand-alone" }
-        };
 
         etl::flat_map<uint16_t, Register &, 141> registerMap = {
             { 0x0100, productID },

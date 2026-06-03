@@ -33,8 +33,6 @@ class DataModelScaledUInt16Leaf : public DataModelRetainedValueLeaf {
    private:
         ScaledUInt16 value;
 
-        virtual void logValue(Logger &logger) override;
-
     public:
         DataModelScaledUInt16Leaf(const char *name, DataModelNode *parent);
         DataModelScaledUInt16Leaf & operator = (const ScaledUInt16 &value);

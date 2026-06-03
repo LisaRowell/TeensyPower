@@ -157,8 +157,3 @@ void DataModelRoot::retainedValueCleared() {
     dataModel->retainedValueCleared();
 }
 
-void DataModelRoot::dump() {
-    for (DataModelElement &child : children) {
-        child.dump();
-    }
-}
