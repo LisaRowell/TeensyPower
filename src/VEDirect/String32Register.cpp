@@ -28,7 +28,7 @@ String32Register::String32Register(const char *deviceName, const char *name)
     : Register(deviceName, name) {
 }
 
-void String32Register::set(VEDirectHexMessage &message) {
+bool String32Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
     etl::string<32> string;
     message.parseString(string, 32);
@@ -37,12 +37,15 @@ void String32Register::set(VEDirectHexMessage &message) {
     if (message.hadParseError()) {
         logger << deviceName << ": Badly formed " << name << " message: "
                << message << eol;
+        return false;
     } else if (flags != 0) {
         logger << deviceName << ": " << name << " update with flags (0x"
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
+        return false;
     } else {
         logger << debug << deviceName << ": Updating " << name << " to "
                << string << eol;
+        return true;
     }
 }

@@ -46,7 +46,7 @@ Int32Register::Int32Register(const char *deviceName, const char *name,
       denominatorExponent(denominatorExponent) {
 }
 
-void Int32Register::set(VEDirectHexMessage &message) {
+bool Int32Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
     int32_t rawValue = message.parseInt32();
     message.expectedEnd();
@@ -57,6 +57,7 @@ void Int32Register::set(VEDirectHexMessage &message) {
         if (dataModelLeaf != nullptr) {
             dataModelLeaf->removeValue();
         }
+        return false;
     } else if (flags != 0) {
         logger << deviceName << ": " << name << " update with flags (0x"
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
@@ -64,6 +65,7 @@ void Int32Register::set(VEDirectHexMessage &message) {
         if (dataModelLeaf != nullptr) {
             dataModelLeaf->removeValue();
         }
+        return false;
     } else {
         ScaledInt32 value(rawValue, denominatorExponent);
         if (dataModelLeaf != nullptr) {
@@ -71,6 +73,7 @@ void Int32Register::set(VEDirectHexMessage &message) {
         }
         logger << debug << deviceName << ": Updating " << name << " to "
                << value << eol;
+        return true;
     }
 }
 

@@ -42,8 +42,6 @@
 #include "src/VEDirect/ScaledUInt32Field.h"
 #include "src/VEDirect/UInt16Field.h"
 #include "src/VEDirect/UInt32Field.h"
-#include "src/VEDirect/UnsignedField.h"
-#include "src/VEDirect/SignedField.h"
 #include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/StringField.h"
 
@@ -251,7 +249,7 @@ class BMV : public VEDirectDevice {
         Int16Field monitorModeField;
         ScaledInt32Field minimumAuxVoltageField;
         ScaledInt32Field maximumAuxVoltageField;
-        SignedField auxVoltageField;
+        ScaledInt32Field auxVoltageField;
 
         etl::flat_map<uint16_t, Register &, 105> registerMap = {
             { 0x0090, bluetoothMode },
@@ -396,8 +394,8 @@ class BMV : public VEDirectDevice {
         };
 
     public:
-        BMV(const char *name, const char *nodeName,
-            HardwareSerial &serialPort, DataModel &dataModel,
+        BMV(const char *name, HardwareSerial &serialPort,
+            DataModel &dataModel, StatsManager &statsManager,
             const etl::ivector<MPPTController *> *mppts = nullptr);
 };
 

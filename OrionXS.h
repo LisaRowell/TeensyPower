@@ -37,6 +37,7 @@
 #include <stdint.h>
 
 class DataModel;
+class StatsManager;
 
 class OrionXS :public VEDirectDevice {
     private:
@@ -54,7 +55,8 @@ class OrionXS :public VEDirectDevice {
         };
 
     public:
-        OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataModel);
+        OrionXS(const char *name, HardwareSerial &serialPort, DataModel &dataModel,
+                StatsManager &statsManager);
         void service() override;
 
 };

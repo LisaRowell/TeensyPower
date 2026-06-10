@@ -49,14 +49,15 @@ Logger logger(dataModel);
 NetworkInterface networkInterface;
 MQTTBroker mqttBroker(dataModel, statsManager);
 
-MPPTController mppt1("mppt1", "mppt1", Serial2, dataModel);
-MPPTController mppt2("mppt2", "mppt2", Serial3, dataModel);
-MPPTController mppt3("mppt3", "mppt3", Serial4, dataModel);
-MPPTController mppt4("mppt4", "mppt4", Serial5, dataModel);
-MPPTController mppt5("mppt5", "mppt5", Serial6, dataModel);
-const etl::vector<MPPTController *, 5> mppts = { &mppt1, &mppt2, &mppt3, &mppt4, &mppt5 };
-BMV bmv("BMV", "bmv", Serial1, dataModel, &mppts );
-BMV windShunt("WindShunt", "windShunt", Serial7, dataModel);
+MPPTController mppt1("mppt1", Serial2, dataModel, statsManager);
+MPPTController mppt2("mppt2", Serial3, dataModel, statsManager);
+MPPTController mppt3("mppt3", Serial4, dataModel, statsManager);
+MPPTController mppt4("mppt4", Serial5, dataModel, statsManager);
+MPPTController mppt5("mppt5", Serial6, dataModel, statsManager);
+const etl::vector<MPPTController *, 5> mppts = { &mppt1, &mppt2, &mppt3,
+                                                 &mppt4, &mppt5 };
+BMV bmv("bmv", Serial1, dataModel, statsManager, &mppts);
+BMV windShunt("windShunt", Serial7, dataModel, statsManager);
 
 etl::string<10> versionBuffer;
 DataModelStringLeaf versionLeaf("version", &dataModel.brokerNode(), versionBuffer);

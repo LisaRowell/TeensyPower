@@ -40,12 +40,13 @@ HexUInt32Field::HexUInt32Field(const char *deviceName, const char *name,
       exceptionValue(exceptionValue) {
 }
 
-void HexUInt32Field::set(const etl::istring &message) {
+bool HexUInt32Field::set(const etl::istring &message) {
     if ((exceptionMatch != nullptr && message == exceptionMatch) ||
         (message == "---")) {
         dataModelLeaf = exceptionValue;
         logger << debug << deviceName << ":" << "Setting " << name << " to '"
                << exceptionValue << "'" << eol;
+        return true;
     } else {
         etl::string_view messageView(message.begin(), message.size());
         etl::string_view prefixView = messageView.substr(0, 2);
@@ -56,15 +57,18 @@ void HexUInt32Field::set(const etl::istring &message) {
                 dataModelLeaf = result.value();
                 logger << debug << deviceName << ":" << "Setting " << name << " to '"
                        << result.value() << "'" << eol;
+                return true;
             } else {
                 logger << deviceName << ": Bad value '" << message << "' for field "
                        << name << eol;
                 dataModelLeaf.removeValue();
+                return false;
             }
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field "
                    << name << eol;
             dataModelLeaf.removeValue();
+            return false;
         }
     }
 }

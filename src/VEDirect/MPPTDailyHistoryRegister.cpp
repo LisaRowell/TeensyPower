@@ -41,7 +41,7 @@ MPPTDailyHistoryRegister::MPPTDailyHistoryRegister(const char *deviceName)
     : Register(deviceName, "Daily History") {
 }
 
-void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
+bool MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
     uint8_t recordVersion = message.parseUInt8();
     ScaledUInt32 yield(message.parseUInt32(), 2);
@@ -65,13 +65,16 @@ void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
     if (recordVersion != 0) {
         logger << deviceName << ": Unsupported Daily History message format ("
                << recordVersion <<"): " << message << eol;
+        return false;
     } else if (message.hadParseError()) {
         logger << deviceName << ": Badly formed Daily History message: "
                << message << eol;
+        return false;
     } else if (flags != 0) {
         logger << deviceName << ": Daily History update with flags (0x"
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
+        return false;
     } else {
         logger << debug << deviceName << ": Updating Day " << daySequenceNumber <<" History:" << eol;
         logger << debug << "    Yield: " << yield << " kWh" << eol;
@@ -96,5 +99,7 @@ void MPPTDailyHistoryRegister::set(VEDirectHexMessage &message) {
                         timeFloat, powerMaximum, batteryCurrentMaximum, panelVoltageMaximum,
                         daySequenceNumber);
         }
+
+        return true;
     }
 }

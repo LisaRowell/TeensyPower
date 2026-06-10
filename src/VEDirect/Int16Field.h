@@ -37,7 +37,7 @@ class Int16Field : public Field {
         Int16Field(const char *deviceName, const char *name,
                    DataModelInt16Leaf &dataModelLeaf,
                    bool invert = false);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

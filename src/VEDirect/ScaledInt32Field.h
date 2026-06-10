@@ -39,7 +39,7 @@ class ScaledInt32Field : public Field {
                          DataModelScaledInt32Leaf &dataModelLeaf,
                          uint8_t denominatorExponent = 0,
                          bool invert = false);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

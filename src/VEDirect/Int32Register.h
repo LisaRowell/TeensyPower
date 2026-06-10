@@ -38,7 +38,7 @@ class Int32Register : public Register {
         Int32Register(const char *deviceName, const char *name,
                       DataModelScaledInt32Leaf &dataModelLeaf,
                       uint8_t denominatorExponent = 0);
-        void set(VEDirectHexMessage &message) override;
+        bool set(VEDirectHexMessage &message) override;
 };
 
 #endif

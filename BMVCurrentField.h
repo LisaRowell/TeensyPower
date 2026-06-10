@@ -42,7 +42,7 @@ class BMVCurrentField : public Field {
         BMVCurrentField(const char *deviceName,
                         DataModelScaledInt32Leaf &dataModelLeaf,
                         const etl::ivector<MPPTController *> *mppts = nullptr);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

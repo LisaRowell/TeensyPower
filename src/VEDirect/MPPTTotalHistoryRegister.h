@@ -28,7 +28,7 @@ class VEDirectHexMessage;
 class MPPTTotalHistoryRegister : public Register {
     public:
         MPPTTotalHistoryRegister(const char *deviceName);
-        void set(VEDirectHexMessage &message) override;
+        bool set(VEDirectHexMessage &message) override;
 };
 
 #endif

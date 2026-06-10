@@ -39,7 +39,7 @@ class UInt8Field : public Field {
                    DataModelUInt8Leaf &dataModelLeaf,
                    const char *exceptionMatch = nullptr,
                    uint8_t exceptionValue = 0xff);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

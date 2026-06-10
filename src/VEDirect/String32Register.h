@@ -26,7 +26,7 @@ class VEDirectHexMessage;
 class String32Register : public Register {
     public:
         String32Register(const char *deviceName, const char *name);
-        void set(VEDirectHexMessage &message) override;
+        bool set(VEDirectHexMessage &message) override;
 };
 
 #endif

@@ -40,12 +40,13 @@ BMVVoltageField::BMVVoltageField(const char *deviceName,
       mppts(mppts) {
 }
 
-void BMVVoltageField::set(const etl::istring &message) {
+bool BMVVoltageField::set(const etl::istring &message) {
     if (message == "---") {
         logger << debug << deviceName << ":" << "Clearing Voltage" << eol;
         dataModelLeaf.removeValue();
 
         clearMPPTsVoltage();
+        return true;
     } else {
         etl::to_arithmetic_result result = etl::to_arithmetic<int32_t>(message);
         if (result.has_value()) {
@@ -57,12 +58,14 @@ void BMVVoltageField::set(const etl::istring &message) {
             dataModelLeaf = voltage;
 
             setMPPTsVoltage(voltageMV);
+            return true;
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field Voltage"
                    << eol;
             dataModelLeaf.removeValue();
 
             clearMPPTsVoltage();
+            return false;
         }
     }
 }

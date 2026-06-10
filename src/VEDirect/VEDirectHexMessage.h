@@ -40,10 +40,10 @@ class VEDirectHexMessage : public LoggableItem {
         size_t readPos;
         uint8_t checksum;
         bool messageInError;
-        uint32_t messages;
+        uint32_t _messages;
         uint32_t badMessages;
-        uint32_t checksumErrors;
-        uint32_t runtMessages;
+        uint32_t _runtMessages;
+        uint32_t _checksumErrors;
         uint32_t badCharacters;
         uint32_t missingNibbleErrors;
         bool parseError;
@@ -67,6 +67,9 @@ class VEDirectHexMessage : public LoggableItem {
         void expectedEnd();
         bool hadParseError() const;
         size_t remainingBytes() const;
+        uint32_t messages() const;
+        uint32_t runtMessages() const;
+        uint32_t checksumErrors() const;
         void log(Logger &logger) const override;
 };
 

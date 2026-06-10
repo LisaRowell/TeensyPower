@@ -39,22 +39,25 @@ UInt32Field::UInt32Field(const char *deviceName, const char *name,
       exceptionValue(exceptionValue) {
 }
 
-void UInt32Field::set(const etl::istring &message) {
+bool UInt32Field::set(const etl::istring &message) {
     if ((exceptionMatch != nullptr && message == exceptionMatch) ||
         (message == "---")) {
         dataModelLeaf = exceptionValue;
         logger << debug << deviceName << ":" << "Setting " << name << " to '"
                << exceptionValue << "'" << eol;
+        return true;
     } else {
         etl::to_arithmetic_result result = etl::to_arithmetic<uint32_t>(message);
         if (result.has_value()) {
             dataModelLeaf = result.value();
             logger << debug << deviceName << ":" << "Setting " << name << " to '"
                    << result.value() << "'" << eol;
+            return true;
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field "
                    << name << eol;
             dataModelLeaf.removeValue();
+            return false;
         }
     }
 }

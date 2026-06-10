@@ -28,7 +28,7 @@ class VEDirectHexMessage;
 class UInt8OnOffRegister : public Register {
     public:
         UInt8OnOffRegister(const char *deviceName, const char *name);
-        void set(VEDirectHexMessage &message) override;
+        bool set(VEDirectHexMessage &message) override;
 };
 
 #endif

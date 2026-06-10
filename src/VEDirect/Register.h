@@ -30,7 +30,7 @@ class Register {
 
     public:
         Register(const char *deviceName, const char *name);
-        virtual void set(VEDirectHexMessage &message) = 0;
+        virtual bool set(VEDirectHexMessage &message) = 0;
 };
 
 #endif

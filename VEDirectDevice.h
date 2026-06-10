@@ -1,3 +1,4 @@
+#include <sys/_stdint.h>
 /* 
  * This file is part of the TeensyPower distribution
  * (https://github.com/LisaRowell/TeensyPower).
@@ -24,8 +25,10 @@
 #include "src/VEDirect/VEDirectHexMessage.h"
 #include "src/VEDirect/VEDirectTextField.h"
 
-#include "src/DataModel/DataModel.h"
 #include "src/DataModel/DataModelNode.h"
+#include "src/DataModel/DataModelUInt32Leaf.h"
+
+#include "src/StatsManager/StatsHolder.h"
 
 #include "src/Util/PassiveTimer.h"
 
@@ -38,11 +41,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+class DataModel;
+class StatsManager;
 class Stream;
 class VEDirectHexCommandMessage;
 class DataModelRoot;
 
-class VEDirectDevice {
+class VEDirectDevice : public StatsHolder {
     protected:
         struct CStringCompare {
             bool operator()(char const *a, char const *b) const {
@@ -80,10 +85,33 @@ class VEDirectDevice {
         etl::vector<VEDirectTextField, VE_DIRECT_MAX_TEXT_FIELDS_PER_BLOCK> textBlock;
         uint8_t hexChecksum;
         int textChecksum;  // Victron uses an int...don't blame me
-        uint32_t runtMessages;
+        uint32_t textBlocks;
+        uint32_t textFields;
+        uint32_t unhandledTextFields;
+        uint32_t textRuntMessages;
         uint32_t textChecksumErrors;
+        uint32_t textSetErrors;
+        uint32_t hexSetErrors;
+        uint32_t unhandledRegisterErrors;
         bool commandOutstanding;
         PassiveTimer commandTimeout;
+        uint32_t commandTimeouts;
+        DataModelNode deviceSysNode;
+        DataModelUInt32Leaf textBlocksLeaf;
+        DataModelUInt32Leaf textFieldsLeaf;
+        DataModelUInt32Leaf hexMessagesLeaf;
+        DataModelNode errorNode;
+        DataModelNode textErrorNode;
+        DataModelUInt32Leaf unhandledTextFieldsLeaf;
+        DataModelUInt32Leaf textRuntMessagesLeaf;
+        DataModelUInt32Leaf textChecksumErrorsLeaf;
+        DataModelUInt32Leaf textSetErrorsLeaf;
+        DataModelNode hexErrorNode;
+        DataModelUInt32Leaf hexRuntMessagesLeaf;
+        DataModelUInt32Leaf hexChecksumErrorsLeaf;
+        DataModelUInt32Leaf hexSetErrorsLeaf;
+        DataModelUInt32Leaf unhandledRegisterErrorsLeaf;
+        DataModelUInt32Leaf commandTimeoutsLeaf;
 
         void processInput();
         void processCharInput(char input);
@@ -108,12 +136,11 @@ class VEDirectDevice {
 
     protected:
         const char *name;
-        DataModelNode deviceNode;
 
         VEDirectDevice(const char *name, HardwareSerial &serialPort,
                        etl::iflat_map<uint16_t, Register &> &registers,
                        etl::iflat_map<const char *, Field &, CStringCompare> &fields,
-                       DataModel &dataModel);
+                       DataModel &dataModel, StatsManager &statsManager);
         bool clearToSend() const;
         void sendGet(uint16_t registerID);
         void sendSet(uint16_t registerID, uint16_t value);
@@ -124,6 +151,7 @@ class VEDirectDevice {
     public:
         virtual void setup();
         virtual void service();
+        virtual void harvestStats(uint32_t msElapsed) override;
 };
 
 #endif

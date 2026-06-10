@@ -38,11 +38,10 @@
 #include "src/VEDirect/ScaledInt32Field.h"
 #include "src/VEDirect/UInt16Field.h"
 #include "src/VEDirect/UInt32Field.h"
-#include "src/VEDirect/UnsignedField.h"
-#include "src/VEDirect/SignedField.h"
 #include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/StringField.h"
 
+#include "src/DataModel/DataModel.h"
 #include "src/DataModel/DataModelNode.h"
 #include "src/DataModel/DataModelBoolLeaf.h"
 #include "src/DataModel/DataModelInt16Leaf.h"
@@ -55,6 +54,8 @@
 #include "src/DataModel/DataModelUInt16Leaf.h"
 #include "src/DataModel/DataModelUInt32Leaf.h"
 
+#include "src/StatsManager/StatsManager.h"
+
 #include <Arduino.h>
 
 #include <Embedded_Template_Library.h>
@@ -66,11 +67,12 @@
 #include <stdint.h>
 #include <string.h>
 
-BMV::BMV(const char *name, const char *nodeName,
-         HardwareSerial &serialPort, DataModel &dataModel,
+BMV::BMV(const char *name, HardwareSerial &serialPort, DataModel &dataModel,
+         StatsManager &statsManager,
          const etl::ivector<MPPTController *> *mppts)
-    : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel),
-      deviceNode(nodeName, &dataModel.rootNode()),
+    : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel,
+                     statsManager),
+      deviceNode(name, &dataModel.rootNode()),
       mainNode("main", &deviceNode),
       mainSOCLeaf("soc", &mainNode),
       mainVoltageLeaf("voltage", &mainNode),

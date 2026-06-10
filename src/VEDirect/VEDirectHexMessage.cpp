@@ -32,10 +32,10 @@
 #include <stddef.h>
 
 VEDirectHexMessage::VEDirectHexMessage()
-    : messages(0),
+    : _messages(0),
       badMessages(0),
-      checksumErrors(0),
-      runtMessages(0),
+      _runtMessages(0),
+      _checksumErrors(0),
       badCharacters(0),
       missingNibbleErrors(0) {
 }
@@ -60,18 +60,18 @@ bool VEDirectHexMessage::inputCharacter(char input) {
             missingNibbleErrors++;
         }
         if (message.size() <2) {
-            runtMessages++;
+            _runtMessages++;
             badMessages++;
             messageInError = true;
         }
         if (checksum != 0) {
             Serial.println("Checksum error");
-            checksumErrors++;
+            _checksumErrors++;
             badMessages++;
             messageInError = true;
         }
         if (!messageInError) {
-            messages++;
+            _messages++;
         }
         return true;
     } else {
@@ -224,14 +224,24 @@ void VEDirectHexMessage::expectedEnd() {
     }
 }
 
-
 bool VEDirectHexMessage::hadParseError() const {
     return parseError;
 }
 
-
 size_t VEDirectHexMessage::remainingBytes() const {
     return message.size() - readPos - 1;
+}
+
+uint32_t VEDirectHexMessage::messages() const {
+    return _messages;
+}
+
+uint32_t VEDirectHexMessage::checksumErrors() const {
+    return _checksumErrors;
+}
+
+uint32_t VEDirectHexMessage::runtMessages() const {
+    return _runtMessages;
 }
 
 void VEDirectHexMessage::log(Logger &logger) const {

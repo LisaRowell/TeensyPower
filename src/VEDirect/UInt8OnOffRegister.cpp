@@ -30,7 +30,7 @@ UInt8OnOffRegister::UInt8OnOffRegister(const char *deviceName, const char *name)
     : Register(deviceName, name) {
 }
 
-void UInt8OnOffRegister::set(VEDirectHexMessage &message) {
+bool UInt8OnOffRegister::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
     uint8_t value = message.parseUInt8();
     message.expectedEnd();
@@ -38,10 +38,12 @@ void UInt8OnOffRegister::set(VEDirectHexMessage &message) {
     if (message.hadParseError()) {
         logger << deviceName << ": Badly formed " << name << " message: "
                << message << eol;
+        return false;
     } else if (flags != 0) {
         logger << deviceName << ": " << name << " update with flags (0x"
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
+        return false;
     } else {
         logger << debug << deviceName << ": Updating " << name << " to ";
         switch (value) {
@@ -56,5 +58,7 @@ void UInt8OnOffRegister::set(VEDirectHexMessage &message) {
                        << etl::setw(0);
         }
         logger << eol;
+
+        return true;
     }
 }

@@ -33,7 +33,7 @@ class MPPTDailyHistoryRegister : public Register {
     public:
         MPPTDailyHistoryRegister(const char *deviceName, MPPTDailyHistoryLeaves &leaves);
         MPPTDailyHistoryRegister(const char *deviceName);
-        void set(VEDirectHexMessage &message) override;
+        bool set(VEDirectHexMessage &message) override;
 };
 
 #endif

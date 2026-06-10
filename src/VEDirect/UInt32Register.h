@@ -34,7 +34,7 @@ class UInt32Register : public Register {
     public:
         UInt32Register(const char *deviceName, const char *name,
                        uint8_t denominatorExponent = 0);
-        void set(VEDirectHexMessage &message) override;
+        bool set(VEDirectHexMessage &message) override;
 };
 
 #endif

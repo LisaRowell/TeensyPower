@@ -32,11 +32,9 @@
 #include "src/VEDirect/Field.h"
 #include "src/VEDirect/HexUInt16Field.h"
 #include "src/VEDirect/HexUInt32Field.h"
-#include "src/VEDirect/UnsignedField.h"
 #include "src/VEDirect/ScaledInt32Field.h"
 #include "src/VEDirect/ScaledUInt16Field.h"
 #include "src/VEDirect/ScaledUInt32Field.h"
-#include "src/VEDirect/SignedField.h"
 #include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/StringField.h"
 #include "src/VEDirect/UInt16Field.h"
@@ -54,6 +52,8 @@
 #include "src/DataModel/DataModelUInt16Leaf.h"
 #include "src/DataModel/DataModelUInt32Leaf.h"
 
+#include "src/StatsManager/StatsManager.h"
+
 #include <Arduino.h>
 
 #include <Embedded_Template_Library.h>
@@ -62,10 +62,11 @@
 
 #include <stdint.h>
 
-MPPTController::MPPTController(const char *name, const char *nodeName,
-                               HardwareSerial &serialPort, DataModel &dataModel)
-    : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel),
-      deviceNode(nodeName, &dataModel.rootNode()),
+MPPTController::MPPTController(const char *name, HardwareSerial &serialPort,
+                               DataModel &dataModel, StatsManager &statsManager)
+    : VEDirectDevice(name, serialPort, registerMap, fieldMap, dataModel,
+                     statsManager),
+      deviceNode(name, &dataModel.rootNode()),
       chargerNode("charger", &deviceNode),
       chargerVoltageLeaf("voltage", &chargerNode),
       chargerCurrentLeaf("current", &chargerNode),

@@ -39,7 +39,7 @@ class HexUInt16Field : public Field {
                        DataModelUInt16Leaf &dataModelLeaf,
                        const char *exceptionMatch = nullptr,
                        uint16_t exceptionValue = 0xffff);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

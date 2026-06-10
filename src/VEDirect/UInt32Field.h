@@ -39,7 +39,7 @@ class UInt32Field : public Field {
                     DataModelUInt32Leaf &dataModelLeaf,
                     const char *exceptionMatch = nullptr,
                     uint32_t exceptionValue = 0xffffffff);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

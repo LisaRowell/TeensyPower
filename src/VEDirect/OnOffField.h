@@ -33,7 +33,7 @@ class OnOffField : public Field {
     public:
         OnOffField(const char *deviceName, const char *name,
                    DataModelBoolLeaf &dataModelLeaf);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

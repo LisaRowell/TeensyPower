@@ -40,7 +40,7 @@ ScaledInt32Field::ScaledInt32Field(const char *deviceName, const char *name,
       invert(invert) {
 }
 
-void ScaledInt32Field::set(const etl::istring &message) {
+bool ScaledInt32Field::set(const etl::istring &message) {
     if (message.compare("---") != 0) {
         etl::to_arithmetic_result result = etl::to_arithmetic<int32_t>(message);
         if (result.has_value()) {
@@ -49,12 +49,15 @@ void ScaledInt32Field::set(const etl::istring &message) {
             dataModelLeaf = value;
             logger << debug << deviceName << ":" << "Setting " << name << " to '"
                    << value << "'" << eol;
+            return true;
         } else {
             dataModelLeaf.removeValue();
             logger << deviceName << ": Bad value '" << message << "' for field "
                    << name << eol;
+            return false;
         }
     } else {
         dataModelLeaf.removeValue();
+        return true;
     }
 }

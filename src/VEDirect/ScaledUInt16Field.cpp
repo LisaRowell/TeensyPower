@@ -39,7 +39,7 @@ ScaledUInt16Field::ScaledUInt16Field(const char *deviceName, const char *name,
       denominatorExponent(denominatorExponent) {
 }
 
-void ScaledUInt16Field::set(const etl::istring &message) {
+bool ScaledUInt16Field::set(const etl::istring &message) {
     if (message.compare("---") != 0) {
         etl::to_arithmetic_result result = etl::to_arithmetic<uint16_t>(message);
         if (result.has_value()) {
@@ -47,12 +47,15 @@ void ScaledUInt16Field::set(const etl::istring &message) {
             dataModelLeaf = value;
             logger << debug << deviceName << ":" << "Setting " << name << " to '"
                    << value << "'" << eol;
+            return true;
         } else {
             dataModelLeaf.removeValue();
             logger << deviceName << ": Bad value '" << message << "' for field "
                    << name << eol;
+            return false;
         }
     } else {
         dataModelLeaf.removeValue();
+        return true;
     }
 }

@@ -33,7 +33,7 @@ class StringField : public Field {
     public:
         StringField(const char *deviceName, const char *name,
                     DataModelStringLeaf &dataModelLeaf);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

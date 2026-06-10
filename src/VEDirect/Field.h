@@ -33,7 +33,7 @@ class Field {
 
     public:
         Field(const char *deviceName, const char *name);
-        virtual void set(const etl::istring &message) = 0;
+        virtual bool set(const etl::istring &message) = 0;
 };
 
 #endif

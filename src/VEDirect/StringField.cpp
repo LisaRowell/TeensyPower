@@ -32,9 +32,11 @@ StringField::StringField(const char *deviceName, const char *name,
       dataModelLeaf(dataModelLeaf) {
 }
 
-void StringField::set(const etl::istring &message) {
+bool StringField::set(const etl::istring &message) {
     dataModelLeaf = message;
 
     logger << debug << deviceName << ":" << "Setting " << name << " to '"
            << message << "'" << eol;
+
+    return true;
 }

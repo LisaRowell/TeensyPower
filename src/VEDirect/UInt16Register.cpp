@@ -45,7 +45,7 @@ UInt16Register::UInt16Register(const char *deviceName, const char *name,
       denominatorExponent(denominatorExponent) {
 }
 
-void UInt16Register::set(VEDirectHexMessage &message) {
+bool UInt16Register::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
     uint16_t rawValue = message.parseUInt16();
     message.expectedEnd();
@@ -56,6 +56,7 @@ void UInt16Register::set(VEDirectHexMessage &message) {
         if (dataModelLeaf != nullptr) {
             dataModelLeaf->removeValue();
         }
+        return false;
     } else if (flags != 0) {
         logger << deviceName << ": " << name << " update with flags (0x"
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
@@ -63,6 +64,7 @@ void UInt16Register::set(VEDirectHexMessage &message) {
         if (dataModelLeaf != nullptr) {
             dataModelLeaf->removeValue();
         }
+        return false;
     } else {
         ScaledUInt16 value(rawValue, denominatorExponent);
         if (dataModelLeaf != nullptr) {
@@ -71,5 +73,7 @@ void UInt16Register::set(VEDirectHexMessage &message) {
 
         logger << debug << deviceName << ": Updating " << name << " to "
                << value << eol;
+
+        return true;
     }
 }

@@ -37,8 +37,6 @@
 #include "src/VEDirect/Field.h"
 #include "src/VEDirect/HexUInt16Field.h"
 #include "src/VEDirect/HexUInt32Field.h"
-#include "src/VEDirect/UnsignedField.h"
-#include "src/VEDirect/SignedField.h"
 #include "src/VEDirect/StringField.h"
 #include "src/VEDirect/OnOffField.h"
 #include "src/VEDirect/ScaledInt32Field.h"
@@ -70,6 +68,7 @@
 #include <stdint.h>
 
 class DataModel;
+class StatsManager;
 
 class MPPTController : public VEDirectDevice {
     private:
@@ -499,8 +498,8 @@ class MPPTController : public VEDirectDevice {
         void sendBatteryCurrent();
 
     public:
-        MPPTController(const char *name, const char *nodeName,
-                       HardwareSerial &serialPort, DataModel &dataModel);
+        MPPTController(const char *name, HardwareSerial &serialPort,
+                       DataModel &dataModel, StatsManager &statsManager);
         virtual void setup() override;
         virtual void service() override;
         void clearBatteryVoltage();

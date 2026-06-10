@@ -33,7 +33,7 @@ MPPTTotalHistoryRegister::MPPTTotalHistoryRegister(const char *deviceName)
     : Register(deviceName, "Total History") {
 }
 
-void MPPTTotalHistoryRegister::set(VEDirectHexMessage &message) {
+bool MPPTTotalHistoryRegister::set(VEDirectHexMessage &message) {
     uint8_t flags = message.parseUInt8();
     uint8_t recordVersion = message.parseUInt8();
     uint8_t errorDatabase = message.parseUInt8();
@@ -57,13 +57,16 @@ void MPPTTotalHistoryRegister::set(VEDirectHexMessage &message) {
     if (recordVersion != 1) {
         logger << deviceName << ": Unsupported Total History message format ("
                << recordVersion <<"): " << message << eol;
+        return false;
     } else if (message.hadParseError()) {
         logger << deviceName << ": Badly formed Total History message: "
                << message << eol;
+        return false;
     } else if (flags != 0) {
         logger << deviceName << ": Total History update with flags (0x"
                << etl::hex << etl::setw(2) << etl::setfill('0') << flags
                << ") set: " << message << eol;
+        return false;
     } else {
         logger << debug << deviceName << ": Updating Total History:";
         logger << debug << "    Error Database: " << errorDatabase << eol;
@@ -77,5 +80,7 @@ void MPPTTotalHistoryRegister::set(VEDirectHexMessage &message) {
         logger << debug << "    Battery Voltage Maximum: " << batteryVoltageMaximum << " V" << eol;
         logger << debug << "    Number Days Available: " << numberDaysAvailable << eol;
         logger << debug << "    Battery Voltage Minimum: " << batteryVoltageMinimum << " V"<< eol;
+
+        return true;
     }
 }

@@ -37,7 +37,7 @@ class ScaledUInt16Field : public Field {
         ScaledUInt16Field(const char *deviceName, const char *name,
                           DataModelScaledUInt16Leaf &dataModelLeaf,
                           uint8_t denominatorExponent = 0);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

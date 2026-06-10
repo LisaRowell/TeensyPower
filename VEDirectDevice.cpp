@@ -26,6 +26,9 @@
 #include "src/DataModel/DataModel.h"
 #include "src/DataModel/DataModelRoot.h"
 #include "src/DataModel/DataModelNode.h"
+#include "src/DataModel/DataModelUInt32Leaf.h"
+
+#include "src/StatsManager/StatsManager.h"
 
 #include "src/Util/PassiveTimer.h"
 #include "src/Util/Logger.h"
@@ -43,16 +46,40 @@
 VEDirectDevice::VEDirectDevice(const char *name, HardwareSerial &serialPort,
                                etl::iflat_map<uint16_t, Register &> &registers,
                                etl::iflat_map<const char *, Field &, CStringCompare> &fields,
-                               DataModel &dataModel)
+                               DataModel &dataModel, StatsManager &statsManager)
     : serialPort(serialPort),
       registers(registers),
       fields(fields),
       state(IDLE),
-      runtMessages(0),
+      textBlocks(0),
+      textFields(0),
+      unhandledTextFields(0),
+      textRuntMessages(0),
       textChecksumErrors(0),
+      textSetErrors(0),
+      hexSetErrors(0),
+      unhandledRegisterErrors(0),
       commandOutstanding(false),
-      name(name),
-      deviceNode(name, &dataModel.rootNode()) {
+      commandTimeouts(0),
+      deviceSysNode(name, &dataModel.sysNode()),
+      textBlocksLeaf("textBlocks", &deviceSysNode),
+      textFieldsLeaf("textFields", &deviceSysNode),
+      hexMessagesLeaf("hexMessages", &deviceSysNode),
+      errorNode("error", &deviceSysNode),
+      textErrorNode("text", &errorNode),
+      unhandledTextFieldsLeaf("unhandledTextFields", &textErrorNode),
+      textRuntMessagesLeaf("runtMessages", &textErrorNode),
+      textChecksumErrorsLeaf("checksum", &textErrorNode),
+      textSetErrorsLeaf("set", &textErrorNode),
+      hexErrorNode("hex", &errorNode),
+      hexRuntMessagesLeaf("runtMessages", &hexErrorNode),
+      hexChecksumErrorsLeaf("checksum", &hexErrorNode),
+      hexSetErrorsLeaf("set", &hexErrorNode),
+      unhandledRegisterErrorsLeaf("unhandledRegister", &hexErrorNode),
+      commandTimeoutsLeaf("commandTimeouts", &hexErrorNode),
+      name(name) {
+    statsManager.addStatsHolder(*this);
+
     // We periodically ping each device so that we keep them in HEX
     // Protocol mode. Avoid all devices sending replies at once by
     // staggering the ping send times.
@@ -74,8 +101,9 @@ void VEDirectDevice::service() {
     }
 
     if (commandOutstanding && commandTimeout.expired()) {
-        logger << name << ": Command timed out" << eol;
+        logger << debug << name << ": Command timed out" << eol;
         commandOutstanding = false;
+        commandTimeouts++;
     }
 }
 
@@ -142,7 +170,7 @@ void VEDirectDevice::idleInput(char input) {
             // error, or we're getting serial errors. We count these,
             // but only as a single instance until the next start of
             // a valid message is detected.
-            runtMessages++;
+            textRuntMessages++;
             state = IN_RUNT_MESSAGE;
     }
 }
@@ -230,14 +258,19 @@ void VEDirectDevice::textChecksumInput(char input) {
 
 void VEDirectDevice::processTextBlock() {
     logger << debug << "Block complete" << eol;
+    textBlocks++;
     for (const VEDirectTextField &textField : textBlock) {
+        textFields++;
         const etl::istring &label = textField.label();
         const auto &mapping = fields.find(label.data());
         if (mapping != fields.end()) {
-            mapping->second.set(textField.value());
+            if (!mapping->second.set(textField.value()) ) {
+                textSetErrors++;
+            }
         } else {
             logger << debug << "Unhandled text field " << textField.label() << ":"
                    << textField.value() << eol;
+            unhandledTextFields++;
         }
     }
 }
@@ -271,7 +304,7 @@ void VEDirectDevice::hexMessageCompleted() {
                        << (uint16_t)hexMessage.responseCode() << eol;
         }
     } else {
-        Serial.println("Ignoring erroneous HEX Protocol message");
+        logger << "Ignoring erroneous HEX Protocol message" << eol;
     }
 
     // The Victron example code resets the text protocol check to zero
@@ -347,11 +380,14 @@ void VEDirectDevice::hexProtocolGetResponseReceived() {
     uint16_t registerID = hexMessage.parseUInt16();
     const auto &mapping = registers.find(registerID);
     if (mapping != registers.end()) {
-        mapping->second.set(hexMessage);
+        if (!mapping->second.set(hexMessage)) {
+            hexSetErrors++;
+        }
     } else {
         logger << name << ": Ignoring GET response for unimplemented register 0x"
                << etl::hex << etl::setw(4) << etl::setfill('0') << registerID
                << etl::setw(0) << ": " << hexMessage << eol;
+        unhandledRegisterErrors++;
     }
 }
 
@@ -366,11 +402,14 @@ void VEDirectDevice::hexProtocolSetResponseReceived() {
     uint16_t registerID = hexMessage.parseUInt16();
     const auto &mapping = registers.find(registerID);
     if (mapping != registers.end()) {
-        mapping->second.set(hexMessage);
+        if (!mapping->second.set(hexMessage)) {
+            hexSetErrors++;
+        }
     } else {
         logger << name << ": Ignoring SET response for unimplemented register 0x"
                << etl::hex << etl::setw(4) << etl::setfill('0') << registerID
                << etl::setw(0) << ": " << hexMessage << eol;
+        unhandledRegisterErrors++;
     }
 }
 
@@ -378,11 +417,14 @@ void VEDirectDevice::hexProtocolAsyncResponseReceived() {
     uint16_t registerID = hexMessage.parseUInt16();
     const auto &mapping = registers.find(registerID);
     if (mapping != registers.end()) {
-        mapping->second.set(hexMessage);
+        if (!mapping->second.set(hexMessage)) {
+            hexSetErrors++;
+        }
     } else {
         logger << name << ": Ignoring Async update of unimplemented register 0x"
                << etl::hex << etl::setw(4) << etl::setfill('0') << registerID
                << etl::setw(0) << ": " << hexMessage << eol;
+        unhandledRegisterErrors++;
     }
 }
 
@@ -432,7 +474,6 @@ void VEDirectDevice::sendSet(uint16_t registerID, uint32_t value) {
     sendCommand(setCommand);
 }
 
-
 void VEDirectDevice::sendSet(uint16_t registerID, int16_t value) {
     sendSet(registerID, (uint16_t)value);
 }
@@ -459,4 +500,19 @@ void VEDirectDevice::addToTextCheckSum(char input) {
     // This is taken from a Victron FAQ. It's odd that they use an int
     // to accumulate an 8-bit value...
     textChecksum = (textChecksum + input) & 255; /* Take modulo 256 in account */
+}
+
+void VEDirectDevice::harvestStats(uint32_t msElapsed) {
+    textBlocksLeaf = textBlocks;
+    textFieldsLeaf = textFields;
+    unhandledTextFieldsLeaf = unhandledTextFields;
+    textRuntMessagesLeaf = textRuntMessages;
+    textChecksumErrorsLeaf = textChecksumErrors;
+    textSetErrorsLeaf = textSetErrors;
+    hexMessagesLeaf = hexMessage.messages();
+    hexRuntMessagesLeaf = hexMessage.runtMessages();
+    hexChecksumErrorsLeaf = hexMessage.checksumErrors();
+    hexSetErrorsLeaf = hexSetErrors;
+    unhandledRegisterErrorsLeaf = unhandledRegisterErrors;
+    commandTimeoutsLeaf = commandTimeouts;
 }

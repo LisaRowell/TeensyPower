@@ -29,7 +29,7 @@ class Logger;
 class UInt16RangeRegister : public Register {
     public:
         UInt16RangeRegister(const char *deviceName, const char *name);
-        void set(VEDirectHexMessage &message) override;
+        bool set(VEDirectHexMessage &message) override;
 };
 
 #endif

@@ -42,7 +42,7 @@ class BMVVoltageField : public Field {
         BMVVoltageField(const char *deviceName,
                         DataModelScaledInt16Leaf &dataModelLeaf,
                         const etl::ivector<MPPTController *> *mppts = nullptr);
-        void set(const etl::istring &message) override;
+        bool set(const etl::istring &message) override;
 };
 
 #endif

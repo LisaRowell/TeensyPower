@@ -38,12 +38,13 @@ BMVTemperatureField::BMVTemperatureField(const char *deviceName,
       mppts(mppts) {
 }
 
-void BMVTemperatureField::set(const etl::istring &message) {
+bool BMVTemperatureField::set(const etl::istring &message) {
     if (message == "---") {
         logger << debug << deviceName << ":" << "Clearing Temperature" << eol;
         dataModelLeaf.removeValue();
 
         clearMPPTsTemperature();
+        return true;
     } else {
         etl::to_arithmetic_result result = etl::to_arithmetic<int16_t>(message);
         if (result.has_value()) {
@@ -54,12 +55,14 @@ void BMVTemperatureField::set(const etl::istring &message) {
             dataModelLeaf = temperatureC;
 
             setMPPTsTemperature(temperatureC);
+            return true;
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field Temperature"
                    << eol;
             dataModelLeaf.removeValue();
 
             clearMPPTsTemperature();
+            return false;
         }
     }
 }

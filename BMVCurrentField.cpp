@@ -40,12 +40,13 @@ BMVCurrentField::BMVCurrentField(const char *deviceName,
       mppts(mppts) {
 }
 
-void BMVCurrentField::set(const etl::istring &message) {
+bool BMVCurrentField::set(const etl::istring &message) {
     if (message == "---") {
         logger << debug << deviceName << ":" << "Clearing Current" << eol;
         dataModelLeaf.removeValue();
 
         clearMPPTsCurrent();
+        return true;
     } else {
         etl::to_arithmetic_result result = etl::to_arithmetic<int32_t>(message);
         if (result.has_value()) {
@@ -57,11 +58,13 @@ void BMVCurrentField::set(const etl::istring &message) {
             dataModelLeaf = current;
 
             setMPPTsCurrent(currentMA);
+            return true;
         } else {
             logger << deviceName << ": Bad value '" << message << "' for field Current" << eol;
             dataModelLeaf.removeValue();
 
             clearMPPTsCurrent();
+            return false;
         }
     }
 }
